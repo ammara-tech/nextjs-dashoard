@@ -6,6 +6,9 @@ import { z } from 'zod';
 import type { User } from '@/app/lib/definitions';
 import { authConfig } from './auth.config';
 
+console.log('AUTH_SECRET set:', !!process.env.AUTH_SECRET);
+console.log('POSTGRES_URL set:', !!process.env.POSTGRES_URL);
+
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
 async function getUser(email: string): Promise<User | undefined> {
@@ -20,6 +23,7 @@ async function getUser(email: string): Promise<User | undefined> {
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
+  debug: true,
   providers: [
     Credentials({
       async authorize(credentials) {
