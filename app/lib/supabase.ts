@@ -1,142 +1,34 @@
-import postgres from 'postgres';
+import 'server-only';
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
-
-type Condition = { column: string; value: unknown; operator: '=' | '!=' | '>' | '<' | '>=' | '<=' };
-type QueryError = Error & { code?: string };
-type QueryResult<T> = { data: T | null; error: QueryError | null };
-
-type QueryBuilder<T = Record<string, unknown>[]> = {
-  data: T | null;
-  error: QueryError | null;
-  select: (columns?: string) => QueryBuilder<T>;
-  eq: (column: string, value: unknown) => QueryBuilder<T>;
-  order: (column: string, options?: { ascending?: boolean }) => QueryBuilder<T>;
-  maybeSingle: () => Promise<QueryResult<Record<string, unknown>>>;
-  insert: (values: Record<string, unknown>) => Promise<{ error: QueryError | null }>;
-  update: (values: Record<string, unknown>) => {
-    eq: (column: string, value: unknown) => Promise<{ error: QueryError | null }>;
-  };
-  delete: () => {
-    eq: (column: string, value: unknown) => Promise<{ error: QueryError | null }>;
-  };
-};
-
-function buildTableName(table: string) {
-  return table.includes('.') ? table : `"${table}"`;
-}
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
 export async function createClient() {
-  const from = (table: string): QueryBuilder => {
-    const state: {
-      columns?: string;
-      conditions: Condition[];
-      orderBy?: { column: string; ascending: boolean };
-    } = { conditions: [] };
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-    const read = async (): Promise<QueryResult<Record<string, unknown>[]>> => {
-      try {
-        let sqlText = `SELECT ${state.columns ?? '*'} FROM ${buildTableName(table)}`;
-        const params: unknown[] = [];
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error(
+      'Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.',
+    );
+  }
 
-        if (state.conditions.length > 0) {
-          const clauses = state.conditions.map((condition, index) => {
-            params.push(condition.value);
-            return `${condition.column} ${condition.operator} $${index + 1}`;
-          });
-          sqlText += ` WHERE ${clauses.join(' AND ')}`;
-        }
+  const cookieStore = await cookies();
 
-        if (state.orderBy) {
-          const direction = state.orderBy.ascending ? 'ASC' : 'DESC';
-          sqlText += ` ORDER BY ${state.orderBy.column} ${direction}`;
-        }
-
-        const rows = (await sql.unsafe(sqlText, ...(params as any[]))) as Record<string, unknown>[];
-        builder.data = rows as any;
-        builder.error = null;
-        return { data: rows, error: null };
-      } catch (error) {
-        const typedError = error as QueryError;
-        builder.error = typedError;
-        return { data: [], error: typedError };
-      }
-    };
-
-    const builder: QueryBuilder = {
-      data: null,
-      error: null,
-      select(columns = '*') {
-        state.columns = columns;
-        return builder;
+  return createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
       },
-      eq(column, value) {
-        state.conditions.push({ column, value, operator: '=' });
-        return builder;
-      },
-      order(column, options) {
-        state.orderBy = { column, ascending: options?.ascending ?? true };
-        return builder;
-      },
-      async maybeSingle() {
-        const { data, error } = await read();
-        return { data: Array.isArray(data) ? (data[0] ?? null) : null, error };
-      },
-      async insert(values) {
-        const columns = Object.keys(values).map((key) => `"${key}"`).join(', ');
-        const placeholders = Object.keys(values)
-          .map((_, index) => `$${index + 1}`)
-          .join(', ');
-
+      setAll(cookiesToSet) {
         try {
-          await sql.unsafe(`INSERT INTO ${buildTableName(table)} (${columns}) VALUES (${placeholders})`, ...(Object.values(values) as any[]));
-          return { error: null };
-        } catch (error) {
-          return { error: error as QueryError };
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options);
+          });
+        } catch {
+          // Server Components cannot write cookies; proxy.ts refreshes the session.
         }
       },
-      update(values) {
-        const stateForUpdate: { table: string; values: Record<string, unknown>; conditions: Condition[] } = {
-          table,
-          values,
-          conditions: [],
-        };
-
-        return {
-          async eq(column, value) {
-            stateForUpdate.conditions.push({ column, value, operator: '=' });
-            try {
-              const assignments = Object.entries(stateForUpdate.values)
-                .map(([_key], index) => `"${_key}" = $${index + 1}`)
-                .join(', ');
-              const whereClause = stateForUpdate.conditions
-                .map((condition, index) => `${condition.column} = $${Object.keys(stateForUpdate.values).length + index + 1}`)
-                .join(' AND ');
-              const params = [...Object.values(stateForUpdate.values), ...stateForUpdate.conditions.map((condition) => condition.value)];
-              await sql.unsafe(`UPDATE ${buildTableName(stateForUpdate.table)} SET ${assignments} WHERE ${whereClause}`, ...(params as any[]));
-              return { error: null };
-            } catch (error) {
-              return { error: error as QueryError };
-            }
-          },
-        };
-      },
-      delete() {
-        return {
-          async eq(column, value) {
-            try {
-              await sql.unsafe(`DELETE FROM ${buildTableName(table)} WHERE ${column} = $1`, value as any);
-              return { error: null };
-            } catch (error) {
-              return { error: error as QueryError };
-            }
-          },
-        };
-      },
-    };
-
-    return builder;
-  };
-
-  return { from };
+    },
+  });
 }

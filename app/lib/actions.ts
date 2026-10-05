@@ -4,32 +4,7 @@ import { z } from 'zod';
 import postgres from 'postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { signIn } from '@/auth';
-import { AuthError } from 'next-auth';
-import {
-  createPatient as createPatientAction,
-  updatePatient as updatePatientAction,
-  deletePatient as deletePatientAction,
-  type PatientState,
-} from '@/app/lib/data';
-
-export type { PatientState } from '@/app/lib/data';
-
-export async function createPatient(prevState: PatientState, formData: FormData) {
-  return createPatientAction(prevState, formData);
-}
-
-export async function updatePatient(
-  id: string,
-  prevState: PatientState,
-  formData: FormData,
-) {
-  return updatePatientAction(id, prevState, formData);
-}
-
-export async function deletePatient(id: string) {
-  return deletePatientAction(id);
-}
+import { createClient } from '@/app/lib/supabase';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -138,21 +113,132 @@ export async function deleteInvoice(id: string) {
   revalidatePath('/dashboard/invoices');
 }
 
-export async function authenticate(
-  prevState: string | undefined,
+const PatientSchema = z.object({
+  full_name: z.string().trim().min(1, { message: 'Please enter the patient\'s full name.' }),
+  phone: z.string().optional(),
+  date_of_birth: z.string().optional(),
+});
+
+export type PatientState = {
+  errors?: {
+    full_name?: string[];
+    phone?: string[];
+    date_of_birth?: string[];
+  };
+  message?: string | null;
+};
+
+export async function createPatient(_prevState: PatientState, formData: FormData) {
+  const validated = PatientSchema.safeParse({
+    full_name: formData.get('full_name'),
+    phone: formData.get('phone'),
+    date_of_birth: formData.get('date_of_birth'),
+  });
+  if (!validated.success) {
+    return {
+      errors: validated.error.flatten().fieldErrors,
+      message: 'Missing fields. Failed to create patient.',
+    };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.from('patients').insert({
+    full_name: validated.data.full_name,
+    phone: validated.data.phone || null,
+    date_of_birth: validated.data.date_of_birth || null,
+  });
+  if (error) {
+    console.error('Supabase error:', error);
+    return { message: `Database error ${error.code}: failed to create patient.` };
+  }
+
+  revalidatePath('/dashboard/patients');
+  redirect('/dashboard/patients');
+}
+
+export async function updatePatient(
+  id: string,
+  _prevState: PatientState,
   formData: FormData,
 ) {
-  try {
-    await signIn('credentials', formData);
-  } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case 'CredentialsSignin':
-          return 'Invalid credentials.';
-        default:
-          return 'Something went wrong.';
-      }
-    }
-    throw error;
+  const validated = PatientSchema.safeParse({
+    full_name: formData.get('full_name'),
+    phone: formData.get('phone'),
+    date_of_birth: formData.get('date_of_birth'),
+  });
+  if (!validated.success) {
+    return {
+      errors: validated.error.flatten().fieldErrors,
+      message: 'Missing fields. Failed to update patient.',
+    };
   }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from('patients')
+    .update({
+      full_name: validated.data.full_name,
+      phone: validated.data.phone || null,
+      date_of_birth: validated.data.date_of_birth || null,
+    })
+    .eq('id', id);
+  if (error) {
+    console.error('Supabase error:', error);
+    return { message: `Database error ${error.code}: failed to update patient.` };
+  }
+
+  revalidatePath('/dashboard/patients');
+  redirect('/dashboard/patients');
+}
+
+export async function deletePatient(id: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from('patients').delete().eq('id', id);
+  if (error) {
+    console.error('Supabase error:', error);
+    throw new Error(`Database error ${error.code}: failed to delete patient.`);
+  }
+  revalidatePath('/dashboard/patients');
+}
+
+export async function authenticate(
+  _prevState: string | undefined,
+  formData: FormData,
+) {
+  const credentials = z
+    .object({ email: z.string().email(), password: z.string().min(6) })
+    .safeParse({
+      email: formData.get('email'),
+      password: formData.get('password'),
+    });
+
+  if (!credentials.success) {
+    return 'Invalid email or password.';
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword(credentials.data);
+  if (error) {
+    console.error('Supabase authentication error:', error);
+    return 'Invalid email or password.';
+  }
+
+  const requestedPath = formData.get('redirectTo');
+  const redirectTo =
+    typeof requestedPath === 'string' &&
+    requestedPath.startsWith('/') &&
+    !requestedPath.startsWith('//')
+      ? requestedPath
+      : '/dashboard';
+  redirect(redirectTo);
+}
+
+export async function signOut() {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    console.error('Supabase sign-out error:', error);
+    throw new Error('Failed to sign out.');
+  }
+  redirect('/');
 }
