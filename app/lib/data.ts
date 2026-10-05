@@ -11,29 +11,55 @@ import {
   Revenue,
 } from './definitions';
 import { formatCurrency } from './utils';
+import { createClient } from '@/app/lib/supabase';
+import { customers, invoices, revenue as fallbackRevenueData } from './placeholder-data';
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+const sql = process.env.POSTGRES_URL
+  ? postgres(process.env.POSTGRES_URL, { ssl: 'require' })
+  : null;
+
+function buildInvoiceRows() {
+  return invoices.map((invoice, index) => {
+    const customer = customers.find((entry) => entry.id === invoice.customer_id);
+    return {
+      id: `inv-${index + 1}`,
+      customer_id: invoice.customer_id,
+      amount: invoice.amount,
+      status: invoice.status,
+      date: invoice.date,
+      name: customer?.name ?? 'Unknown Customer',
+      email: customer?.email ?? '',
+      image_url: customer?.image_url ?? '/customers/evil-rabbit.png',
+    };
+  });
+}
 
 export async function fetchRevenue() {
+  if (!sql) {
+    return fallbackRevenueData;
+  }
+
   try {
-    // Artificially delay a response for demo purposes.
-    // Don't do this in production :)
-
-    // console.log('Fetching revenue data...');
-    // await new Promise((resolve) => setTimeout(resolve, 3000));
-
     const data = await sql<Revenue[]>`SELECT * FROM revenue`;
-
-    // console.log('Data fetch completed after 3 seconds.');
-
     return data;
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch revenue data.');
+    return fallbackRevenueData;
   }
 }
 
 export async function fetchLatestInvoices() {
+  if (!sql) {
+    return buildInvoiceRows()
+      .slice()
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 5)
+      .map((invoice) => ({
+        ...invoice,
+        amount: formatCurrency(invoice.amount),
+      }));
+  }
+
   try {
     const data = await sql<LatestInvoiceRaw[]>`
       SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
@@ -49,15 +75,41 @@ export async function fetchLatestInvoices() {
     return latestInvoices;
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch the latest invoices.');
+    return buildInvoiceRows()
+      .slice()
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 5)
+      .map((invoice) => ({
+        ...invoice,
+        amount: formatCurrency(invoice.amount),
+      }));
   }
 }
 
 export async function fetchCardData() {
+  if (!sql) {
+    const numberOfInvoices = invoices.length;
+    const numberOfCustomers = customers.length;
+    const totalPaidInvoices = formatCurrency(
+      invoices
+        .filter((invoice) => invoice.status === 'paid')
+        .reduce((sum, invoice) => sum + invoice.amount, 0),
+    );
+    const totalPendingInvoices = formatCurrency(
+      invoices
+        .filter((invoice) => invoice.status === 'pending')
+        .reduce((sum, invoice) => sum + invoice.amount, 0),
+    );
+
+    return {
+      numberOfCustomers,
+      numberOfInvoices,
+      totalPaidInvoices,
+      totalPendingInvoices,
+    };
+  }
+
   try {
-    // You can probably combine these into a single SQL query
-    // However, we are intentionally splitting them to demonstrate
-    // how to initialize multiple queries in parallel with JS.
     const invoiceCountPromise = sql`SELECT COUNT(*) FROM invoices`;
     const customerCountPromise = sql`SELECT COUNT(*) FROM customers`;
     const invoiceStatusPromise = sql`SELECT
@@ -84,7 +136,20 @@ export async function fetchCardData() {
     };
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch card data.');
+    return {
+      numberOfCustomers: customers.length,
+      numberOfInvoices: invoices.length,
+      totalPaidInvoices: formatCurrency(
+        invoices
+          .filter((invoice) => invoice.status === 'paid')
+          .reduce((sum, invoice) => sum + invoice.amount, 0),
+      ),
+      totalPendingInvoices: formatCurrency(
+        invoices
+          .filter((invoice) => invoice.status === 'pending')
+          .reduce((sum, invoice) => sum + invoice.amount, 0),
+      ),
+    };
   }
 }
 
@@ -94,6 +159,22 @@ export async function fetchFilteredInvoices(
   currentPage: number,
 ) {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  if (!sql) {
+    const search = query.trim().toLowerCase();
+    const rows = buildInvoiceRows().filter((invoice) => {
+      if (!search) return true;
+      return [
+        invoice.name,
+        invoice.email,
+        invoice.amount.toString(),
+        invoice.date,
+        invoice.status,
+      ].some((value) => value.toLowerCase().includes(search));
+    });
+
+    return rows.slice(offset, offset + ITEMS_PER_PAGE) as InvoicesTable[];
+  }
 
   try {
     const invoices = await sql<InvoicesTable[]>`
@@ -120,11 +201,38 @@ export async function fetchFilteredInvoices(
     return invoices;
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch invoices.');
+    const search = query.trim().toLowerCase();
+    const rows = buildInvoiceRows().filter((invoice) => {
+      if (!search) return true;
+      return [
+        invoice.name,
+        invoice.email,
+        invoice.amount.toString(),
+        invoice.date,
+        invoice.status,
+      ].some((value) => value.toLowerCase().includes(search));
+    });
+
+    return rows.slice(offset, offset + ITEMS_PER_PAGE) as InvoicesTable[];
   }
 }
 
 export async function fetchInvoicesPages(query: string) {
+  if (!sql) {
+    const search = query.trim().toLowerCase();
+    const matchingRows = buildInvoiceRows().filter((invoice) => {
+      if (!search) return true;
+      return [
+        invoice.name,
+        invoice.email,
+        invoice.amount.toString(),
+        invoice.date,
+        invoice.status,
+      ].some((value) => value.toLowerCase().includes(search));
+    });
+    return Math.max(1, Math.ceil(matchingRows.length / ITEMS_PER_PAGE));
+  }
+
   try {
     const data = await sql`SELECT COUNT(*)
     FROM invoices
@@ -141,13 +249,39 @@ export async function fetchInvoicesPages(query: string) {
     return totalPages;
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch total number of invoices.');
+    const search = query.trim().toLowerCase();
+    const matchingRows = buildInvoiceRows().filter((invoice) => {
+      if (!search) return true;
+      return [
+        invoice.name,
+        invoice.email,
+        invoice.amount.toString(),
+        invoice.date,
+        invoice.status,
+      ].some((value) => value.toLowerCase().includes(search));
+    });
+    return Math.max(1, Math.ceil(matchingRows.length / ITEMS_PER_PAGE));
   }
 }
 
+function normalizeInvoiceStatus(status: string): InvoiceForm['status'] {
+  return status === 'paid' ? 'paid' : 'pending';
+}
+
 export async function fetchInvoiceById(id: string) {
+  if (!sql) {
+    const invoice = buildInvoiceRows().find((item) => item.id === id);
+    if (!invoice) return undefined;
+    return {
+      id: invoice.id,
+      customer_id: invoice.customer_id,
+      amount: invoice.amount / 100,
+      status: normalizeInvoiceStatus(invoice.status),
+    } satisfies InvoiceForm;
+  }
+
   try {
-    const data = await sql<InvoiceForm[]>`
+    const data = await sql<{ id: string; customer_id: string; amount: number; status: string }[]>`
       SELECT
         invoices.id,
         invoices.customer_id,
@@ -159,20 +293,31 @@ export async function fetchInvoiceById(id: string) {
 
     const invoice = data.map((invoice) => ({
       ...invoice,
-      // Convert amount from cents to dollars
       amount: invoice.amount / 100,
+      status: normalizeInvoiceStatus(invoice.status),
     }));
 
-    return invoice[0];
+    return invoice[0] as InvoiceForm | undefined;
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch invoice.');
+    const invoice = buildInvoiceRows().find((item) => item.id === id);
+    if (!invoice) return undefined;
+    return {
+      id: invoice.id,
+      customer_id: invoice.customer_id,
+      amount: invoice.amount / 100,
+      status: normalizeInvoiceStatus(invoice.status),
+    } satisfies InvoiceForm;
   }
 }
 
 export async function fetchCustomers() {
+  if (!sql) {
+    return customers.map(({ id, name }) => ({ id, name }));
+  }
+
   try {
-    const customers = await sql<CustomerField[]>`
+    const customersList = await sql<CustomerField[]>`
       SELECT
         id,
         name
@@ -180,14 +325,46 @@ export async function fetchCustomers() {
       ORDER BY name ASC
     `;
 
-    return customers;
+    return customersList;
   } catch (err) {
     console.error('Database Error:', err);
-    throw new Error('Failed to fetch all customers.');
+    return customers.map(({ id, name }) => ({ id, name }));
   }
 }
 
 export async function fetchFilteredCustomers(query: string) {
+  if (!sql) {
+    const search = query.trim().toLowerCase();
+    return customers
+      .filter((customer) => {
+        if (!search) return true;
+        return [customer.name, customer.email].some((value) =>
+          value.toLowerCase().includes(search),
+        );
+      })
+      .map((customer) => {
+        const customerInvoices = invoices.filter(
+          (invoice) => invoice.customer_id === customer.id,
+        );
+        const totalPending = customerInvoices
+          .filter((invoice) => invoice.status === 'pending')
+          .reduce((sum, invoice) => sum + invoice.amount, 0);
+        const totalPaid = customerInvoices
+          .filter((invoice) => invoice.status === 'paid')
+          .reduce((sum, invoice) => sum + invoice.amount, 0);
+
+        return {
+          id: customer.id,
+          name: customer.name,
+          email: customer.email,
+          image_url: customer.image_url,
+          total_invoices: customerInvoices.length,
+          total_pending: formatCurrency(totalPending),
+          total_paid: formatCurrency(totalPaid),
+        };
+      });
+  }
+
   try {
     const data = await sql<CustomersTableType[]>`
 		SELECT
@@ -207,20 +384,46 @@ export async function fetchFilteredCustomers(query: string) {
 		ORDER BY customers.name ASC
 	  `;
 
-    const customers = data.map((customer) => ({
+    const customerRows = data.map((customer) => ({
       ...customer,
       total_pending: formatCurrency(customer.total_pending),
       total_paid: formatCurrency(customer.total_paid),
     }));
 
-    return customers;
+    return customerRows;
   } catch (err) {
     console.error('Database Error:', err);
-    throw new Error('Failed to fetch customer table.');
+    const search = query.trim().toLowerCase();
+    return customers
+      .filter((customer) => {
+        if (!search) return true;
+        return [customer.name, customer.email].some((value) =>
+          value.toLowerCase().includes(search),
+        );
+      })
+      .map((customer) => {
+        const customerInvoices = invoices.filter(
+          (invoice) => invoice.customer_id === customer.id,
+        );
+        const totalPending = customerInvoices
+          .filter((invoice) => invoice.status === 'pending')
+          .reduce((sum, invoice) => sum + invoice.amount, 0);
+        const totalPaid = customerInvoices
+          .filter((invoice) => invoice.status === 'paid')
+          .reduce((sum, invoice) => sum + invoice.amount, 0);
+
+        return {
+          id: customer.id,
+          name: customer.name,
+          email: customer.email,
+          image_url: customer.image_url,
+          total_invoices: customerInvoices.length,
+          total_pending: formatCurrency(totalPending),
+          total_paid: formatCurrency(totalPaid),
+        };
+      });
   }
 }
-
-import { createClient } from '@/app/lib/supabase';
 
 export type Patient = {
   id: string;
@@ -294,7 +497,6 @@ export async function createPatient(prevState: PatientState, formData: FormData)
     full_name,
     phone: phone || null,
     date_of_birth: date_of_birth || null,
-    // user_id is not sent: the column default auth.uid() fills it
   });
   if (error) {
     console.error('Supabase error:', error);
