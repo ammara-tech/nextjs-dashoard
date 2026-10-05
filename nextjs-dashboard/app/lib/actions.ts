@@ -6,6 +6,30 @@ import postgres from 'postgres';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
+import {
+  createPatient as createPatientAction,
+  updatePatient as updatePatientAction,
+  deletePatient as deletePatientAction,
+  type PatientState,
+} from '@/app/lib/data';
+
+export type { PatientState } from '@/app/lib/data';
+
+export async function createPatient(prevState: PatientState, formData: FormData) {
+  return createPatientAction(prevState, formData);
+}
+
+export async function updatePatient(
+  id: string,
+  prevState: PatientState,
+  formData: FormData,
+) {
+  return updatePatientAction(id, prevState, formData);
+}
+
+export async function deletePatient(id: string) {
+  return deletePatientAction(id);
+}
 
 export type State = {
   errors?: {
