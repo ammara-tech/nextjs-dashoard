@@ -1,17 +1,10 @@
 import {
-  createClinicAppointment,
   deleteClinicAppointment,
   updateClinicAppointment,
 } from '../lib/actions';
 import { getClinicAccess } from '../lib/access';
 import { fetchAppointments, fetchPatients } from '../lib/data';
-
-function localDateTime(value?: string) {
-  const date = value ? new Date(value) : new Date();
-  return new Date(date.getTime() - date.getTimezoneOffset() * 60_000)
-    .toISOString()
-    .slice(0, 16);
-}
+import CreateAppointmentForm from '../ui/create-appointment-form';
 
 export default async function ClinicAppointmentsPage() {
   const [appointments, patients, { isOwner }] = await Promise.all([
@@ -34,48 +27,7 @@ export default async function ClinicAppointmentsPage() {
             Add a patient before booking an appointment.
           </p>
         ) : (
-          <form action={createClinicAppointment} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <label className="text-sm text-[#727a90]">
-              Patient
-              <select
-                className="mt-1 block w-full rounded-xl border-[#e3e5eb]"
-                name="patient_id"
-                required
-              >
-                <option value="">Select patient</option>
-                {patients.map((patient) => (
-                  <option key={patient.id} value={patient.id}>
-                    {patient.full_name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="text-sm text-[#727a90]">
-              Date and time
-              <input
-                className="mt-1 block w-full rounded-xl border-[#e3e5eb]"
-                defaultValue={localDateTime()}
-                name="starts_at"
-                required
-                type="datetime-local"
-              />
-            </label>
-            <label className="text-sm text-[#727a90]">
-              Status
-              <select
-                className="mt-1 block w-full rounded-xl border-[#e3e5eb]"
-                defaultValue="booked"
-                name="status"
-              >
-                <StatusOptions />
-              </select>
-            </label>
-            <div className="flex items-end">
-              <button className="w-full rounded-xl bg-[#647cf5] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#526be8]">
-                Book appointment
-              </button>
-            </div>
-          </form>
+          <CreateAppointmentForm patients={patients} />
         )}
       </section>
 
@@ -177,6 +129,13 @@ export default async function ClinicAppointmentsPage() {
       </section>
     </div>
   );
+}
+
+function localDateTime(value?: string) {
+  const date = value ? new Date(value) : new Date();
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60_000)
+    .toISOString()
+    .slice(0, 16);
 }
 
 function StatusOptions() {

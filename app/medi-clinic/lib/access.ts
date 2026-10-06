@@ -16,7 +16,7 @@ export async function getClinicAccess() {
   }
 
   if (!user) {
-    redirect('/login?callbackUrl=%2Fmedi-clinic');
+    redirect('/clinic-login?callbackUrl=%2Fmedi-clinic');
   }
 
   const role: ClinicRole =

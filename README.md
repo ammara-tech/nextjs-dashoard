@@ -71,11 +71,13 @@ The app also includes a separate family practice dashboard at `/medi-clinic`. It
 ## Family Clinic dashboard
 
 - `/medi-clinic` is protected by the same Supabase sign-in middleware as `/dashboard`; `/dashboard` continues to show the original billing dashboard for authenticated users.
+- The **Family Clinic** navigation link opens `/clinic-login`; signing in there returns to `/medi-clinic`. Unauthenticated clinic links use this clinic-specific login page.
 - Patient records and patient-management pages appear only in the Family Clinic dashboard. Legacy `/dashboard/patients` URLs redirect to `/medi-clinic/patients`, and `/dashboard/chart-check` redirects to the clinic overview.
 - The first chart counts patients by creation month for the current and previous five calendar months. The second chart counts this month's appointments by `booked`, `done`, and `no_show`, joined to their patients.
 - `/medi-clinic/patients` and `/medi-clinic/appointments` support create and edit for both roles. Only the owner can delete records.
 - `/medi-clinic/treatments` is owner-only. `/medi-clinic/tomorrow` lists booked appointments for the next calendar day, including patient phone numbers.
 - The database policies in `supabase/medi-clinic.sql` are authoritative. UI visibility is not used as an access-control boundary.
+- If appointment booking fails, the form displays the Supabase error and code. Confirm `supabase/patients.sql` and then `supabase/medi-clinic.sql` have been applied, and that the selected patient belongs to the signed-in clinic.
 
 Verify roles by signing in as the configured owner and as a front-desk user. The owner should see all clinic areas and have delete/treatment actions; front desk should see only patients, appointments, and tomorrow's booked list. Do not use the Supabase SQL Editor to prove application access rules; SQL Editor queries run with elevated database privileges.
 

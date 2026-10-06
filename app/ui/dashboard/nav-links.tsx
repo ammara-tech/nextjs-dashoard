@@ -20,7 +20,7 @@ const links = [
     icon: DocumentDuplicateIcon,
   },
   { name: 'Customers', href: '/dashboard/customers', icon: UserGroupIcon },
-  { name: 'Family Clinic', href: '/medi-clinic', icon: HeartIcon },
+  { name: 'Family Clinic', href: '/clinic-login', icon: HeartIcon },
 ];
 
 export default function NavLinks() {

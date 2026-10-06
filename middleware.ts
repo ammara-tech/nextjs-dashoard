@@ -52,7 +52,9 @@ export async function middleware(request: NextRequest) {
 
   if (isDashboard && !user) {
     const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = '/login';
+    loginUrl.pathname = pathname.startsWith('/medi-clinic')
+      ? '/clinic-login'
+      : '/login';
     loginUrl.searchParams.set(
       'callbackUrl',
       `${request.nextUrl.pathname}${request.nextUrl.search}`,

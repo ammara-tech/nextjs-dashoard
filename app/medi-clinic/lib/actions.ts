@@ -16,6 +16,11 @@ const AppointmentSchema = z.object({
   status: z.enum(['booked', 'done', 'no_show']),
 });
 
+export type AppointmentActionState = {
+  message?: string;
+  success?: boolean;
+};
+
 const TreatmentSchema = z.object({
   appointment_id: z.string().uuid('Select an appointment.'),
   procedure: z.string().trim().min(1, 'Enter the treatment or procedure.'),
@@ -108,28 +113,43 @@ export async function deleteClinicPatient(id: string) {
   revalidateClinicPages();
 }
 
-export async function createClinicAppointment(formData: FormData) {
-  const { supabase } = await getClinicAccess();
-  const appointment = AppointmentSchema.parse({
+export async function createClinicAppointment(
+  _previousState: AppointmentActionState,
+  formData: FormData,
+): Promise<AppointmentActionState> {
+  const validated = AppointmentSchema.safeParse({
     patient_id: formString(formData, 'patient_id'),
     starts_at: formString(formData, 'starts_at'),
     status: formString(formData, 'status') || 'booked',
   });
-  const startsAt = new Date(appointment.starts_at);
-  if (Number.isNaN(startsAt.getTime())) {
-    throw new Error('Choose a valid appointment date and time.');
+  if (!validated.success) {
+    return {
+      message:
+        validated.error.issues[0]?.message ??
+        'Check the appointment details and try again.',
+    };
   }
+
+  const startsAt = new Date(validated.data.starts_at);
+  if (Number.isNaN(startsAt.getTime())) {
+    return { message: 'Choose a valid appointment date and time.' };
+  }
+
+  const { supabase } = await getClinicAccess();
   const { error } = await supabase.from('appointments').insert({
-    patient_id: appointment.patient_id,
+    patient_id: validated.data.patient_id,
     starts_at: startsAt.toISOString(),
-    status: appointment.status,
+    status: validated.data.status,
   });
 
   if (error) {
     console.error('Supabase appointment create error:', error);
-    throw new Error(`Unable to create appointment (${error.code}).`);
+    return {
+      message: `Unable to book appointment: ${error.message} (${error.code}). Check that supabase/medi-clinic.sql has been applied and the selected patient belongs to this clinic.`,
+    };
   }
   revalidateClinicPages();
+  return { message: 'Appointment booked.', success: true };
 }
 
 export async function updateClinicAppointment(
