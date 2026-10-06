@@ -2,6 +2,7 @@ import { generateYAxis } from '@/app/lib/utils';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import { lusitana } from '@/app/ui/fonts';
 import { fetchRevenue } from '@/app/lib/data';
+import { formatCurrency } from '@/app/lib/utils';
 
 // This component is representational only.
 // For data visualization UI, check out:
@@ -37,15 +38,26 @@ export default async function RevenueChart() {
           </div>
 
           {revenue.map((month) => (
-            <div key={month.month} className="flex flex-col items-center gap-2">
-              {/* bars */}
+            <div
+              key={month.month}
+              className="group relative flex flex-col items-center gap-2"
+            >
               <div
-                className="w-full rounded-md bg-blue-300"
+                role="img"
+                aria-label={`${month.month}: ${formatCurrency(month.revenue)}`}
+                tabIndex={0}
+                className="relative w-full rounded-md bg-blue-300 outline-none transition-colors hover:bg-blue-400 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
                 style={{
                   height: `${(chartHeight / topLabel) * month.revenue}px`,
                 }}
-              ></div>
-              {/* x-axis */}
+              >
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-medium text-white shadow-lg group-hover:block group-focus-within:block"
+                >
+                  {month.month}: {formatCurrency(month.revenue)}
+                </span>
+              </div>
               <p className="-rotate-90 text-sm text-gray-400 sm:rotate-0">
                 {month.month}
               </p>
