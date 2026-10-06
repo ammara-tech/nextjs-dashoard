@@ -35,6 +35,15 @@ create policy "patients: owner can delete"
 
 create index patients_user_id_idx on public.patients (user_id);
 
+insert into public.patients (user_id, full_name, phone, date_of_birth, created_at)
+select
+  'b131b12e-4a10-4d7b-904a-087c610a8a53'::uuid,
+  'Patient ' || g,
+  '082' || lpad(floor(random() * 10000000)::int::text, 7, '0'),
+  date '1960-01-01' + floor(random() * 20000)::int,
+  now() - (random() * interval '180 days')
+from generate_series(1, 30) as g;
+
 create or replace view public.patients_per_month
 with (security_invoker = true) as
 with months as (

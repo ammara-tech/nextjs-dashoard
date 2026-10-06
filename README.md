@@ -61,18 +61,7 @@ Patient operations use the cookie-backed Supabase server client in `lib/supabase
 
 To verify ownership, sign in as two different Supabase Auth users. Each account should see only its own patients. A user's attempt to open another user's patient edit URL should display the not-found page. Do not use the Supabase SQL Editor to prove the app's access rules: SQL Editor queries run with elevated database privileges and do not represent a normal signed-in application request.
 
-To seed test data, copy user one's UID from **Authentication → Users** and run this in the Supabase SQL Editor, replacing the example UUID with that user's UID:
-
-```sql
-insert into patients (user_id, full_name, phone, date_of_birth, created_at)
-select
-  '00000000-0000-0000-0000-000000000000'::uuid,
-  'Patient ' || g,
-  '082' || lpad(floor(random() * 10000000)::int::text, 7, '0'),
-  date '1960-01-01' + floor(random() * 20000)::int,
-  now() - (random() * interval '180 days')
-from generate_series(1, 30) as g;
-```
+To seed test data for user one, run the seed insert in [`supabase/patients.sql`](./supabase/patients.sql) in the Supabase SQL Editor. It inserts 30 sample patients owned by the configured test-user UID. Change that UUID in the script if your test user changes. Run the seed insert only once; each run creates another 30 rows.
 
 ## Chart one
 
