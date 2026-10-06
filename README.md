@@ -57,9 +57,31 @@ A Next.js dashboard for managing invoices, customers, and patient records. Patie
 
 ## Patient data security
 
-Patient operations use the cookie-backed Supabase server client in `app/lib/supabase.ts`. The app does not send a `user_id` when creating a patient: the database fills it from `auth.uid()`. RLS policies restrict reads and writes to the signed-in user's rows.
+Patient operations use the cookie-backed Supabase server client in `lib/supabase/server.ts`. The app does not send a `user_id` when creating a patient: the database fills it from `auth.uid()`. RLS policies restrict reads and writes to the signed-in user's rows.
 
 To verify ownership, sign in as two different Supabase Auth users. Each account should see only its own patients. A user's attempt to open another user's patient edit URL should display the not-found page. Do not use the Supabase SQL Editor to prove the app's access rules: SQL Editor queries run with elevated database privileges and do not represent a normal signed-in application request.
+
+To seed test data, copy user one's UID from **Authentication → Users** and run this in the Supabase SQL Editor, replacing the example UUID with that user's UID:
+
+```sql
+insert into patients (user_id, full_name, phone, date_of_birth, created_at)
+select
+  '00000000-0000-0000-0000-000000000000'::uuid,
+  'Patient ' || g,
+  '082' || lpad(floor(random() * 10000000)::int::text, 7, '0'),
+  date '1960-01-01' + floor(random() * 20000)::int,
+  now() - (random() * interval '180 days')
+from generate_series(1, 30) as g;
+```
+
+## Chart one
+
+- **Question:** Is the practice growing? New patients per month
+- **Who acts:** the owner decides whether to open a second consulting day
+- **Shape:** bar, one per month, last 6 months
+- **View:** `patients_per_month` (`month_start`, `label`, `new_patients`) — with (`security_invoker = true`)
+
+The view is created in `supabase/patients.sql`. It includes all six calendar months, including months with zero patients. Its invoker security keeps the patients table's RLS policies active. After applying the SQL, visit `/dashboard/chart-check` while signed in as each test user; user one's monthly counts should be visible and user two should receive an empty result when they own no patients.
 
 ## Useful commands
 
@@ -81,7 +103,8 @@ app/
   lib/
     actions.ts           Invoice actions, patient actions, and Supabase sign-in/out
     data.ts              Invoice/customer queries and patient reads
-    supabase.ts          Cookie-backed Supabase server client
+    supabase/server.ts   Cookie-backed Supabase server client
+    chart-check/         Temporary RLS check for the monthly patients view
   ui/
     dashboard/           Dashboard layout and navigation
     invoices/            Invoice components and forms
