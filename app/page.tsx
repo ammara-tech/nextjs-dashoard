@@ -27,6 +27,13 @@ export default function Page() {
           >
             <span>Log in</span> <ArrowRightIcon className="w-5 md:w-6" />
           </Link>
+          <Link
+            href="/medi-clinic"
+            className="flex items-center gap-2 self-start text-sm font-medium text-blue-600 hover:text-blue-500 md:text-base"
+          >
+            Open the Family Clinic dashboard
+            <ArrowRightIcon className="w-4" />
+          </Link>
         </div>
         <div className="flex items-center justify-center p-6 md:w-3/5 md:px-28 md:py-12">
           {/* Add Hero Images Here */}

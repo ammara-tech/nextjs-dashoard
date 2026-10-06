@@ -5,6 +5,7 @@ import postgres from 'postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { requireClinicOwner } from '@/app/medi-clinic/lib/access';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -35,6 +36,7 @@ export type State = {
 };
 
 export async function createInvoice(prevState: State, formData: FormData) {
+  await requireClinicOwner();
   // Validate form fields using Zod
   const validatedFields = CreateInvoice.safeParse({
     customerId: formData.get('customerId'),
@@ -78,6 +80,7 @@ export async function updateInvoice(
   prevState: State,
   formData: FormData,
 ) {
+  await requireClinicOwner();
   const validatedFields = UpdateInvoice.safeParse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
@@ -109,6 +112,7 @@ export async function updateInvoice(
 }
 
 export async function deleteInvoice(id: string) {
+  await requireClinicOwner();
   await sql`DELETE FROM invoices WHERE id = ${id}`;
   revalidatePath('/dashboard/invoices');
 }
@@ -192,7 +196,7 @@ export async function updatePatient(
 }
 
 export async function deletePatient(id: string) {
-  const supabase = await createClient();
+  const { supabase } = await requireClinicOwner();
   const { error } = await supabase.from('patients').delete().eq('id', id);
   if (error) {
     console.error('Supabase error:', error);

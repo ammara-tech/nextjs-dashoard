@@ -1,6 +1,8 @@
 # Patient and Billing Dashboard
 
-A Next.js dashboard for managing invoices, customers, and patient records. Patient records are accessed through Supabase Auth and protected by database row-level security (RLS), so an authenticated user can access only records associated with their account.
+A Next.js application with the original invoice/customer dashboard and a separate family clinic dashboard. Supabase Auth and database row-level security (RLS) protect patient and clinic data.
+
+The app also includes a separate family practice dashboard at `/medi-clinic`. It manages patients, appointments, and treatments; shows patient growth and appointment outcomes; and includes a tomorrow appointment list.
 
 ## Features
 
@@ -8,6 +10,8 @@ A Next.js dashboard for managing invoices, customers, and patient records. Patie
 - View the dashboard overview, revenue, and latest invoices.
 - Browse customers and search/filter invoices.
 - Create, list, edit, and delete patient records.
+- Open the family clinic dashboard at `/medi-clinic` with owner/front-desk access.
+- Manage appointments and owner-only treatments, review the two clinic charts, and view tomorrow's booked appointments with patient phone numbers.
 - Enforce patient ownership in PostgreSQL with Supabase RLS policies.
 - Keep the invoice and customer data layer backed by the existing `POSTGRES_URL` connection.
 
@@ -47,19 +51,28 @@ A Next.js dashboard for managing invoices, customers, and patient records. Patie
 
 4. Run [`supabase/patients.sql`](./supabase/patients.sql) in the Supabase SQL Editor. It creates the patient table, enables RLS, grants authenticated access, adds owner-only policies, and creates an index on `user_id`.
 
-5. Start the development server:
+5. Run [`supabase/medi-clinic.sql`](./supabase/medi-clinic.sql) after `patients.sql`. It adds appointments and treatments, updates patient ownership policies for the shared clinic, and limits deletes and treatments to the owner.
+
+6. Set the trusted Supabase Auth `app_metadata` for each clinic account using the Supabase Admin API from a secure server-side environment. Never expose the service-role key in the browser or commit it.
+
+   - Owner: `{ "clinic_role": "owner" }`
+   - Front desk: `{ "clinic_role": "front_desk", "clinic_owner_id": "<owner-auth-user-uuid>" }`
+
+   The owner ID defaults to the signed-in user's ID for the owner account. Front-desk users must point to that same owner ID to share the practice's records. Accounts without a `clinic_role` are treated as front desk; they cannot view or change treatments or delete records.
+
+7. Start the development server:
 
    ```bash
    npm run dev
    ```
 
-6. Open [http://localhost:3000](http://localhost:3000), sign in with a Supabase Auth account, and use **Patients** in the dashboard navigation.
+8. Open [http://localhost:3000](http://localhost:3000), sign in with a configured Supabase Auth account, and open `/medi-clinic`.
 
 ## Patient data security
 
-Patient operations use the cookie-backed Supabase server client in `lib/supabase/server.ts`. The app does not send a `user_id` when creating a patient: the database fills it from `auth.uid()`. RLS policies restrict reads and writes to the signed-in user's rows.
+Patient operations use the cookie-backed Supabase server client in `lib/supabase/server.ts`. The app does not send a `user_id` when creating a patient: the database fills it from the authenticated clinic owner claim. RLS restricts access to the clinic's rows and enforces role-specific changes.
 
-To verify ownership, sign in as two different Supabase Auth users. Each account should see only its own patients. A user's attempt to open another user's patient edit URL should display the not-found page. Do not use the Supabase SQL Editor to prove the app's access rules: SQL Editor queries run with elevated database privileges and do not represent a normal signed-in application request.
+Verify roles by signing in once as the configured owner and once as a front-desk user. The owner should see all clinic areas and have delete/treatment actions; front desk should see only patients, appointments, and tomorrow's booked list. Do not use the Supabase SQL Editor to prove the app's access rules: SQL Editor queries run with elevated database privileges and do not represent a normal signed-in application request.
 
 To seed test data for user one, run the seed insert in [`supabase/patients.sql`](./supabase/patients.sql) in the Supabase SQL Editor. It inserts 30 sample patients owned by the configured test-user UID. Change that UUID in the script if your test user changes. Run the seed insert only once; each run creates another 30 rows.
 
@@ -71,6 +84,14 @@ To seed test data for user one, run the seed insert in [`supabase/patients.sql`]
 - **View:** `patients_per_month` (`month_start`, `label`, `new_patients`) — with (`security_invoker = true`)
 
 The view is created in `supabase/patients.sql`. It includes all six calendar months, including months with zero patients. Its invoker security keeps the patients table's RLS policies active. After applying the SQL, visit `/dashboard/chart-check` while signed in as each test user; user one's monthly counts should be visible and user two should receive an empty result when they own no patients.
+
+## Family Clinic dashboard
+
+- `/medi-clinic` is protected by the same Supabase sign-in middleware as `/dashboard`. Front-desk users are sent to the clinic app instead of the legacy billing dashboard.
+- The first chart counts patients by creation month for the current and previous five calendar months. The second chart counts this month's appointments by `booked`, `done`, and `no_show`, joined to their patients.
+- `/medi-clinic/patients` and `/medi-clinic/appointments` support create and edit for both roles. Only the owner can delete records.
+- `/medi-clinic/treatments` is owner-only. `/medi-clinic/tomorrow` lists booked appointments for the next calendar day, including patient phone numbers.
+- The database policies in `supabase/medi-clinic.sql` are authoritative. UI visibility is not used as an access-control boundary.
 
 ## Useful commands
 
@@ -84,6 +105,7 @@ npm run start   # Serve a production build
 
 ```text
 app/
+  medi-clinic/          Separate family clinic dashboard and CRUD routes
   dashboard/
     (overview)/          Dashboard overview
     customers/           Customer view
@@ -100,6 +122,7 @@ app/
     patients/            Patient buttons and forms
 middleware.ts             Refreshes Supabase sessions and protects dashboard routes
 supabase/patients.sql     Patient table, grants, index, and RLS policies
+supabase/medi-clinic.sql  Appointment/treatment schema and role-based RLS
 ```
 
 ## Important notes
