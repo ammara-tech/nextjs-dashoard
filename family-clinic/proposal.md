@@ -6,7 +6,7 @@
 
 **Repository:** https://github.com/ammara-tech/nextjs-dashoard
 
-**Student:** [Add your name]
+**Student:** Ammara Badat
 
 ## 1. Domain
 
