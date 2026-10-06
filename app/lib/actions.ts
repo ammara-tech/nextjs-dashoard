@@ -5,7 +5,6 @@ import postgres from 'postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { requireClinicOwner } from '@/app/medi-clinic/lib/access';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -36,7 +35,6 @@ export type State = {
 };
 
 export async function createInvoice(prevState: State, formData: FormData) {
-  await requireClinicOwner();
   // Validate form fields using Zod
   const validatedFields = CreateInvoice.safeParse({
     customerId: formData.get('customerId'),
@@ -80,7 +78,6 @@ export async function updateInvoice(
   prevState: State,
   formData: FormData,
 ) {
-  await requireClinicOwner();
   const validatedFields = UpdateInvoice.safeParse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
@@ -112,16 +109,9 @@ export async function updateInvoice(
 }
 
 export async function deleteInvoice(id: string) {
-  await requireClinicOwner();
   await sql`DELETE FROM invoices WHERE id = ${id}`;
   revalidatePath('/dashboard/invoices');
 }
-
-const PatientSchema = z.object({
-  full_name: z.string().trim().min(1, { message: 'Please enter the patient\'s full name.' }),
-  phone: z.string().optional(),
-  date_of_birth: z.string().optional(),
-});
 
 export type PatientState = {
   errors?: {
@@ -132,77 +122,23 @@ export type PatientState = {
   message?: string | null;
 };
 
-export async function createPatient(_prevState: PatientState, formData: FormData) {
-  const validated = PatientSchema.safeParse({
-    full_name: formData.get('full_name'),
-    phone: formData.get('phone'),
-    date_of_birth: formData.get('date_of_birth'),
-  });
-  if (!validated.success) {
-    return {
-      errors: validated.error.flatten().fieldErrors,
-      message: 'Missing fields. Failed to create patient.',
-    };
-  }
-
-  const supabase = await createClient();
-  const { error } = await supabase.from('patients').insert({
-    full_name: validated.data.full_name,
-    phone: validated.data.phone || null,
-    date_of_birth: validated.data.date_of_birth || null,
-  });
-  if (error) {
-    console.error('Supabase error:', error);
-    return { message: `Database error ${error.code}: failed to create patient.` };
-  }
-
-  revalidatePath('/dashboard/patients');
-  redirect('/dashboard/patients');
+export async function createPatient(
+  _prevState: PatientState,
+  _formData: FormData,
+): Promise<PatientState> {
+  redirect('/medi-clinic/patients');
 }
 
 export async function updatePatient(
-  id: string,
+  _id: string,
   _prevState: PatientState,
-  formData: FormData,
-) {
-  const validated = PatientSchema.safeParse({
-    full_name: formData.get('full_name'),
-    phone: formData.get('phone'),
-    date_of_birth: formData.get('date_of_birth'),
-  });
-  if (!validated.success) {
-    return {
-      errors: validated.error.flatten().fieldErrors,
-      message: 'Missing fields. Failed to update patient.',
-    };
-  }
-
-  const supabase = await createClient();
-  const { error } = await supabase
-    .from('patients')
-    .update({
-      full_name: validated.data.full_name,
-      phone: validated.data.phone || null,
-      date_of_birth: validated.data.date_of_birth || null,
-    })
-    .eq('id', id);
-  if (error) {
-    console.error('Supabase error:', error);
-    return { message: `Database error ${error.code}: failed to update patient.` };
-  }
-
-  revalidatePath('/dashboard/patients');
-  redirect('/dashboard/patients');
+  _formData: FormData,
+): Promise<PatientState> {
+  redirect('/medi-clinic/patients');
 }
 
-export async function deletePatient(id: string) {
-  const { supabase } = await requireClinicOwner();
-  const { error } = await supabase.from('patients').delete().eq('id', id);
-  if (error) {
-    console.error('Supabase error:', error);
-    throw new Error(`Database error ${error.code}: failed to delete patient.`);
-  }
-  revalidatePath('/dashboard/patients');
+export async function deletePatient(_id: string) {
+  redirect('/medi-clinic/patients');
 }
 
 export async function authenticate(

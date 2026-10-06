@@ -7,9 +7,7 @@ export async function middleware(request: NextRequest) {
     pathname === '/dashboard' ||
     pathname.startsWith('/dashboard/') ||
     pathname === '/medi-clinic' ||
-    pathname.startsWith('/medi-clinic/') ||
-    pathname === '/query' ||
-    pathname === '/seed';
+    pathname.startsWith('/medi-clinic/');
   const isLoginPage = pathname === '/login';
 
   if (!isDashboard && !isLoginPage) {
@@ -64,24 +62,6 @@ export async function middleware(request: NextRequest) {
       redirectResponse.cookies.set(cookie);
     });
     return redirectResponse;
-  }
-
-  if (
-    pathname === '/dashboard' ||
-    pathname.startsWith('/dashboard/') ||
-    pathname === '/query' ||
-    pathname === '/seed'
-  ) {
-    if (user?.app_metadata.clinic_role !== 'owner') {
-      const clinicUrl = request.nextUrl.clone();
-      clinicUrl.pathname = '/medi-clinic';
-      clinicUrl.search = '';
-      const redirectResponse = NextResponse.redirect(clinicUrl);
-      response.cookies.getAll().forEach((cookie) => {
-        redirectResponse.cookies.set(cookie);
-      });
-      return redirectResponse;
-    }
   }
 
   if (isLoginPage && user) {
