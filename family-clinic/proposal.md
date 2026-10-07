@@ -6,6 +6,17 @@
 **Repository:** https://github.com/ammara-tech/nextjs-dashoard  
 **Status:** Current capabilities are documented separately from proposed work. This is a phased product and technical specification, not a claim that future modules are already implemented.
 
+## Deployed access links
+
+The following deployed URLs are the intended entry points for the clinic audiences:
+
+- [Patients](https://nextjs-dashoard-psi.vercel.app/medi-clinic) — patient sign-in.
+- [Administration](https://nextjs-dashoard-psi.vercel.app/medi-clinic/dashboard) — administrative sign-in; create staff accounts with name, surname, and occupation/role such as reception or nurse.
+- [Doctors](https://nextjs-dashoard-psi.vercel.app/medi-clinic/doctors) — doctor sign-in; create doctor accounts with the doctor's name and occupation.
+- [Pharmacy](https://nextjs-dashoard-psi.vercel.app/medi-clinic/pharmacy) — pharmacy sign-in; create accounts with name, surname, and role: front desk/reception, stocker, or pharmacist.
+
+These are access links, not account-creation links. Sign-in requires an existing Supabase Auth account with the appropriate trusted clinic role and clinic association. Route availability depends on the deployed application version.
+
 ## 1. Purpose and current baseline
 
 Upgrade the existing family-practice dashboard into a secure clinic operations

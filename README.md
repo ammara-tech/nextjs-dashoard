@@ -4,6 +4,15 @@ A Next.js application with the original invoice/customer dashboard and a separat
 
 The app also includes a separate family practice dashboard at `/medi-clinic`. It manages patients, appointments, and treatments; shows patient growth and appointment outcomes; and includes a tomorrow appointment list.
 
+## Family Clinic deployed access links
+
+- [Patient portal](https://nextjs-dashoard-psi.vercel.app/medi-clinic) — patient sign-in.
+- [Administrative dashboard](https://nextjs-dashoard-psi.vercel.app/medi-clinic/dashboard) — administrative sign-in; staff accounts are provisioned with a name, surname, and occupation/role such as reception or nurse.
+- [Doctors area](https://nextjs-dashoard-psi.vercel.app/medi-clinic/doctors) — doctor sign-in; doctor accounts are provisioned with the doctor's name and occupation.
+- [Pharmacy area](https://nextjs-dashoard-psi.vercel.app/medi-clinic/pharmacy) — pharmacy sign-in; accounts are provisioned with a name, surname, and pharmacy role: front desk/reception, stocker, or pharmacist.
+
+These links identify the intended deployed entry points. Users still need valid Supabase Auth accounts with the correct clinic role and clinic association; a URL alone does not create an account or grant access.
+
 ## Features
 
 - Sign in with Supabase Auth.
