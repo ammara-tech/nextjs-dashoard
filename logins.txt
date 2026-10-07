@@ -18,3 +18,6 @@ email:doctor@netmail.com password:111111
 
 -pharmacy:
 email:pharmacy@nextmail.com password:333333
+
+-administration
+email:admin@nextmail.com password:222222
