@@ -11,10 +11,11 @@ export default async function PharmacyPage() {
   if (role === 'front_desk') {
     redirect('/medi-clinic/payments');
   }
-  if (role !== 'stock_manager' && role !== 'pharmacist') {
+  if (!['owner', 'admin', 'stock_manager', 'pharmacist'].includes(role)) {
     redirectToClinicSignIn('/medi-clinic/pharmacy');
   }
-  const canStock = role === 'stock_manager';
+  const canStock =
+    role === 'owner' || role === 'admin' || role === 'stock_manager';
   const [itemsResult, batchesResult, prescriptionsResult] = await Promise.all([
     supabase
       .from('clinic_inventory_items')
@@ -39,7 +40,7 @@ export default async function PharmacyPage() {
   ] as const) {
     if (error) {
       console.error(`Supabase pharmacy ${label} error:`, error);
-      throw new Error(`Unable to load ${label}.`);
+      return <PharmacyDataError code={error.code} label={label} />;
     }
   }
   const patientsResult = await supabase
@@ -47,7 +48,12 @@ export default async function PharmacyPage() {
     .select('id, full_name');
   if (patientsResult.error) {
     console.error('Supabase pharmacy patient lookup error:', patientsResult.error);
-    throw new Error('Unable to load prescription patient names.');
+    return (
+      <PharmacyDataError
+        code={patientsResult.error.code}
+        label="prescription patient names"
+      />
+    );
   }
 
   return (
@@ -184,6 +190,19 @@ export default async function PharmacyPage() {
         does not yet deduct stock or perform drug-interaction checks.
       </p>
     </div>
+  );
+}
+
+function PharmacyDataError({ code, label }: { code: string; label: string }) {
+  return (
+    <section className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-amber-950">
+      <h1 className="font-semibold">Unable to load pharmacy data</h1>
+      <p className="mt-2 text-sm">
+        The database could not load {label} (error {code}). Confirm that
+        clinic-platform.sql and clinic-patient-registration.sql have been
+        applied in the Supabase SQL Editor, then refresh this page.
+      </p>
+    </section>
   );
 }
 
