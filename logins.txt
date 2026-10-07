@@ -1,0 +1,20 @@
+1.Nextjs dashboard:
+email:user@nextmail.com
+password:123456
+
+email:staff@nextmail.com
+password:000000
+
+2.Family clinic:
+-Patients:
+email:user@nextmail.com
+password:123456
+
+email:staff@nextmail.com
+password:000000
+
+-doctors:
+email:doctor@netmail.com password:111111
+
+-pharmacy:
+email:pharmacy@nextmail.com password:333333
