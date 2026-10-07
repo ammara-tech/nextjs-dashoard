@@ -15,7 +15,7 @@ The following deployed URLs are the intended entry points for the clinic audienc
 - [Doctors](https://nextjs-dashoard-psi.vercel.app/medi-clinic/doctors) — doctor sign-in; create doctor accounts with the doctor's name and occupation.
 - [Pharmacy](https://nextjs-dashoard-psi.vercel.app/medi-clinic/pharmacy) — pharmacy sign-in; create accounts with name, surname, and role: front desk/reception, stocker, or pharmacist.
 
-These are access links, not account-creation links. Sign-in requires an existing Supabase Auth account with the appropriate trusted clinic role and clinic association. Route availability depends on the deployed application version.
+These are access links, not account-creation links. Sign-in requires an existing Supabase Auth account with the appropriate trusted clinic role and clinic association. The administrative link opens the existing clinic overview, and the doctors link opens the clinical workspace. Pharmacist and stock-manager roles access the pharmacy workspace; front-desk users are sent to the in-person payment register. A different signed-in role is sent to clinic sign-in with the requested route as the return destination.
 
 ## 1. Purpose and current baseline
 

@@ -1,18 +1,20 @@
+import { redirect } from 'next/navigation';
 import {
   createInventoryItem,
   dispenseClinicPrescription,
   receiveInventoryBatch,
 } from '../lib/actions';
-import { requireClinicRole } from '../lib/access';
+import { getClinicAccess, redirectToClinicSignIn } from '../lib/access';
 
 export default async function PharmacyPage() {
-  const { supabase, role } = await requireClinicRole([
-    'owner',
-    'admin',
-    'stock_manager',
-    'pharmacist',
-  ]);
-  const canStock = ['owner', 'admin', 'stock_manager'].includes(role);
+  const { supabase, role } = await getClinicAccess();
+  if (role === 'front_desk') {
+    redirect('/medi-clinic/payments');
+  }
+  if (role !== 'stock_manager' && role !== 'pharmacist') {
+    redirectToClinicSignIn('/medi-clinic/pharmacy');
+  }
+  const canStock = role === 'stock_manager';
   const [itemsResult, batchesResult, prescriptionsResult] = await Promise.all([
     supabase
       .from('clinic_inventory_items')

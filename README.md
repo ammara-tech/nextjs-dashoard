@@ -11,7 +11,7 @@ The app also includes a separate family practice dashboard at `/medi-clinic`. It
 - [Doctors area](https://nextjs-dashoard-psi.vercel.app/medi-clinic/doctors) — doctor sign-in; doctor accounts are provisioned with the doctor's name and occupation.
 - [Pharmacy area](https://nextjs-dashoard-psi.vercel.app/medi-clinic/pharmacy) — pharmacy sign-in; accounts are provisioned with a name, surname, and pharmacy role: front desk/reception, stocker, or pharmacist.
 
-These links identify the intended deployed entry points. Users still need valid Supabase Auth accounts with the correct clinic role and clinic association; a URL alone does not create an account or grant access.
+These links identify the deployed entry points. Users still need valid Supabase Auth accounts with the correct clinic role and clinic association; a URL alone does not create an account or grant access. The administrative link opens the existing clinic overview, and the doctors link opens the clinical workspace. Pharmacist and stock-manager roles access the pharmacy workspace; front-desk users are sent to the in-person payment register. A different signed-in role is sent to clinic sign-in with the requested route as the return destination.
 
 ## Features
 

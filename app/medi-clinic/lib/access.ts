@@ -83,3 +83,10 @@ export async function requireClinicRole(roles: ClinicRole[]) {
   }
   return access;
 }
+
+export function redirectToClinicSignIn(callbackUrl: string): never {
+  const query = new URLSearchParams({
+    callbackUrl,
+  });
+  redirect(`/clinic-login?${query.toString()}`);
+}
