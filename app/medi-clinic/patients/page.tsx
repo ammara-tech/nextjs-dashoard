@@ -1,13 +1,14 @@
 import {
+  archiveClinicPatient,
   createClinicPatient,
-  deleteClinicPatient,
+  linkClinicPatientAccount,
   updateClinicPatient,
 } from '../lib/actions';
 import { getClinicAccess } from '../lib/access';
 import { fetchPatients } from '../lib/data';
 
 export default async function ClinicPatientsPage() {
-  const [patients, { isOwner }] = await Promise.all([
+  const [patients, { isOwner, canManageAppointments, role }] = await Promise.all([
     fetchPatients(),
     getClinicAccess(),
   ]);
@@ -15,9 +16,14 @@ export default async function ClinicPatientsPage() {
   return (
     <div className="space-y-6">
       <PageHeading
-        description="Keep patient contact details up to date."
-        title="Patients"
+        description={
+          role === 'doctor'
+            ? 'Patients linked to your provider schedule.'
+            : 'Keep patient contact details up to date.'
+        }
+        title={role === 'doctor' ? 'My patients' : 'Patients'}
       />
+      {canManageAppointments && (
       <section className="rounded-2xl border border-[#e9eaf0] bg-white p-5 shadow-[0_8px_30px_rgba(31,41,55,0.04)]">
         <h2 className="font-semibold">Add a patient</h2>
         <form action={createClinicPatient} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -46,6 +52,14 @@ export default async function ClinicPatientsPage() {
               type="date"
             />
           </label>
+          <label className="text-sm text-[#727a90]">
+            Email
+            <input
+              className="mt-1 block w-full rounded-xl border-[#e3e5eb]"
+              name="email"
+              type="email"
+            />
+          </label>
           <div className="flex items-end">
             <button className="w-full rounded-xl bg-[#647cf5] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#526be8]">
               Add patient
@@ -53,6 +67,7 @@ export default async function ClinicPatientsPage() {
           </div>
         </form>
       </section>
+      )}
 
       <section className="overflow-hidden rounded-2xl border border-[#e9eaf0] bg-white shadow-[0_8px_30px_rgba(31,41,55,0.04)]">
         <div className="border-b border-[#eff0f4] px-5 py-4">
@@ -68,7 +83,10 @@ export default async function ClinicPatientsPage() {
                   <th className="px-5 py-3 font-medium">Patient</th>
                   <th className="px-5 py-3 font-medium">Phone</th>
                   <th className="px-5 py-3 font-medium">Date of birth</th>
-                  <th className="px-5 py-3 font-medium">Actions</th>
+                  <th className="px-5 py-3 font-medium">Patient number</th>
+                  {canManageAppointments && (
+                    <th className="px-5 py-3 font-medium">Actions</th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#eff0f4]">
@@ -81,7 +99,11 @@ export default async function ClinicPatientsPage() {
                     <td className="px-5 py-4 text-[#727a90]">
                       {patient.date_of_birth || '—'}
                     </td>
-                    <td className="min-w-72 px-5 py-3">
+                    <td className="px-5 py-4 text-[#727a90]">
+                      {patient.patient_number || '—'}
+                    </td>
+                    {canManageAppointments && (
+                      <td className="min-w-72 px-5 py-3">
                       <details>
                         <summary className="cursor-pointer font-medium text-[#6077ed]">
                           Edit
@@ -111,22 +133,50 @@ export default async function ClinicPatientsPage() {
                             name="date_of_birth"
                             type="date"
                           />
+                          <input
+                            aria-label="Email"
+                            className="rounded-lg border-[#e3e5eb] text-sm"
+                            defaultValue={patient.email ?? ''}
+                            name="email"
+                            type="email"
+                          />
                           <button className="rounded-lg bg-[#647cf5] px-3 py-2 text-sm font-semibold text-white">
                             Save changes
                           </button>
                         </form>
                       </details>
                       {isOwner && (
-                        <form
-                          action={deleteClinicPatient.bind(null, patient.id)}
-                          className="mt-2"
-                        >
-                          <button className="text-sm font-medium text-red-600">
-                            Delete
-                          </button>
-                        </form>
+                        <>
+                          <form
+                            action={linkClinicPatientAccount.bind(null, patient.id)}
+                            className="mt-3 grid gap-2"
+                          >
+                            <label className="text-xs text-[#727a90]">
+                              Linked Supabase Auth user UUID
+                              <input
+                                className="mt-1 w-full rounded-lg border-[#e3e5eb] text-xs"
+                                defaultValue={patient.auth_user_id ?? ''}
+                                name="auth_user_id"
+                                placeholder="UUID from the verified patient account"
+                                required
+                              />
+                            </label>
+                            <button className="text-left text-sm font-medium text-[#6077ed]">
+                              Link patient portal account
+                            </button>
+                          </form>
+                          <form
+                            action={archiveClinicPatient.bind(null, patient.id)}
+                            className="mt-2"
+                          >
+                            <button className="text-sm font-medium text-red-600">
+                              Archive patient
+                            </button>
+                          </form>
+                        </>
                       )}
-                    </td>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

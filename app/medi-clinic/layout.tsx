@@ -47,7 +47,7 @@ export default async function MediClinicLayout({
               </form>
             </div>
           </div>
-          <ClinicNavigation isOwner={role === 'owner'} />
+          <ClinicNavigation role={role} />
         </div>
       </header>
       <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8 lg:px-10">

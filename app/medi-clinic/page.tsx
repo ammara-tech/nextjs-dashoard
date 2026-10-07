@@ -1,11 +1,15 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import {
   AppointmentStatusChart,
   NewPatientsChart,
 } from './ui/charts';
 import { fetchClinicDashboard, fetchTomorrowAppointments } from './lib/data';
+import { getClinicAccess } from './lib/access';
 
 export default async function MediClinicPage() {
+  const { role } = await getClinicAccess();
+  if (role === 'patient') redirect('/medi-clinic/portal');
   const [dashboard, tomorrowAppointments] = await Promise.all([
     fetchClinicDashboard(),
     fetchTomorrowAppointments(),

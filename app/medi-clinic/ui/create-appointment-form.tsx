@@ -5,19 +5,22 @@ import {
   createClinicAppointment,
   type AppointmentActionState,
 } from '../lib/actions';
-import type { Patient } from '../lib/data';
-
-function localDateTime() {
-  const date = new Date();
-  return new Date(date.getTime() - date.getTimezoneOffset() * 60_000)
-    .toISOString()
-    .slice(0, 16);
-}
+import type {
+  ClinicAppointmentType,
+  ClinicProvider,
+  Patient,
+} from '../lib/data';
 
 export default function CreateAppointmentForm({
+  appointmentTypes,
+  patientId,
   patients,
+  providers,
 }: {
+  appointmentTypes: ClinicAppointmentType[];
+  patientId?: string;
   patients: Patient[];
+  providers: ClinicProvider[];
 }) {
   const initialState: AppointmentActionState = {};
   const [state, formAction, pending] = useActionState(
@@ -26,7 +29,11 @@ export default function CreateAppointmentForm({
   );
 
   return (
-    <form action={formAction} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <form action={formAction} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {patientId && (
+        <input name="patient_id" type="hidden" value={patientId} />
+      )}
+      {!patientId && (
       <label className="text-sm text-[#727a90]">
         Patient
         <select
@@ -42,27 +49,48 @@ export default function CreateAppointmentForm({
           ))}
         </select>
       </label>
+      )}
+      <label className="text-sm text-[#727a90]">
+        Provider
+        <select
+          className="mt-1 block w-full rounded-xl border-[#e3e5eb]"
+          name="provider_id"
+          required
+        >
+          <option value="">Select provider</option>
+          {providers.map((provider) => (
+            <option key={provider.id} value={provider.id}>
+              {provider.display_name} — {provider.specialty} ({provider.time_zone})
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="text-sm text-[#727a90]">
+        Appointment type
+        <select
+          className="mt-1 block w-full rounded-xl border-[#e3e5eb]"
+          name="appointment_type_id"
+          required
+        >
+          <option value="">Select type</option>
+          {appointmentTypes.map((type) => (
+            <option key={type.id} value={type.id}>
+              {type.name} ({type.duration_minutes} min)
+            </option>
+          ))}
+        </select>
+      </label>
       <label className="text-sm text-[#727a90]">
         Date and time
         <input
           className="mt-1 block w-full rounded-xl border-[#e3e5eb]"
-          defaultValue={localDateTime()}
           name="starts_at"
           required
           type="datetime-local"
         />
-      </label>
-      <label className="text-sm text-[#727a90]">
-        Status
-        <select
-          className="mt-1 block w-full rounded-xl border-[#e3e5eb]"
-          defaultValue="booked"
-          name="status"
-        >
-          <option value="booked">Booked</option>
-          <option value="done">Done</option>
-          <option value="no_show">No-show</option>
-        </select>
+        <span className="mt-1 block text-xs text-[#9298a8]">
+          Times are interpreted in the provider’s configured time zone.
+        </span>
       </label>
       <div className="flex items-end">
         <button
@@ -75,7 +103,7 @@ export default function CreateAppointmentForm({
       {state.message && (
         <p
           aria-live="polite"
-          className={`sm:col-span-2 lg:col-span-4 text-sm ${
+          className={`sm:col-span-2 lg:col-span-3 text-sm ${
             state.success ? 'text-emerald-700' : 'text-red-600'
           }`}
           role={state.success ? 'status' : 'alert'}

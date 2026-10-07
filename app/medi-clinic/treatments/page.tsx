@@ -1,6 +1,5 @@
 import {
   createTreatment,
-  deleteTreatment,
   updateTreatment,
 } from '../lib/actions';
 import { requireClinicOwner } from '../lib/access';
@@ -80,7 +79,7 @@ export default async function ClinicTreatmentsPage() {
                   <th className="px-5 py-3 font-medium">Procedure</th>
                   <th className="px-5 py-3 font-medium">Fee</th>
                   <th className="px-5 py-3 font-medium">Appointment</th>
-                  <th className="px-5 py-3 font-medium">Actions</th>
+                  <th className="px-5 py-3 font-medium">Edit</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#eff0f4]">
@@ -140,14 +139,6 @@ export default async function ClinicTreatmentsPage() {
                           </button>
                         </form>
                       </details>
-                      <form
-                        action={deleteTreatment.bind(null, treatment.id)}
-                        className="mt-2"
-                      >
-                        <button className="text-sm font-medium text-red-600">
-                          Delete
-                        </button>
-                      </form>
                     </td>
                   </tr>
                 ))}

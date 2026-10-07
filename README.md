@@ -51,22 +51,31 @@ The app also includes a separate family practice dashboard at `/medi-clinic`. It
 
 4. Run [`supabase/patients.sql`](./supabase/patients.sql) in the Supabase SQL Editor. It creates the patient table, enables RLS, grants authenticated access, adds owner-only policies, and creates an index on `user_id`.
 
-5. Run [`supabase/medi-clinic.sql`](./supabase/medi-clinic.sql) after `patients.sql`. It adds appointments and treatments, updates patient ownership policies for the shared clinic, and limits deletes and treatments to the owner.
+5. Run [`supabase/medi-clinic.sql`](./supabase/medi-clinic.sql) after `patients.sql`. It adds appointments and treatments and updates patient ownership policies for the shared clinic.
 
-6. Set the trusted Supabase Auth `app_metadata` for each clinic account using the Supabase Admin API from a secure server-side environment. Never expose the service-role key in the browser or commit it.
+6. Run [`supabase/clinic-scheduling.sql`](./supabase/clinic-scheduling.sql) after `medi-clinic.sql`. It adds providers, appointment types, weekly shifts, unavailable blocks, and database booking functions that enforce shifts, provider conflicts, and daily appointment limits.
+
+7. Run [`supabase/clinic-platform.sql`](./supabase/clinic-platform.sql) after `clinic-scheduling.sql`. It adds patient-account linking, a private documents bucket and policies, signed encounter/addendum records, prescriptions, inventory, payment registers, wallet-ledger foundations, and a support-request queue. Apply reviewed SQL migrations using an appropriately privileged database connection.
+
+8. Set the trusted Supabase Auth `app_metadata` for each clinic account using the Supabase Admin API from a secure server-side environment. Never expose the service-role key in the browser or commit it.
 
    - Owner: `{ "clinic_role": "owner" }`
    - Front desk: `{ "clinic_role": "front_desk", "clinic_owner_id": "<owner-auth-user-uuid>" }`
+   - Doctor: `{ "clinic_role": "doctor", "clinic_owner_id": "<owner-auth-user-uuid>" }`
+   - Patient: `{ "clinic_role": "patient", "clinic_owner_id": "<owner-auth-user-uuid>" }`
+   - Pharmacist: `{ "clinic_role": "pharmacist", "clinic_owner_id": "<owner-auth-user-uuid>" }`
+   - Stock manager: `{ "clinic_role": "stock_manager", "clinic_owner_id": "<owner-auth-user-uuid>" }`
+   - Admin: `{ "clinic_role": "admin", "clinic_owner_id": "<owner-auth-user-uuid>" }`
 
-   The owner ID defaults to the signed-in user's ID for the owner account. Front-desk users must point to that same owner ID to share the practice's records. Accounts without a `clinic_role` are treated as front desk; they cannot view or change treatments or delete records.
+   The owner ID defaults to the signed-in user's ID for the owner account. Other clinic accounts must use that same owner ID to access the practice. For doctor accounts, also set the provider's `auth_user_id` to the doctor's Supabase Auth UUID. For patients, use the owner-only patient action to link a patient record to the patient's Auth UUID. Role claims and patient linking must be set only after verifying the account holder.
 
-7. Start the development server:
+9. Start the development server:
 
    ```bash
    npm run dev
    ```
 
-8. Open [http://localhost:3000](http://localhost:3000), sign in with a configured Supabase Auth account, and open `/medi-clinic`.
+10. Open [http://localhost:3000](http://localhost:3000), sign in with a configured Supabase Auth account, and open `/medi-clinic`.
 
 ## Family Clinic dashboard
 
@@ -74,12 +83,21 @@ The app also includes a separate family practice dashboard at `/medi-clinic`. It
 - The **Family Clinic** navigation link opens `/clinic-login`; signing in there returns to `/medi-clinic`. Unauthenticated clinic links use this clinic-specific login page.
 - Patient records and patient-management pages appear only in the Family Clinic dashboard. Legacy `/dashboard/patients` URLs redirect to `/medi-clinic/patients`, and `/dashboard/chart-check` redirects to the clinic overview.
 - The first chart counts patients by creation month for the current and previous five calendar months. The second chart counts this month's appointments by `booked`, `done`, and `no_show`, joined to their patients.
-- `/medi-clinic/patients` and `/medi-clinic/appointments` support create and edit for both roles. Only the owner can delete records.
+- `/medi-clinic/patients` and `/medi-clinic/appointments` support create and edit for owner/front-desk staff. Provider-based bookings require an active provider, appointment type, and matching weekly shift. SQL functions enforce provider time conflicts and daily appointment caps.
 - `/medi-clinic/treatments` is owner-only. `/medi-clinic/tomorrow` lists booked appointments for the next calendar day, including patient phone numbers.
-- The database policies in `supabase/medi-clinic.sql` are authoritative. UI visibility is not used as an access-control boundary.
-- If appointment booking fails, the form displays the Supabase error and code. Confirm `supabase/patients.sql` and then `supabase/medi-clinic.sql` have been applied, and that the selected patient belongs to the signed-in clinic.
+- Owners can configure providers, specialties, time zones, appointment types/durations, shifts, and availability blocks at `/medi-clinic/providers`.
+- `/medi-clinic/portal` is for accounts explicitly assigned the `patient` role and linked to a patient record. Owners link accounts under `/medi-clinic/patients`; self-registration is not enabled, but linked patients can book from configured provider shifts and appointment types.
+- Documents are uploaded to a private bucket at `/medi-clinic/documents`; authorized patients receive short-lived signed links in their portal. Configure and test the storage policies before uploading real documents.
+- Doctors linked to a provider can draft/sign encounter notes, append addenda, and issue prescriptions. Pharmacists can mark issued prescriptions dispensed; stock managers can register inventory items and batches. Inventory is not yet decremented on dispensing.
+- `/medi-clinic/payments` supports staff entry of in-person payments only. No online gateway, automated invoice delivery, or wallet credit/refund action is configured. Wallet rows are a ledger foundation, not a patient-accessible payment method or withdrawable balance.
+- `/medi-clinic/portal` accepts non-urgent support requests; reception staff can triage them at `/medi-clinic/enquiries`. It is not live chat or an emergency channel.
+- RLS and server-side role checks are authoritative; hiding a link or form is not an access-control boundary. Apply all three clinic SQL scripts in order and test each role with normal authenticated application sessions. Do not use SQL Editor queries to prove application access rules; they run with elevated database privileges.
+- Applying `clinic-platform.sql` disables hard deletion of patient, appointment, and treatment rows. Patient records can be archived; clinical and financial history should not be erased.
+- If appointment booking fails, inspect the displayed Supabase error and confirm all migrations through `clinic-platform.sql` have been applied, the provider and appointment type are active, a matching shift exists in the provider time zone, and the patient belongs to the clinic.
 
-Verify roles by signing in as the configured owner and as a front-desk user. The owner should see all clinic areas and have delete/treatment actions; front desk should see only patients, appointments, and tomorrow's booked list. Do not use the Supabase SQL Editor to prove application access rules; SQL Editor queries run with elevated database privileges.
+The encounter, payment, wallet, pharmacy, and storage schema additions are operational foundations and are not a certification of compliance. Have clinic counsel/privacy officers review retention, patient rights, and regulated workflows before using real clinical data. Payment processing, email/SMS delivery, drug interaction checks, stock decrement/reconciliation, and audited record exports are not implemented.
+
+Verify roles by signing in as the configured owner, front-desk, doctor, patient, pharmacist, and stock-manager accounts. Confirm each role sees only its assigned pages and that direct server actions and database queries are denied when unauthorized.
 
 To seed test data, run the seed insert in [`supabase/patients.sql`](./supabase/patients.sql) in the Supabase SQL Editor. It inserts 30 sample patients owned by the configured test-user UID. Change that UUID if the test user changes and run the seed only once.
 
@@ -110,6 +128,8 @@ app/
 middleware.ts             Refreshes Supabase sessions and protects dashboard routes
 supabase/patients.sql     Patient table for the Family Clinic dashboard
 supabase/medi-clinic.sql  Appointment/treatment schema and role-based RLS
+supabase/clinic-scheduling.sql  Providers, shifts, appointment types, booking rules
+supabase/clinic-platform.sql    Portal, private records, clinical, payment and pharmacy foundations
 ```
 
 ## Important notes
