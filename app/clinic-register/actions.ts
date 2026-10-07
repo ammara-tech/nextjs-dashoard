@@ -51,8 +51,7 @@ export async function registerPatient(
   }
 
   return {
-    message:
-      'Account created. Check your email if verification is required. Your request is waiting for clinic review; you will be able to sign in to the patient portal after approval.',
+    message: 'Account created.',
     success: true,
   };
 }
