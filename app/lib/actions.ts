@@ -124,9 +124,41 @@ export type PatientState = {
 
 export async function createPatient(
   _prevState: PatientState,
-  _formData: FormData,
+  formData: FormData,
 ): Promise<PatientState> {
-  redirect('/medi-clinic/patients');
+  const validatedFields = z
+    .object({
+      full_name: z.string().trim().min(1, 'Please enter the patient’s full name.'),
+      phone: z.string().trim().max(40, 'Phone number must be 40 characters or fewer.'),
+      date_of_birth: z.union([z.literal(''), z.string().date()]),
+    })
+    .safeParse({
+      full_name: formData.get('full_name'),
+      phone: formData.get('phone') ?? '',
+      date_of_birth: formData.get('date_of_birth') ?? '',
+    });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Please correct the highlighted fields.',
+    };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.from('patients').insert({
+    full_name: validatedFields.data.full_name,
+    phone: validatedFields.data.phone || null,
+    date_of_birth: validatedFields.data.date_of_birth || null,
+  });
+
+  if (error) {
+    console.error('Supabase patient create error:', error);
+    return { message: 'Database Error: Failed to Create Patient.' };
+  }
+
+  revalidatePath('/dashboard/patients');
+  redirect('/dashboard/patients');
 }
 
 export async function updatePatient(

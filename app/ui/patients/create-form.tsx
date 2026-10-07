@@ -41,7 +41,15 @@ export default function CreatePatientForm() {
             name="phone"
             type="tel"
             className="block w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+            aria-describedby="phone-error"
           />
+          <div id="phone-error" aria-live="polite" aria-atomic="true">
+            {state.errors?.phone?.map((error) => (
+              <p className="mt-2 text-sm text-red-500" key={error}>
+                {error}
+              </p>
+            ))}
+          </div>
         </div>
         <div className="mb-4">
           <label
@@ -55,7 +63,15 @@ export default function CreatePatientForm() {
             name="date_of_birth"
             type="date"
             className="block w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+            aria-describedby="date_of_birth-error"
           />
+          <div id="date_of_birth-error" aria-live="polite" aria-atomic="true">
+            {state.errors?.date_of_birth?.map((error) => (
+              <p className="mt-2 text-sm text-red-500" key={error}>
+                {error}
+              </p>
+            ))}
+          </div>
         </div>
         <div aria-live="polite" aria-atomic="true">
           {state.message && (
