@@ -25,9 +25,9 @@ export default async function PatientRegistrationPage() {
           Create a patient account
         </h1>
         <p className="mb-6 mt-2 text-sm text-[#727a90]">
-          Your account and patient profile will be created together. If you
-          already have a clinic record, contact reception to verify and link
-          it to your account.
+          After you register, clinic staff will review your request from their
+          dashboard. Once approved, your account will be linked to your patient
+          record.
         </p>
         <PatientRegistrationForm />
         <p className="mt-5 text-center text-sm text-[#727a90]">

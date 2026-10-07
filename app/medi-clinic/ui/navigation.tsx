@@ -23,6 +23,7 @@ export default function ClinicNavigation({
       : role === 'owner'
         ? [
             ...links,
+            { href: '/medi-clinic/patient-access', label: 'Patient access' },
             { href: '/medi-clinic/providers', label: 'Providers & availability' },
             { href: '/medi-clinic/treatments', label: 'Treatments' },
             { href: '/medi-clinic/clinical', label: 'Clinical' },
@@ -45,6 +46,7 @@ export default function ClinicNavigation({
             : role === 'admin'
               ? [
                   ...links,
+                  { href: '/medi-clinic/patient-access', label: 'Patient access' },
                   { href: '/medi-clinic/providers', label: 'Providers' },
                   { href: '/medi-clinic/clinical', label: 'Clinical' },
                   { href: '/medi-clinic/documents', label: 'Documents' },

@@ -66,9 +66,11 @@ These links identify the deployed entry points. Users still need valid Supabase 
 
 7. Run [`supabase/clinic-platform.sql`](./supabase/clinic-platform.sql) after `clinic-scheduling.sql`. It adds patient-account linking, a private documents bucket and policies, signed encounter/addendum records, prescriptions, inventory, payment registers, wallet-ledger foundations, and a support-request queue. Apply reviewed SQL migrations using an appropriately privileged database connection.
 
-8. Run [`supabase/clinic-patient-registration.sql`](./supabase/clinic-patient-registration.sql) after `clinic-platform.sql`. It enables patient self-registration at `/medi-clinic/register`, creates a patient row linked to the new Auth user in the clinic owner's tenant, and grants that account the patient role. Before applying it, ensure exactly one Supabase Auth account has trusted `app_metadata` `{ "clinic_role": "owner" }`.
+8. Run [`supabase/clinic-patient-registration.sql`](./supabase/clinic-patient-registration.sql) after `clinic-platform.sql` to install the signup trigger.
 
-9. Set the trusted Supabase Auth `app_metadata` for each staff account using the Supabase Admin API from a secure server-side environment. Never expose the service-role key in the browser or commit it.
+9. Run [`supabase/clinic-patient-access-requests.sql`](./supabase/clinic-patient-access-requests.sql) after the patient-registration migration. It changes signup to create a pending request, adds the owner/admin approval queue, and creates or links a patient record only after approval. Before enabling signup, ensure exactly one Supabase Auth account has trusted `app_metadata` `{ "clinic_role": "owner" }`.
+
+10. Set the trusted Supabase Auth `app_metadata` for each staff account using the Supabase Admin API from a secure server-side environment. Never expose the service-role key in the browser or commit it.
 
    - Owner: `{ "clinic_role": "owner" }`
    - Front desk: `{ "clinic_role": "front_desk", "clinic_owner_id": "<owner-auth-user-uuid>" }`
@@ -80,13 +82,13 @@ These links identify the deployed entry points. Users still need valid Supabase 
 
    The owner ID defaults to the signed-in user's ID for the owner account. Other clinic accounts must use that same owner ID to access the practice. For doctor accounts, also set the provider's `auth_user_id` to the doctor's Supabase Auth UUID. For existing patients, use the owner-only patient action to link the existing patient record to the verified patient's Auth UUID. New self-registered patients are linked by the registration trigger. Staff role claims and existing-patient linking must be set only after verifying the account holder.
 
-10. Start the development server:
+11. Start the development server:
 
    ```bash
    npm run dev
    ```
 
-11. Open [http://localhost:3000](http://localhost:3000), sign in with a configured Supabase Auth account, and open `/medi-clinic`.
+12. Open [http://localhost:3000](http://localhost:3000), sign in with a configured Supabase Auth account, and open `/medi-clinic`.
 
 ## Family Clinic dashboard
 
@@ -98,8 +100,8 @@ These links identify the deployed entry points. Users still need valid Supabase 
 - `/medi-clinic/treatments` is owner-only. `/medi-clinic/tomorrow` lists booked appointments for the next calendar day, including patient phone numbers.
 - Owners can configure providers, specialties, time zones, appointment types/durations, shifts, and availability blocks at `/medi-clinic/providers`.
 - `/medi-clinic/portal` is for accounts with the trusted `patient` role and a linked patient record. Linked patients can book from configured provider shifts and appointment types.
-- Patients can create an account from `/medi-clinic/register` (also reachable from clinic sign-in). After the `clinic-patient-registration.sql` migration, signup creates a patient row and links the new Auth UUID in the clinic tenant. The trigger assigns only the patient role; clinic staff must verify identity before linking an account to any pre-existing patient record. Accounts without a valid role are sent to `/clinic-pending`.
-- Clinic staff can see self-registered patient rows in the dashboard. Doctors see patients through their assigned appointments; pharmacists see patients with prescription records. Stock managers manage inventory without patient-chart access.
+- Patients can request an account from `/medi-clinic/register` (also reachable from clinic sign-in). Signup creates a pending access request, not a patient profile or clinic role. Owners and admins see a dashboard notification and can approve or deny each request at `/medi-clinic/patient-access`. Approval links the Auth account to an existing same-email clinic patient record, or creates the patient record if none exists, and grants the patient role. Denial leaves portal access disabled.
+- After approval, clinic staff can use the created/linked patient record in the dashboard. Doctors see patients through their assigned appointments; pharmacists see patients with prescription records. Stock managers manage inventory without patient-chart access.
 - Documents are uploaded to a private bucket at `/medi-clinic/documents`; authorized patients receive short-lived signed links in their portal. Configure and test the storage policies before uploading real documents.
 - Doctors linked to a provider can draft/sign encounter notes, append addenda, and issue prescriptions. Pharmacists can mark issued prescriptions dispensed; stock managers can register inventory items and batches. Inventory is not yet decremented on dispensing.
 - `/medi-clinic/payments` supports staff entry of in-person payments only. No online gateway, automated invoice delivery, or wallet credit/refund action is configured. Wallet rows are a ledger foundation, not a patient-accessible payment method or withdrawable balance.

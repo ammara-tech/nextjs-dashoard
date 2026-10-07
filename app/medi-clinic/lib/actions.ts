@@ -250,6 +250,45 @@ export async function linkClinicPatientAccount(
   revalidateClinicPages();
 }
 
+export async function approvePatientAccessRequest(formData: FormData) {
+  const { supabase } = await requireClinicRole(['owner', 'admin']);
+  const requestId = formString(formData, 'request_id');
+  if (!z.string().uuid().safeParse(requestId).success) {
+    throw new Error('Invalid patient access request.');
+  }
+
+  const { error } = await supabase.rpc('approve_clinic_patient_access', {
+    p_request_id: requestId,
+  });
+  if (error) {
+    console.error('Supabase patient access approval error:', error);
+    throw new Error(`Unable to approve patient access (${error.code}).`);
+  }
+
+  revalidatePath('/medi-clinic');
+  revalidatePath('/medi-clinic/patient-access');
+  revalidatePath('/medi-clinic/patients');
+}
+
+export async function denyPatientAccessRequest(formData: FormData) {
+  const { supabase } = await requireClinicRole(['owner', 'admin']);
+  const requestId = formString(formData, 'request_id');
+  if (!z.string().uuid().safeParse(requestId).success) {
+    throw new Error('Invalid patient access request.');
+  }
+
+  const { error } = await supabase.rpc('deny_clinic_patient_access', {
+    p_request_id: requestId,
+  });
+  if (error) {
+    console.error('Supabase patient access denial error:', error);
+    throw new Error(`Unable to deny patient access (${error.code}).`);
+  }
+
+  revalidatePath('/medi-clinic');
+  revalidatePath('/medi-clinic/patient-access');
+}
+
 export async function createClinicAppointment(
   _previousState: AppointmentActionState,
   formData: FormData,

@@ -21,3 +21,11 @@ email:pharmacy@nextmail.com password:333333
 
 -administration
 email:admin@nextmail.com password:222222
+
+-patient1
+email:patient1@gmail.com
+password:18092007
+
+-owner
+email:owner@nextmail.com
+password:100000
