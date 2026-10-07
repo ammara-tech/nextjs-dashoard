@@ -1,4 +1,5 @@
 import LoginForm from '@/app/ui/login-form';
+import Link from 'next/link';
 import { Suspense } from 'react';
 
 export default function ClinicLoginPage() {
@@ -15,6 +16,15 @@ export default function ClinicLoginPage() {
             title="Sign in to the Family Clinic dashboard."
           />
         </Suspense>
+        <p className="mt-4 text-center text-sm text-[#727a90]">
+          New patient?{' '}
+          <Link
+            className="font-semibold text-[#6077ed] hover:text-[#465fd4]"
+            href="/clinic-register"
+          >
+            Create an account
+          </Link>
+        </p>
       </div>
     </main>
   );

@@ -40,12 +40,10 @@ export async function getClinicAccess() {
   const role =
     typeof claimedRole === 'string' && clinicRoles.has(claimedRole as ClinicRole)
       ? (claimedRole as ClinicRole)
-      : claimedRole === undefined
-        ? 'front_desk'
-        : null;
+      : null;
 
   if (!role) {
-    throw new Error('Your account does not have a valid clinic role.');
+    redirect('/clinic-pending');
   }
 
   return {

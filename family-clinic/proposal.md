@@ -17,6 +17,8 @@ The following deployed URLs are the intended entry points for the clinic audienc
 
 These are access links, not account-creation links. Sign-in requires an existing Supabase Auth account with the appropriate trusted clinic role and clinic association. The administrative link opens the existing clinic overview, and the doctors link opens the clinical workspace. Pharmacist and stock-manager roles access the pharmacy workspace; front-desk users are sent to the in-person payment register. A different signed-in role is sent to clinic sign-in with the requested route as the return destination.
 
+Patients can register an Auth account at `/clinic-register` using their name, email, and password. Registration alone does not grant portal access: reception must verify the patient, link their Auth UUID to the correct patient record, and assign the trusted `patient` role. Accounts without a valid role are directed to `/clinic-pending`.
+
 ## 1. Purpose and current baseline
 
 Upgrade the existing family-practice dashboard into a secure clinic operations
