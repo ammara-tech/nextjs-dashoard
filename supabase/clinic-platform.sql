@@ -303,7 +303,8 @@ create policy "clinical encounters: assigned staff read"
       (select public.current_clinic_role()) in ('owner', 'admin')
       or exists (
         select 1 from public.clinic_providers p
-        where p.id = provider_id and p.auth_user_id = (select auth.uid())
+        where p.id = clinic_encounters.provider_id
+          and p.auth_user_id = (select auth.uid())
       )
     )
   );
@@ -316,17 +317,21 @@ create policy "clinical encounters: assigned doctor create"
     and (select public.current_clinic_role()) = 'doctor'
     and exists (
       select 1 from public.clinic_providers p
-      where p.id = provider_id and p.user_id = user_id
+      where p.id = clinic_encounters.provider_id
+        and p.user_id = clinic_encounters.user_id
         and p.auth_user_id = (select auth.uid())
     )
     and exists (
       select 1 from public.patients pt
-      where pt.id = patient_id and pt.user_id = user_id
+      where pt.id = clinic_encounters.patient_id
+        and pt.user_id = clinic_encounters.user_id
     )
     and exists (
       select 1 from public.appointments a
-      where a.id = appointment_id and a.patient_id = patient_id
-        and a.provider_id = provider_id and a.user_id = user_id
+      where a.id = clinic_encounters.appointment_id
+        and a.patient_id = clinic_encounters.patient_id
+        and a.provider_id = clinic_encounters.provider_id
+        and a.user_id = clinic_encounters.user_id
     )
   );
 
@@ -337,7 +342,8 @@ create policy "clinical encounters: doctor signs own"
     and (select public.current_clinic_role()) = 'doctor'
     and exists (
       select 1 from public.clinic_providers p
-      where p.id = provider_id and p.auth_user_id = (select auth.uid())
+      where p.id = clinic_encounters.provider_id
+        and p.auth_user_id = (select auth.uid())
     )
     and status = 'draft'
   )
@@ -346,7 +352,8 @@ create policy "clinical encounters: doctor signs own"
     and (select public.current_clinic_role()) = 'doctor'
     and exists (
       select 1 from public.clinic_providers p
-      where p.id = provider_id and p.auth_user_id = (select auth.uid())
+      where p.id = clinic_encounters.provider_id
+        and p.auth_user_id = (select auth.uid())
     )
     and (
       (status = 'draft' and signed_at is null and signed_by is null)
@@ -360,7 +367,8 @@ create policy "clinical notes: assigned staff read"
     user_id = (select public.current_clinic_owner_id())
     and exists (
       select 1 from public.clinic_encounters e
-      where e.id = encounter_id and e.user_id = user_id
+      where e.id = clinic_encounter_notes.encounter_id
+        and e.user_id = clinic_encounter_notes.user_id
         and (
           (select public.current_clinic_role()) in ('owner', 'admin')
           or exists (
@@ -380,16 +388,20 @@ create policy "clinical notes: doctor draft or addendum"
     and exists (
       select 1 from public.clinic_encounters e
       join public.clinic_providers p on p.id = e.provider_id
-      where e.id = encounter_id and e.user_id = user_id
+      where e.id = clinic_encounter_notes.encounter_id
+        and e.user_id = clinic_encounter_notes.user_id
+        and p.user_id = clinic_encounter_notes.user_id
         and p.auth_user_id = (select auth.uid())
         and exists (
           select 1 from public.appointments a
-          where a.id = e.appointment_id and a.patient_id = e.patient_id
-            and a.provider_id = e.provider_id and a.user_id = e.user_id
+          where a.id = e.appointment_id
+            and a.patient_id = e.patient_id
+            and a.provider_id = e.provider_id
+            and a.user_id = e.user_id
         )
         and (
-          (note_type = 'draft' and e.status = 'draft')
-          or (note_type = 'addendum' and e.status = 'signed')
+          (clinic_encounter_notes.note_type = 'draft' and e.status = 'draft')
+          or (clinic_encounter_notes.note_type = 'addendum' and e.status = 'signed')
         )
     )
   );
@@ -626,7 +638,8 @@ create policy "inventory batches: stock roles access"
     and (select public.current_clinic_role()) in ('owner', 'admin', 'stock_manager', 'pharmacist')
     and exists (
       select 1 from public.clinic_inventory_items i
-      where i.id = item_id and i.user_id = user_id
+      where i.id = clinic_inventory_batches.item_id
+        and i.user_id = clinic_inventory_batches.user_id
     )
   )
   with check (
@@ -634,7 +647,8 @@ create policy "inventory batches: stock roles access"
     and (select public.current_clinic_role()) in ('owner', 'admin', 'stock_manager', 'pharmacist')
     and exists (
       select 1 from public.clinic_inventory_items i
-      where i.id = item_id and i.user_id = user_id
+      where i.id = clinic_inventory_batches.item_id
+        and i.user_id = clinic_inventory_batches.user_id
     )
   );
 
