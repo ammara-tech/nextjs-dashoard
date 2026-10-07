@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { headers } from 'next/headers';
 import { signOut } from '@/app/lib/actions';
 import { getClinicAccess } from './lib/access';
 import ClinicNavigation from './ui/navigation';
@@ -10,6 +11,11 @@ export default async function MediClinicLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const requestHeaders = await headers();
+  if (requestHeaders.get('x-clinic-registration-route') === 'true') {
+    return <>{children}</>;
+  }
+
   const { user, role } = await getClinicAccess();
 
   return (

@@ -3,6 +3,14 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  const requestHeaders = new Headers(request.headers);
+  if (pathname === '/medi-clinic/register') {
+    requestHeaders.set('x-clinic-registration-route', 'true');
+  } else {
+    requestHeaders.delete('x-clinic-registration-route');
+  }
+  const continueRequest = () =>
+    NextResponse.next({ request: { headers: requestHeaders } });
   const isDashboard =
     pathname === '/dashboard' ||
     pathname.startsWith('/dashboard/') ||
@@ -11,7 +19,7 @@ export async function middleware(request: NextRequest) {
   const isLoginPage = pathname === '/login';
 
   if (!isDashboard && !isLoginPage) {
-    return NextResponse.next({ request });
+    return continueRequest();
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -23,7 +31,7 @@ export async function middleware(request: NextRequest) {
     );
   }
 
-  let response = NextResponse.next({ request });
+  let response = continueRequest();
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       getAll() {
@@ -33,7 +41,7 @@ export async function middleware(request: NextRequest) {
         cookiesToSet.forEach(({ name, value }) => {
           request.cookies.set(name, value);
         });
-        response = NextResponse.next({ request });
+        response = continueRequest();
         cookiesToSet.forEach(({ name, value, options }) => {
           response.cookies.set(name, value, options);
         });
