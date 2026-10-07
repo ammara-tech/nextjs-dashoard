@@ -20,7 +20,7 @@ export default function ClinicLoginPage() {
           New patient?{' '}
           <Link
             className="font-semibold text-[#6077ed] hover:text-[#465fd4]"
-            href="/medi-clinic/register"
+            href="/clinic-register"
           >
             Create an account
           </Link>

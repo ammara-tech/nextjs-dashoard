@@ -3,23 +3,20 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  const requestHeaders = new Headers(request.headers);
   if (pathname === '/medi-clinic/register') {
-    requestHeaders.set('x-clinic-registration-route', 'true');
-  } else {
-    requestHeaders.delete('x-clinic-registration-route');
+    const registrationUrl = request.nextUrl.clone();
+    registrationUrl.pathname = '/clinic-register';
+    return NextResponse.redirect(registrationUrl);
   }
-  const continueRequest = () =>
-    NextResponse.next({ request: { headers: requestHeaders } });
   const isDashboard =
     pathname === '/dashboard' ||
     pathname.startsWith('/dashboard/') ||
-    ((pathname === '/medi-clinic' || pathname.startsWith('/medi-clinic/')) &&
-      pathname !== '/medi-clinic/register');
+    pathname === '/medi-clinic' ||
+    pathname.startsWith('/medi-clinic/');
   const isLoginPage = pathname === '/login';
 
   if (!isDashboard && !isLoginPage) {
-    return continueRequest();
+    return NextResponse.next({ request });
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -31,7 +28,7 @@ export async function middleware(request: NextRequest) {
     );
   }
 
-  let response = continueRequest();
+  let response = NextResponse.next({ request });
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       getAll() {
@@ -41,7 +38,7 @@ export async function middleware(request: NextRequest) {
         cookiesToSet.forEach(({ name, value }) => {
           request.cookies.set(name, value);
         });
-        response = continueRequest();
+        response = NextResponse.next({ request });
         cookiesToSet.forEach(({ name, value, options }) => {
           response.cookies.set(name, value, options);
         });
