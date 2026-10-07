@@ -27,6 +27,7 @@ begin
 end;
 $$;
 
+drop trigger if exists patients_assign_patient_number on public.patients;
 create trigger patients_assign_patient_number
   before insert on public.patients
   for each row execute function public.assign_patient_number();
@@ -54,13 +55,15 @@ begin
 end;
 $$;
 
-create trigger patients_protect_identity_fields
-  before update on public.patients
-  for each row execute function public.protect_patient_identity_fields();
+drop trigger if exists patients_protect_identity_fields on public.patients;
 
 update public.patients
 set patient_number = 'PT-' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 12))
 where patient_number is null;
+
+create trigger patients_protect_identity_fields
+  before update on public.patients
+  for each row execute function public.protect_patient_identity_fields();
 
 create unique index if not exists patients_auth_user_id_unique
   on public.patients (auth_user_id)
