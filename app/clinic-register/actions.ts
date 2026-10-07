@@ -35,7 +35,10 @@ export async function registerPatient(
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
-      data: { full_name: parsed.data.fullName },
+      data: {
+        full_name: parsed.data.fullName,
+        family_clinic_patient_signup: true,
+      },
     },
   });
 
@@ -43,13 +46,13 @@ export async function registerPatient(
     console.error('Supabase patient registration error:', error);
     return {
       message:
-        'Unable to create the account. Check the details or contact clinic reception.',
+        'Unable to create the patient account. Please try again or contact clinic reception.',
     };
   }
 
   return {
     message:
-      'Account created. Check your email if verification is required, then contact clinic reception to verify and link your patient record before using the portal.',
+      'Account created. Check your email if verification is required, then sign in to open your patient portal. If you already have a clinic record, contact reception so they can verify and link your account to it.',
     success: true,
   };
 }

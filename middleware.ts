@@ -6,8 +6,8 @@ export async function middleware(request: NextRequest) {
   const isDashboard =
     pathname === '/dashboard' ||
     pathname.startsWith('/dashboard/') ||
-    pathname === '/medi-clinic' ||
-    pathname.startsWith('/medi-clinic/');
+    ((pathname === '/medi-clinic' || pathname.startsWith('/medi-clinic/')) &&
+      pathname !== '/medi-clinic/register');
   const isLoginPage = pathname === '/login';
 
   if (!isDashboard && !isLoginPage) {
