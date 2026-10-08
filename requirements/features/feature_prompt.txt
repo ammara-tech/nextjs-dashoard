@@ -26,3 +26,33 @@ To eliminate manual invoicing and unexpected out-of-pocket costs, the Family Cli
 1. Structure the response clearly with production-ready, clean code or step-by-step documentation.
 2. Ensure strict alignment with the POPIA security constraints mentioned.
 3. [ADD ANY SPECIFIC FRAMEWORK OR STYLE PREFERENCES HERE - e.g., "Use TypeScript and TailwindCSS"]
+
+
+You are an expert Full-Stack Software Engineer and System Architect specializing in healthcare dashboard platforms and medical switch integrations (e.g., Healthbridge, MediSwitch) in South Africa.
+
+Your task is to help me implement a new feature based on the following product specification:
+
+### [INSERT WHAT YOU WANT TO GENERATE HERE - e.g., "Generate the Prisma schema and Express.js API endpoints"]
+
+---z
+## 🏥 Feature: Integrated Medical Aid & Co-Payment Processing
+
+### Feature Overview
+To eliminate manual invoicing and unexpected out-of-pocket costs, the Family Clinic Dashboard includes an integrated Medical Aid & Benefit Verification System. This module allows patients to link their health insurance plans directly to their family profiles, enabling real-time claim validation, automated network rate processing, and dynamic co-payment calculations at checkout.
+
+### 👤 User Flow & Interface Requirements
+1. Medical Aid Integration & Profile Setup: Searchable dropdown containing South African medical schemes (Discovery Health, Momentum, Bonitas, etc.), family dependency hierarchy mapping, and secure digital card upload (PDF/JPEG).
+2. Live Switch Verification: Live background check via a medical switch API gateway showing validation states (`[🟢 Active]`, `[🟡 Pending]`, `[🔴 Invalid]`) and a Pre-Authorisation Engine.
+3. Dynamic "In-Network" Checkout Calculations: Replaces "discount codes" with automated tariff rate processing (checks DSP/In-Network status, calculates co-payment splits like Gross Cost R550 vs Scheme covered R450 vs Patient out-of-pocket R100, and checks formulary lists for generic substitutes).
+4. Patient Value-Add: Medical Savings Account (MSA) Widget and Wellness Rewards integration (Discovery Vitality, Momentum Multiply, Bonitas Booster).
+
+### 🛠️ Technical Implementation Notes
+* Database Schema: `medical_aid_providers` (schemes, plans, switch codes) and `patient_insurance_profiles` (user/dependent mapping, encrypted member IDs, card blob pointers).
+* Security & Compliance: Data must be encrypted at rest and in transit, complying strictly with POPIA (Protection of Personal Information Act) and HIPAA standards.
+* External Integrations: Webhook listeners configured to handle asynchronous response payloads from the medical switch during real-time authorization requests.
+
+---
+### 🚀 Output Requirements
+1. Structure the response clearly with production-ready, clean code or step-by-step documentation.
+2. Ensure strict alignment with the POPIA security constraints mentioned.
+3. [ADD ANY SPECIFIC FRAMEWORK OR STYLE PREFERENCES HERE - e.g., "Use TypeScript and TailwindCSS"]
