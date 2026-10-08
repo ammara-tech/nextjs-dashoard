@@ -1,0 +1,23 @@
+smoke test:run a simulation-using python for automated tests
+(choose a few things-manual testing->test the flow frontend)
+-whats necessary->MVP add-on,define done(final product accomplished from the requirements(MVP))
+
+MVP-acceptance criteria:
+1.no errors
+2.each feature works
+3.navigation through dashboard is smooth and easy to understand
+4.redirecting and different user logins work according to url add ons- /medi-clinic/......
+5.add a roadmap for family clinic dashboard
+6.ensure that the dashboard is responsive and works on different devices (desktop, tablet, mobile)
+7. implement user feedback mechanism for continuous improvement
+8. ensure data privacy and security measures are in place
+
+focus:
+smoke testing:checking various aspects,must work,reference against proposal must be similar to requirements
+define done: all acceptance criteria met, no critical bugs, user feedback incorporated, and the product is ready for deployment
+
+NB.have a  clear and rough estimation of time and resources needed for the testing phase, including any additional tools or frameworks required for automated testing.
+->rough estimation of what components time estimation
+
+->upgrade:
+-ensure each login whether its admin, doctor, or patient has the correct access and can work independently without clashing with other log-ins-> if the medi-clinic dashboard is opened via patient and admin wants to login, the patient can be logged in to the patient dashboard while the admin logs in to the admin dashboard and vice versa with every role without clashing the logins and sessions.
