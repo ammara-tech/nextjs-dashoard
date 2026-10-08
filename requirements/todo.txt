@@ -1,0 +1,30 @@
+1.Create csv files for:
+-appointment types
+-inventory/inventory batches
+-providers/blocks/shifts
+-demo patient-medical-records
+-
+
+fix:
+1.when a new user creates an account,no registration is needed until after they are logged in thats when they fill in their additional details
+2.on the dashboard when signed in as admin i cannot add a patient or edit it.
+3.the new patient->create account needs to show on one sign-in (patient side) ->it should not appear when the url redirecting route is /medi-clinic/dashsboard
+4.enable online payments for patients->online payments include:
+• Customer & Billing Details: Name, email address, billing/shipping address, and IP address.
+• Payment Instrument Data: Encrypted card number (PAN), expiration date, CVV, or linked digital wallet/EFT token.
+• Transaction Metadata: Unique transaction ID/reference number, timestamp, currency type, and total amount.
+• Itemized Order Data: Description of purchased goods, SKU numbers, quantities, and applicable taxes.
+• Authorization Status Code: A real-time response code from the issuing bank (e.g., approved, declined for insufficient funds, or flagged for suspected fraud)
+
+online payments to choose from:
+
+
+
+NB:online payments need to be handled via admin and staff(owner)
+
+additional upgrade:
+ensure each login whether its admin, doctor, or patient has the correct access and can work independently without clashing with other log-ins
+-> if the medi-clinic dashboard is opened via patient and admin wants to login, the patient can be logged in to the patient dashboard while the admin logs in to the admin dashboard and vice versa with every role without clashing the logins and sessions.
+
+add ons:
+1.patient medical aid ->patient can upload
