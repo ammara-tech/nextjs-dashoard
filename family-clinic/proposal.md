@@ -1,9 +1,9 @@
 # Family Clinic Dashboard: Upgrade Proposal
 
-**Project:** Family Clinic dashboard  
-**Current route:** `/medi-clinic`  
-**Deployed base:** https://nextjs-dashoard-psi.vercel.app  
-**Repository:** https://github.com/ammara-tech/nextjs-dashoard  
+**Project:** Family Clinic dashboard
+**Current route:** `/medi-clinic`
+**Deployed base:** https://nextjs-dashoard-psi.vercel.app
+**Repository:** https://github.com/ammara-tech/nextjs-dashoard
 **Status:** Current capabilities are documented separately from proposed work. This is a phased product and technical specification, not a claim that future modules are already implemented.
 
 ## Deployed access links

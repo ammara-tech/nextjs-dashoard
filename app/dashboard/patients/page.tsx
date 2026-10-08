@@ -1,6 +1,5 @@
 import { fetchPatients } from '@/app/lib/data';
 import {
-  CreatePatient,
   DeletePatient,
   UpdatePatient,
 } from '@/app/ui/patients/buttons';
@@ -15,12 +14,11 @@ export default async function PatientsPage() {
     <div className="w-full">
       <div className="flex w-full items-center justify-between">
         <h1 className={`${lusitana.className} text-2xl`}>Patients</h1>
-        <CreatePatient />
       </div>
 
       {patients.length === 0 ? (
         <p className="mt-6 text-sm text-gray-500">
-          No patients yet. Add the first one.
+          No patients yet.
         </p>
       ) : (
         <div className="overflow-x-auto">

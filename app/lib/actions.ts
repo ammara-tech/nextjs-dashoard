@@ -122,13 +122,6 @@ export type PatientState = {
   message?: string | null;
 };
 
-export async function createPatient(
-  _prevState: PatientState,
-  _formData: FormData,
-): Promise<PatientState> {
-  redirect('/medi-clinic/patients');
-}
-
 export async function updatePatient(
   _id: string,
   _prevState: PatientState,

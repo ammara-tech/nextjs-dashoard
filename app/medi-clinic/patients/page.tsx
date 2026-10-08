@@ -1,6 +1,5 @@
 import {
   archiveClinicPatient,
-  createClinicPatient,
   linkClinicPatientAccount,
   updateClinicPatient,
 } from '../lib/actions';
@@ -23,51 +22,6 @@ export default async function ClinicPatientsPage() {
         }
         title={role === 'doctor' ? 'My patients' : 'Patients'}
       />
-      {canManageAppointments && (
-      <section className="rounded-2xl border border-[#e9eaf0] bg-white p-5 shadow-[0_8px_30px_rgba(31,41,55,0.04)]">
-        <h2 className="font-semibold">Add a patient</h2>
-        <form action={createClinicPatient} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <label className="text-sm text-[#727a90]">
-            Full name
-            <input
-              className="mt-1 block w-full rounded-xl border-[#e3e5eb]"
-              name="full_name"
-              placeholder="Patient name"
-              required
-            />
-          </label>
-          <label className="text-sm text-[#727a90]">
-            Phone
-            <input
-              className="mt-1 block w-full rounded-xl border-[#e3e5eb]"
-              name="phone"
-              type="tel"
-            />
-          </label>
-          <label className="text-sm text-[#727a90]">
-            Date of birth
-            <input
-              className="mt-1 block w-full rounded-xl border-[#e3e5eb]"
-              name="date_of_birth"
-              type="date"
-            />
-          </label>
-          <label className="text-sm text-[#727a90]">
-            Email
-            <input
-              className="mt-1 block w-full rounded-xl border-[#e3e5eb]"
-              name="email"
-              type="email"
-            />
-          </label>
-          <div className="flex items-end">
-            <button className="w-full rounded-xl bg-[#647cf5] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#526be8]">
-              Add patient
-            </button>
-          </div>
-        </form>
-      </section>
-      )}
 
       <section className="overflow-hidden rounded-2xl border border-[#e9eaf0] bg-white shadow-[0_8px_30px_rgba(31,41,55,0.04)]">
         <div className="border-b border-[#eff0f4] px-5 py-4">
@@ -144,6 +98,20 @@ export default async function ClinicPatientsPage() {
                             Save changes
                           </button>
                         </form>
+                        {(isOwner || role === 'admin') && (
+                          <form
+                            action={archiveClinicPatient.bind(null, patient.id)}
+                            className="mt-3 border-t border-[#eff0f4] pt-3"
+                          >
+                            <p className="mb-2 text-xs text-[#727a90]">
+                              Archiving removes this patient from active records
+                              while preserving their clinical history.
+                            </p>
+                            <button className="text-sm font-semibold text-red-600">
+                              Archive patient
+                            </button>
+                          </form>
+                        )}
                       </details>
                       {isOwner && (
                         <>
@@ -163,14 +131,6 @@ export default async function ClinicPatientsPage() {
                             </label>
                             <button className="text-left text-sm font-medium text-[#6077ed]">
                               Link patient portal account
-                            </button>
-                          </form>
-                          <form
-                            action={archiveClinicPatient.bind(null, patient.id)}
-                            className="mt-2"
-                          >
-                            <button className="text-sm font-medium text-red-600">
-                              Archive patient
                             </button>
                           </form>
                         </>
