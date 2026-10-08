@@ -1,5 +1,6 @@
 'use server';
 
+import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 
@@ -31,7 +32,7 @@ export async function registerPatient(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
@@ -50,8 +51,13 @@ export async function registerPatient(
     };
   }
 
+  if (data.session) {
+    redirect('/medi-clinic');
+  }
+
   return {
-    message: 'Account created.',
+    message:
+      'Account created. Check your email to confirm your address, then sign in to the clinic.',
     success: true,
   };
 }

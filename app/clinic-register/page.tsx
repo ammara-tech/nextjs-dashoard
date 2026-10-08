@@ -10,8 +10,7 @@ export default function PatientRegistrationPage() {
           Create a patient account
         </h1>
         <p className="mb-6 mt-2 text-sm text-[#727a90]">
-          Clinic staff will review your request and link your account to a
-          patient record when approved.
+          Create an account to access your clinic portal.
         </p>
         <PatientRegistrationForm />
         <p className="mt-5 text-center text-sm text-[#727a90]">

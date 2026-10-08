@@ -43,7 +43,7 @@ export async function getClinicAccess() {
       : null;
 
   if (!role) {
-    redirect('/clinic-pending');
+    redirect('/clinic-access-unavailable');
   }
 
   return {

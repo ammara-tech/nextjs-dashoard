@@ -8,22 +8,8 @@ import { fetchClinicDashboard, fetchTomorrowAppointments } from './lib/data';
 import { getClinicAccess } from './lib/access';
 
 export default async function MediClinicPage() {
-  const { role, supabase } = await getClinicAccess();
+  const { role } = await getClinicAccess();
   if (role === 'patient') redirect('/medi-clinic/portal');
-  let pendingPatientRequests = 0;
-  if (role === 'owner' || role === 'admin') {
-    const { count, error } = await supabase
-      .from('clinic_patient_access_requests')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'pending');
-    if (error) {
-      console.error('Supabase pending patient request count error:', error);
-      throw new Error(
-        'Unable to load patient access notifications. Apply clinic-patient-access-requests.sql.',
-      );
-    }
-    pendingPatientRequests = count ?? 0;
-  }
   const [dashboard, tomorrowAppointments] = await Promise.all([
     fetchClinicDashboard(),
     fetchTomorrowAppointments(),
@@ -62,27 +48,6 @@ export default async function MediClinicPage() {
           + Book appointment
         </Link>
       </div>
-
-      {(role === 'owner' || role === 'admin') &&
-        pendingPatientRequests > 0 && (
-          <Link
-            className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-amber-950"
-            href="/medi-clinic/patient-access"
-          >
-            <span>
-              <span className="block font-semibold">
-                New patient account request
-                {pendingPatientRequests === 1 ? '' : 's'}
-              </span>
-              <span className="mt-1 block text-sm text-amber-800">
-                Review identity and approve or deny portal access.
-              </span>
-            </span>
-            <span className="rounded-full bg-amber-200 px-3 py-1 text-sm font-bold">
-              {pendingPatientRequests}
-            </span>
-          </Link>
-        )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <MetricCard
