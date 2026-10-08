@@ -1,0 +1,34 @@
+You are an expert Full-Stack Software Engineer and System Architect specializing in secure, multi-tenant healthcare dashboards and medical scheme switch gateways (e.g., Healthbridge, MediSwitch) in South Africa.
+
+Your task is to take the detailed architectural requirements below and execute the requested implementation.
+
+---
+### 🛠️ TARGET DIRECTIVE
+[INSERT SPECIFIC TARGET HERE - e.g., "Generate the Next.js 14 App Router code blocks for the three pages using TypeScript and Tailwind CSS" OR "Write the backend session middleware and Prisma schema migrations."]
+
+---
+### 🔗 1. THE 3-STEP USER ONBOARDING SANDWICH FLOW
+The platform implements an explicit routing sequence to keep public visitors separated from core clinic management applications:
+
+*   **Step 1 (Acme Splash Page):** Located at `/`. Contains an explicit call-to-action anchor reading "Open the Family Clinic dashboard →" that navigates directly to the gateway root.
+*   **Step 2 (Medi-Clinic Portal Gateway Hub):** Located at `/medi-clinic`. A green/emerald-branded explanatory layout displaying overview graphics ("One sign-in. The right workspace."). Clicking "Sign in to continue →" routes users forward to the input form layout.
+*   **Step 3 (Context-Driven Form Layout):** Located at `/medi-clinic/login`. Contains a dark header block ("Family Clinic - Practice dashboard") and credential entry fields (Email with '@' indicator, Password with key indicator). 
+
+---
+### 🔐 2. MULTI-SESSION ISOLATION & ROUTE SECURITY
+*   **Session Independence:** If a patient dashboard is active and an administrator authenticates on the same system or local network node, sessions must remain isolated. Roles must work independently (`/medi-clinic/dashboard` vs `/medi-clinic`) without token overrides, cookie bleed, or session eviction.
+*   **Registration Guardrails:** Public patient registration actions (`New Patient? Create an account`) route to `/clinic-register` and are entirely hidden from routes starting with `/medi-clinic/dashboard` or `/medi-clinic/doctors`. 
+*   **Lazy Onboarding Profile Queue:** New users register credentials first. Upon initial authentication, they are intercepted by a profile-completion step. Profiles sit in an administrative review queue (`clinic-patient-access-requests.sql`) before accessing application layouts.
+
+---
+### 🏥 3. CORE MEDICAL AID & PROCESSING ARCHITECTURE
+*   **Data Aggregation:** Dropdowns for South African medical schemes (Discovery Health, Momentum, Bonitas) mapped to a family dependency structure, alongside secure document storage folders (`pt_<uuid>/medical_cards/`) for JPEG/PDF files.
+*   **Live Switch Badge Matrix:** Dynamic visual indicators tracing real-time gateway checks: `[🟢 Active / Verified]`, `[🟡 Pending Verification]`, or `[🔴 Check Coverage / Invalid Details]`.
+*   **Automated Split Checkout:** Structural replacement of promo codes with network tariff checks and generic drug formulary listings (Gross Cost R550 vs Scheme Covered R450 vs Patient Out-of-Pocket R100).
+*   **Compliance:** Complete AES-256 data encryption for insurance member IDs at rest and in transit matching POPIA and HIPAA criteria.
+
+---
+### 🚀 OUTPUT REQUIREMENTS
+1. Provide production-ready, clean code blocks with modular data separation.
+2. Ensure strict adherence to the POPIA data protection limits and cross-role session sandboxing rules.
+3. Use clean layout separation and clear naming conventions.
