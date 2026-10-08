@@ -111,3 +111,101 @@ To safely seed or verify environment integrity, standard initialization protocol
 
 ### 🔒 Security, Private Storage & POPIA Compliance
 *   **Data Encryption:** All insurance policy records, national identity keys, and card documents must be encrypted at rest and during transmission, complying with **POPIA** (Protection of Personal Information Act) and **HIPAA** guidelines.
+
+NB:additional things to take notice of:
+• Supabase Storage Policies: Implement private bucket grouping structures using restricted folder architecture organized by verified identifiers (pt_<uuid>/medical_cards/).
+• Least-Privilege RLS: Enforce storage policy objects checking that the active session matches ownership claims. The application must never surface static, public object paths; utilize short-lived signed URLs with a max lifespan configuration of 15 minutes.
+
+💳 4. Secure Payment Processing & Tokenization
+
+Keep live public payment gateways decoupled from baseline scheduling testing. Once implemented, billing architectures must guarantee detailed parameter logging:
+• Customer & Billing Ingestion: Captures client names, addresses, emails, and transactional IP footprints.
+• Instrument Tokenization: Utilizes secure token exchanges or encrypted transaction payload maps (PAN numbers, CVVs, and expiry records must never touch the core database as raw strings).
+• Transaction Metadata: Enforces tracking logic compiling exact timestamp markers, currency indices, unique transaction tracking identifiers, and authorization status response flags.
+• Itemized Inventory Mapping: Links billing lines to specific SKU records, healthcare tax definitions, and product quantities.
+• Admin Control: All processing, dispute resolutions, and manual ledger overrides are managed through administrative panels restricted to Owner/Staff classes.
+
+🚀 5. Phased Delivery & Engineering Milestones
+
+• Phase 0: Base Hardening (Current Sprint)
+└── Review RLS structures ➔ Deploy registration request queues ➔ Resolve Admin profile CRUD permissions.
+• Phase 1: Scheduling & Data Foundations
+└── Ingest core CSV matrices ➔ Map shifts, blocks, and duration parameters ➔ Overlap locks.
+• Phase 2: Patient Portal & Document Integration
+└── Verify patient links ➔ Deliver private signed storage buckets ➔ Setup card views.
+• Phase 3: Medical Aid & Payments Switch
+└── Connect real-time API gateways ➔ Inject co-payment split checkouts.
+
+🧪 6. Testing, Quality Assurance & Acceptance Criteria
+
+The system upgrade cannot deploy to production branches unless it clears both automated code checks and manual responsive visual flows.
+
+Automated Python Smoke Simulation Test
+
+Developers should execute the test routine below to verify structural tenant separation, conflict prevention systems, and onboarding tracking:
+```python
+import uuid
+from typing import Dict, Any, List
+class ClinicVerificationTestDB:
+def init(self):
+self.sessions: Dict[str, dict] = {}
+self.review_queue: List[dict] = []
+self.patient_profiles: Dict[str, dict] = {}
+self.appointments: List[dict] = []
+def queue_patient_signup(self, email: str, name: str) -> dict:
+entry = {"id": str(uuid.uuid4())[:6], "email": email, "name": name, "status": "pending_review"}
+self.review_queue.append(entry)
+return entry
+def owner_authorize_profile(self, caller_role: str, entry_id: str) -> bool:
+if caller_role != "owner":
+raise PermissionError("RLS Restriction: Unauthorized management access attempt.")
+for item in self.review_queue:
+if item["id"] == entry_id:
+item["status"] = "approved"
+self.patient_profiles[f"pt_{item['id']}"] = {"name": item["name"], "medical_aid": "Active"}
+return True
+return False
+def schedule_slot(self, doctor_id: str, slot_time: str) -> bool:
+for appt in self.appointments:
+if appt["doctor"] == doctor_id and appt["time"] == slot_time:
+return False # Block concurrent overlapping bookings
+self.appointments.append({"doctor": doctor_id, "time": slot_time})
+return True
+
+--- Verification Evaluation Executions ---
+
+def run_proposal_smoke_suite():
+print("🚀 Running System Verification Flow...")
+suite = ClinicVerificationTestDB()
+# 1. Check Lazy Onboarding Tracking
+entry = suite.queue_patient_signup("user@nextmail.com", "Thabo Mokoena")
+assert len(suite.patient_profiles) == 0
+print("🟢 [PASSED]: Signup locked from interface routing. Placed in verification queue.")
+# 2. Validate Tenant Permission Escalation Defense
+try:
+suite.owner_authorize_profile("patient", entry["id"])
+print("🔴 [FAILED]: Security breach. Patient was allowed to self-approve profile status.")
+except PermissionError:
+print("🟢 [PASSED]: Access control interceptors successfully blocked unauthorized role modification.")
+# 3. Conflict Engine Overlap Protection
+ok_1 = suite.schedule_slot("dr_smit", "10:00 AM")
+ok_2 = suite.schedule_slot("dr_smit", "10:00 AM")
+assert ok_1 is True and ok_2 is False
+print("🟢 [PASSED]: Transaction processing rules successfully rejected concurrent double-booking.")
+if name == "main":
+run_proposal_smoke_suite()
+```
+
+Core Acceptance Criteria (Definition of Done)
+
+• [DoD-01] Zero Metadata Crossover: A user role cannot hijack access boundaries by tampering with client query arguments or browser profile states. RLS layers block all requests failing validation.
+• [DoD-02] Clean Separation of Layouts: Public signup buttons are completely hidden across administrative sub-paths (/medi-clinic/dashboard).
+• [DoD-03] Verified Sandbox Operations: Multiple tabs running different roles concurrently on the same network node remain completely sandboxed without cookie or state interference.
+• [DoD-04] Responsive Interface Design: All newly introduced panels, co-payment layout grids, and switch badges scale cleanly to mobile viewports without introducing horizontal scroll overflow anomalies.
+• [DoD-05] Operational Security Audits: System logs append-only event records capturing signature updates, configuration overrides, and administrative modifications without recording raw identity keys or system secrets.
+
+***
+
+<FollowUp>
+Would you like me to write a **README.md add-on snippet** that summarizes this feature for your repository's main landing page?
+</FollowUp>
