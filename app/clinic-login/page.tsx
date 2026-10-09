@@ -26,6 +26,15 @@ export default async function ClinicLoginPage({
             title="Sign in to the Family Clinic dashboard."
           />
         </Suspense>
+        <p className="mt-4 text-center text-sm text-[#727a90]">
+          Looking for the invoice dashboard?{' '}
+          <Link
+            className="font-semibold text-[#5B7FFF] hover:text-[#465fd4]"
+            href="/login?callbackUrl=%2Fdashboard"
+          >
+            Sign in to the Next.js dashboard
+          </Link>
+        </p>
         {hideRegister ? null : (
           <p className="mt-4 text-center text-sm text-[#727a90]">
             New patient?{' '}

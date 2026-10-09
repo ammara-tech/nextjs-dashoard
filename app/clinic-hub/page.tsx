@@ -25,6 +25,12 @@ export default function ClinicHubPage() {
         >
           Sign in to continue <ArrowRightIcon className="w-5" />
         </Link>
+        <Link
+          href="/login?callbackUrl=%2Fdashboard"
+          className="flex w-fit items-center gap-2 rounded-lg border border-slate-300 bg-white px-6 py-3 font-medium text-slate-800 transition hover:bg-slate-100"
+        >
+          Sign in to the Next.js dashboard <ArrowRightIcon className="w-5" />
+        </Link>
         <Link href="/clinic-register" className="text-sm text-emerald-700 hover:underline">
           New patient? Create an account
         </Link>
