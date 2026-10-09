@@ -1,18 +1,15 @@
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import ClinicLogo from '@/app/ui/clinic-logo';
+import { ClinicMark } from '@/app/ui/clinic-logo';
 
 export default function Page() {
   return (
     <main className="flex min-h-screen flex-col bg-[#F8FAFC] p-6">
-      <div className="flex h-24 shrink-0 flex-wrap items-end justify-between gap-4 rounded-2xl bg-[#0F172A] p-5 md:h-52">
-        <ClinicLogo light />
-        <div className="flex items-center gap-3 text-white">
-          <svg
-            viewBox="0 0 180 180"
-            className="h-10 w-10 shrink-0"
-            aria-hidden="true"
-          >
+      <div className="flex shrink-0 flex-col items-center gap-5 rounded-2xl bg-[#0F172A] px-6 py-10 text-center text-white">
+        <div className="flex items-center gap-4">
+          <ClinicMark className="h-16 w-16" />
+          <span className="h-10 w-px bg-white/25" aria-hidden="true" />
+          <svg viewBox="0 0 180 180" className="h-16 w-16 shrink-0" aria-hidden="true">
             <circle cx="90" cy="90" r="90" fill="#000" stroke="#fff" strokeWidth="4" />
             <path
               d="M149.5 157.5 69.1 54H54v72h12V69.4l73.8 95.2a90 90 0 0 0 9.7-7.1Z"
@@ -20,12 +17,11 @@ export default function Page() {
             />
             <rect x="115" y="54" width="12" height="72" fill="#fff" />
           </svg>
-          <div className="leading-tight">
-            <p className="text-xs font-semibold uppercase tracking-wider text-[#C7D4FF]">
-              Next.js
-            </p>
-            <p className="text-lg font-bold">Invoice Dashboard</p>
-          </div>
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-lg font-semibold md:text-2xl">
+          <span>Family Clinic Dashboard</span>
+          <span className="text-[#9CC9FF]" aria-hidden="true">&amp;</span>
+          <span>Next.js Dashboard</span>
         </div>
       </div>
       <div className="mt-4 grid grow content-center gap-6 md:grid-cols-2 md:px-8">
