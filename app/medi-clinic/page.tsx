@@ -82,16 +82,19 @@ export default async function MediClinicPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <MetricCard
+          accent="bg-[#1E4FD8]"
           label="New patients"
           note="Across the last 6 months"
           value={newPatients}
         />
         <MetricCard
+          accent="bg-[#5B7FFF]"
           label="Appointments this month"
           note={`${noShows} no-shows recorded`}
           value={appointmentTotal}
         />
         <MetricCard
+          accent="bg-[#1E2F66]"
           label="No-show share"
           note="This month’s appointment rate"
           value={noShowRate}
@@ -151,18 +154,21 @@ export default async function MediClinicPage() {
 }
 
 function MetricCard({
+  accent,
   label,
   note,
   value,
 }: {
+  accent: string;
   label: string;
   note: string;
   value: number | string;
 }) {
   return (
-    <section className="rounded-2xl border border-[#e9eaf0] bg-white p-5 shadow-[0_8px_30px_rgba(31,41,55,0.04)]">
+    <section className="relative overflow-hidden rounded-2xl border border-[#e9eaf0] bg-white p-5 shadow-sm">
+      <span className={`absolute inset-x-0 top-0 h-1.5 ${accent}`} />
       <p className="text-sm font-medium text-[#798096]">{label}</p>
-      <p className="mt-3 text-3xl font-bold tracking-tight text-[#20263b]">
+      <p className="mt-3 text-3xl font-bold tracking-tight text-[#1E2F66]">
         {value}
       </p>
       <p className="mt-1 text-xs text-[#9298a8]">{note}</p>

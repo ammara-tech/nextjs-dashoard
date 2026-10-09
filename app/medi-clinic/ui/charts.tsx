@@ -10,7 +10,7 @@ const statusLabels: Record<AppointmentStatusCount['status'], string> = {
 };
 
 const statusColors: Record<AppointmentStatusCount['status'], string> = {
-  booked: '#5b7cfa',
+  booked: '#1E4FD8',
   done: '#31b78a',
   no_show: '#f18b68',
 };
@@ -31,7 +31,7 @@ export function NewPatientsChart({
             New patients
           </h2>
         </div>
-        <span className="rounded-full bg-[#f1f3ff] px-3 py-1 text-xs font-semibold text-[#586de0]">
+        <span className="rounded-full bg-[#EEF2FF] px-3 py-1 text-xs font-semibold text-[#1E4FD8]">
           Last 6 months
         </span>
       </div>
@@ -50,7 +50,7 @@ export function NewPatientsChart({
             </span>
             <div className="flex h-36 w-full items-end rounded-t-lg bg-[#f5f6fb]">
               <div
-                className="w-full rounded-t-lg bg-gradient-to-t from-[#1E4FD8] to-[#8b9cff]"
+                className="w-full rounded-t-lg bg-gradient-to-t from-[#1E4FD8] to-[#9CC9FF]"
                 style={{
                   height:
                     item.count === 0

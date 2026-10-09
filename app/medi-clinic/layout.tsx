@@ -14,8 +14,8 @@ export default async function MediClinicLayout({
   const { user, role } = await getClinicAccess();
 
   return (
-    <main className="min-h-screen bg-[#f7f8fc] text-[#20263b]">
-      <header className="border-b border-[#e9eaf0] bg-white">
+    <main className="min-h-screen bg-[#f7f8fc] text-[#1E2F66]">
+      <header className="border-b border-[#e9eaf0] border-t-4 border-t-[#1E4FD8] bg-white">
         <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-6 sm:px-8 lg:px-10">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <Link className="flex items-center gap-3" href="/medi-clinic">
