@@ -884,6 +884,61 @@ export async function updateSupportRequestStatus(formData: FormData) {
 
 export type CardActionState = { message?: string; success?: boolean };
 
+export async function uploadMyDocument(
+  _previousState: CardActionState,
+  formData: FormData,
+): Promise<CardActionState> {
+  const { supabase, user } = await requireClinicRole(['patient']);
+  const category = formString(formData, 'category');
+  const file = formData.get('file');
+  if (!['identity', 'clinical_history', 'invoices'].includes(category)) {
+    return { message: 'Select a document category.' };
+  }
+  if (!(file instanceof File) || file.size === 0) {
+    return { message: 'Choose a file to upload.' };
+  }
+  if (
+    !['application/pdf', 'image/jpeg', 'image/png'].includes(file.type) ||
+    file.size > 10 * 1024 * 1024
+  ) {
+    return { message: 'Upload a PDF, JPEG, or PNG file up to 10 MB.' };
+  }
+  const { data: patient } = await supabase
+    .from('patients')
+    .select('id')
+    .eq('auth_user_id', user.id)
+    .maybeSingle();
+  if (!patient) {
+    return { message: 'Your account is not linked to a patient record.' };
+  }
+
+  const objectPath = `pt_${patient.id}/${category}/${crypto.randomUUID()}`;
+  const { error: uploadError } = await supabase.storage
+    .from('patients-medical-records')
+    .upload(objectPath, file, { contentType: file.type, upsert: false });
+  if (uploadError) {
+    console.error('Supabase patient self upload error:', uploadError);
+    return {
+      message: `Unable to upload (${uploadError.message}). Make sure supabase/clinic-patient-documents-upload.sql has been run.`,
+    };
+  }
+  const { error } = await supabase.from('clinic_patient_documents').insert({
+    patient_id: patient.id,
+    object_path: objectPath,
+    category,
+    original_name: file.name.slice(0, 255),
+    content_type: file.type,
+    byte_size: file.size,
+  });
+  if (error) {
+    console.error('Supabase patient self document insert error:', error);
+    await supabase.storage.from('patients-medical-records').remove([objectPath]);
+    return { message: `Unable to save document (${error.code}).` };
+  }
+  revalidatePath('/medi-clinic/portal');
+  return { message: 'Document uploaded.', success: true };
+}
+
 function detectCardBrand(digits: string) {
   if (/^4/.test(digits)) return 'Visa';
   if (/^(5[1-5]|2[2-7])/.test(digits)) return 'Mastercard';

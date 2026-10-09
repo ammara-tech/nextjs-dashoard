@@ -7,6 +7,7 @@ import {
 } from '../lib/data';
 import CreateAppointmentForm from '../ui/create-appointment-form';
 import CardWallet, { type SavedCard } from '../ui/card-wallet';
+import DocumentUpload from '../ui/document-upload';
 import MedicalAidPanel from '../ui/medical-aid-panel';
 
 const tabs = [
@@ -323,8 +324,9 @@ export default async function PatientPortalPage({
       {tab === 'documents' && (
       <section className="rounded-2xl border border-[#e9eaf0] bg-white p-5 shadow-sm">
         <h2 className="text-lg font-semibold">My documents</h2>
+        <DocumentUpload />
         {documents.length === 0 ? (
-          <p className="mt-3 text-sm text-[#727a90]">No documents are available.</p>
+          <p className="mt-3 text-sm text-[#727a90]">No documents uploaded yet.</p>
         ) : (
           <ul className="mt-3 divide-y divide-[#eff0f4]">
             {documents.map((document) => (
