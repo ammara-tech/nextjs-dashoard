@@ -73,8 +73,8 @@ export default function ClinicNavigation({
             aria-current={active ? 'page' : undefined}
             className={`rounded-xl px-4 py-2.5 text-sm font-medium transition-colors ${
               active
-                ? 'bg-[#263351] text-white'
-                : 'text-[#727a90] hover:bg-[#f0f2f7] hover:text-[#263351]'
+                ? 'bg-[#1E2F66] text-white'
+                : 'text-[#727a90] hover:bg-[#f0f2f7] hover:text-[#1E2F66]'
             }`}
             href={link.href}
             key={link.href}

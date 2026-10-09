@@ -26,7 +26,7 @@ export default async function TomorrowAppointmentsPage() {
                 <div>
                   <p className="font-semibold">{appointment.patients.full_name}</p>
                   <a
-                    className="mt-1 inline-block text-sm text-[#6077ed]"
+                    className="mt-1 inline-block text-sm text-[#1E4FD8]"
                     href={
                       appointment.patients.phone
                         ? `tel:${appointment.patients.phone}`

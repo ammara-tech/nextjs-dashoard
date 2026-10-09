@@ -100,7 +100,7 @@ export default async function ClinicAppointmentsPage() {
                     {canManageAppointments && (
                     <td className="min-w-72 px-5 py-3">
                       <details>
-                        <summary className="cursor-pointer font-medium text-[#6077ed]">
+                        <summary className="cursor-pointer font-medium text-[#1E4FD8]">
                           Edit
                         </summary>
                         <form
@@ -172,7 +172,7 @@ export default async function ClinicAppointmentsPage() {
                           >
                             <StatusOptions />
                           </select>
-                          <button className="rounded-lg bg-[#647cf5] px-3 py-2 text-sm font-semibold text-white">
+                          <button className="rounded-lg bg-[#1E4FD8] px-3 py-2 text-sm font-semibold text-white">
                             Save changes
                           </button>
                         </form>

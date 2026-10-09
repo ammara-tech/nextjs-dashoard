@@ -231,7 +231,7 @@ export default async function PatientPortalPage() {
                 </div>
                 {document.url ? (
                   <a
-                    className="text-sm font-semibold text-[#6077ed]"
+                    className="text-sm font-semibold text-[#1E4FD8]"
                     href={document.url}
                     rel="noreferrer"
                     target="_blank"
@@ -298,7 +298,7 @@ export default async function PatientPortalPage() {
 
 const inputClass = 'mt-1 block w-full rounded-xl border-[#e3e5eb] text-sm';
 const buttonClass =
-  'rounded-xl bg-[#647cf5] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#526be8]';
+  'rounded-xl bg-[#1E4FD8] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1E2F66]';
 
 function InfoCard({ label, value }: { label: string; value: string }) {
   return (

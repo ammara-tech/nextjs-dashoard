@@ -29,7 +29,7 @@ export default async function ClinicPatientsPage() {
 
       {canManageAppointments && (
         <details className="rounded-2xl border border-[#e9eaf0] bg-white p-5 shadow-[0_8px_30px_rgba(31,41,55,0.04)]">
-          <summary className="cursor-pointer text-sm font-semibold text-[#6077ed]">
+          <summary className="cursor-pointer text-sm font-semibold text-[#1E4FD8]">
             + Add patient
           </summary>
           <form action={createClinicPatient} className="mt-4 grid max-w-md gap-3">
@@ -64,7 +64,7 @@ export default async function ClinicPatientsPage() {
                 type="email"
               />
             </label>
-            <button className="rounded-lg bg-[#647cf5] px-3 py-2 text-sm font-semibold text-white">
+            <button className="rounded-lg bg-[#1E4FD8] px-3 py-2 text-sm font-semibold text-white">
               Add patient
             </button>
           </form>
@@ -107,7 +107,7 @@ export default async function ClinicPatientsPage() {
                     {canManageAppointments && (
                       <td className="min-w-72 px-5 py-3">
                         <details>
-                          <summary className="cursor-pointer font-medium text-[#6077ed]">
+                          <summary className="cursor-pointer font-medium text-[#1E4FD8]">
                             Edit
                           </summary>
                           <form
@@ -153,7 +153,7 @@ export default async function ClinicPatientsPage() {
                                 type="email"
                               />
                             </label>
-                            <button className="rounded-lg bg-[#647cf5] px-3 py-2 text-sm font-semibold text-white">
+                            <button className="rounded-lg bg-[#1E4FD8] px-3 py-2 text-sm font-semibold text-white">
                               Save changes
                             </button>
                           </form>
@@ -187,7 +187,7 @@ export default async function ClinicPatientsPage() {
                                 required
                               />
                             </label>
-                            <button className="text-left text-sm font-medium text-[#6077ed]">
+                            <button className="text-left text-sm font-medium text-[#1E4FD8]">
                               Link patient portal account
                             </button>
                           </form>

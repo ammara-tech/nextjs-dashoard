@@ -208,4 +208,4 @@ function PharmacyDataError({ code, label }: { code: string; label: string }) {
 
 const inputClass = 'mt-1 block w-full rounded-xl border-[#e3e5eb] text-sm';
 const buttonClass =
-  'rounded-xl bg-[#647cf5] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#526be8]';
+  'rounded-xl bg-[#1E4FD8] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1E2F66]';

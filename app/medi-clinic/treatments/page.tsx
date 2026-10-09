@@ -61,7 +61,7 @@ export default async function ClinicTreatmentsPage() {
               />
             </label>
             <div className="flex items-end">
-              <button className="w-full rounded-xl bg-[#647cf5] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#526be8]">
+              <button className="w-full rounded-xl bg-[#1E4FD8] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1E2F66]">
                 Save treatment
               </button>
             </div>
@@ -97,7 +97,7 @@ export default async function ClinicTreatmentsPage() {
                     </td>
                     <td className="min-w-72 px-5 py-3">
                       <details>
-                        <summary className="cursor-pointer font-medium text-[#6077ed]">
+                        <summary className="cursor-pointer font-medium text-[#1E4FD8]">
                           Edit
                         </summary>
                         <form
@@ -134,7 +134,7 @@ export default async function ClinicTreatmentsPage() {
                             required
                             type="number"
                           />
-                          <button className="rounded-lg bg-[#647cf5] px-3 py-2 text-sm font-semibold text-white">
+                          <button className="rounded-lg bg-[#1E4FD8] px-3 py-2 text-sm font-semibold text-white">
                             Save changes
                           </button>
                         </form>

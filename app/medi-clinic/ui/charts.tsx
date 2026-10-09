@@ -50,7 +50,7 @@ export function NewPatientsChart({
             </span>
             <div className="flex h-36 w-full items-end rounded-t-lg bg-[#f5f6fb]">
               <div
-                className="w-full rounded-t-lg bg-gradient-to-t from-[#647cf5] to-[#8b9cff]"
+                className="w-full rounded-t-lg bg-gradient-to-t from-[#1E4FD8] to-[#8b9cff]"
                 style={{
                   height:
                     item.count === 0

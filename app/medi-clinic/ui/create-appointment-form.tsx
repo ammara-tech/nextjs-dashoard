@@ -94,7 +94,7 @@ export default function CreateAppointmentForm({
       </label>
       <div className="flex items-end">
         <button
-          className="w-full rounded-xl bg-[#647cf5] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#526be8] disabled:opacity-60"
+          className="w-full rounded-xl bg-[#1E4FD8] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1E2F66] disabled:opacity-60"
           disabled={pending}
         >
           {pending ? 'Booking…' : 'Book appointment'}

@@ -73,7 +73,7 @@ export default async function MediClinicPage() {
           </h1>
         </div>
         <Link
-          className="rounded-xl bg-[#647cf5] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#526be8]"
+          className="rounded-xl bg-[#1E4FD8] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1E2F66]"
           href="/medi-clinic/appointments"
         >
           + Book appointment
@@ -112,7 +112,7 @@ export default async function MediClinicPage() {
             </h2>
           </div>
           <Link
-            className="text-sm font-semibold text-[#6077ed] hover:text-[#465fd4]"
+            className="text-sm font-semibold text-[#1E4FD8] hover:text-[#465fd4]"
             href="/medi-clinic/tomorrow"
           >
             View all

@@ -51,7 +51,7 @@ export default function MedicalAidPanel({
         </div>
         <span
           className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${
-            current?.className ?? 'border-[#dfe3ee] bg-[#f5f7fb] text-[#727a90]'
+            current?.className ?? 'border-[#dfe3ee] bg-[#F3F7FF] text-[#727a90]'
           }`}
         >
           {current?.label ?? 'No medical aid on file'}
@@ -64,7 +64,7 @@ export default function MedicalAidPanel({
           clinic-medical-aid migration.
         </p>
       ) : (
-        <form action={saveMedicalAidProfile} className="mt-4 space-y-4 rounded-2xl bg-[#f5f7fb] p-4">
+        <form action={saveMedicalAidProfile} className="mt-4 space-y-4 rounded-2xl bg-[#F3F7FF] p-4">
           <div className="grid gap-4 md:grid-cols-2">
             <label className="text-sm text-[#727a90]">
               Medical aid provider
@@ -144,4 +144,4 @@ export default function MedicalAidPanel({
 const inputClass =
   'mt-1 block w-full rounded-xl border border-[#dfe3ee] bg-white px-3 py-2.5 text-sm text-[#1d2940] outline-none focus:border-[#6177e8]';
 const buttonClass =
-  'rounded-xl bg-[#647cf5] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#526be8]';
+  'rounded-xl bg-[#1E4FD8] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1E2F66]';

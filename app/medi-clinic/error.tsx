@@ -17,7 +17,7 @@ export default function MediClinicError({
       </p>
       <div className="mt-5 flex justify-center gap-3">
         <button
-          className="rounded-xl bg-[#647cf5] px-4 py-2 text-sm font-semibold text-white hover:bg-[#526be8]"
+          className="rounded-xl bg-[#1E4FD8] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1E2F66]"
           onClick={() => reset()}
           type="button"
         >
