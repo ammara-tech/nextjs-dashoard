@@ -56,7 +56,7 @@ export default function Page() {
             dashboard.
           </p>
           <Link
-            href="/login"
+            href="/nextjs-hub"
             className="mx-auto mt-auto flex items-center gap-3 rounded-xl border border-[#1E2F66] px-6 py-3 font-medium text-[#1E2F66] transition-colors hover:bg-[#EEF2FF]"
           >
             Open the Next.js dashboard
