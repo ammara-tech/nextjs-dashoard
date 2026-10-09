@@ -17,20 +17,6 @@ export default function ClinicHubPage() {
     <main className="min-h-screen bg-white">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <ClinicLogo />
-        <div className="flex items-center gap-3">
-          <Link
-            href="/clinic-login?callbackUrl=%2Fmedi-clinic"
-            className="flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
-          >
-            Sign in <ArrowRightIcon className="w-4" />
-          </Link>
-          <Link
-            href="/clinic-register"
-            className="flex items-center gap-2 rounded-lg bg-[#1E2F66] px-4 py-2 text-sm font-medium text-white hover:bg-[#2b4190]"
-          >
-            Create user
-          </Link>
-        </div>
       </header>
 
       <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-12 md:grid-cols-2">
@@ -55,6 +41,12 @@ export default function ClinicHubPage() {
               className="flex items-center gap-2 rounded-lg bg-[#1E2F66] px-6 py-3 font-medium text-white transition hover:bg-[#2b4190]"
             >
               Sign in to continue <ArrowRightIcon className="w-5" />
+            </Link>
+            <Link
+              href="/clinic-register"
+              className="flex items-center gap-2 rounded-lg border border-[#1E2F66] px-6 py-3 font-medium text-[#1E2F66] transition hover:bg-[#EEF2FF]"
+            >
+              Create user
             </Link>
           </div>
           <p className="text-sm text-slate-500">
