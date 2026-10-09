@@ -52,6 +52,12 @@ export async function registerPatient(
   }
 
   if (data.session) {
+    // The signup trigger sets the patient role just after the account is
+    // created, so the first token doesn't carry it yet. Refresh to pick it up.
+    const { error: refreshError } = await supabase.auth.refreshSession();
+    if (refreshError) {
+      console.error('Supabase session refresh error:', refreshError);
+    }
     redirect('/medi-clinic');
   }
 
