@@ -23,6 +23,13 @@ These links identify the deployed entry points. Users still need valid Supabase 
 - Manage appointments and owner-only treatments, review the two clinic charts, and view tomorrow's booked appointments with patient phone numbers.
 - Enforce patient ownership in PostgreSQL with Supabase RLS policies.
 - Keep the invoice and customer data layer backed by the existing `POSTGRES_URL` connection.
+- Manage patient medical aid and co-payment coverage, with provider selection, dependent mapping, digital card uploads, verification badges, and in-network billing summaries.
+
+## Medical aid & co-payment flow
+
+The patient portal now includes a dedicated medical aid panel designed around the project requirements for Family Clinic coverage verification and checkout experience. Patients can select a provider and plan, map the relevant dependent, upload a membership card image or PDF, and see status feedback for verification. The UI includes a scheme coverage summary, remaining medical savings account balance, and reward/wellness indicators so the patient can understand out-of-pocket cost expectations without leaving the portal.
+
+This is implemented as a patient-facing clinic integration aligned to the `/medi-clinic` portal and keeps the role separation intact for the rest of the app.
 
 ## Technology
 

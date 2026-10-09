@@ -5,6 +5,7 @@ import {
   fetchClinicProviders,
 } from '../lib/data';
 import CreateAppointmentForm from '../ui/create-appointment-form';
+import MedicalAidPanel from '../ui/medical-aid-panel';
 
 export default async function PatientPortalPage() {
   const { supabase, user } = await requireClinicRole(['patient']);
@@ -118,6 +119,8 @@ export default async function PatientPortalPage() {
         <InfoCard label="Phone" value={patient.phone ?? 'Not on file'} />
         <InfoCard label="Date of birth" value={patient.date_of_birth ?? 'Not on file'} />
       </section>
+
+      <MedicalAidPanel patientName={patient.full_name} />
 
       <section className="rounded-2xl border border-[#e9eaf0] bg-white p-5">
         <h2 className="text-lg font-semibold">Book an appointment</h2>
