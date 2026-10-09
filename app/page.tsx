@@ -5,8 +5,28 @@ import ClinicLogo from '@/app/ui/clinic-logo';
 export default function Page() {
   return (
     <main className="flex min-h-screen flex-col bg-[#F8FAFC] p-6">
-      <div className="flex h-24 shrink-0 items-end rounded-2xl bg-[#0F172A] p-5 md:h-52">
+      <div className="flex h-24 shrink-0 flex-wrap items-end justify-between gap-4 rounded-2xl bg-[#0F172A] p-5 md:h-52">
         <ClinicLogo light />
+        <div className="flex items-center gap-3 text-white">
+          <svg
+            viewBox="0 0 180 180"
+            className="h-10 w-10 shrink-0"
+            aria-hidden="true"
+          >
+            <circle cx="90" cy="90" r="90" fill="#000" stroke="#fff" strokeWidth="4" />
+            <path
+              d="M149.5 157.5 69.1 54H54v72h12V69.4l73.8 95.2a90 90 0 0 0 9.7-7.1Z"
+              fill="#fff"
+            />
+            <rect x="115" y="54" width="12" height="72" fill="#fff" />
+          </svg>
+          <div className="leading-tight">
+            <p className="text-xs font-semibold uppercase tracking-wider text-[#C7D4FF]">
+              Next.js
+            </p>
+            <p className="text-lg font-bold">Invoice Dashboard</p>
+          </div>
+        </div>
       </div>
       <div className="mt-4 grid grow content-center gap-6 md:grid-cols-2 md:px-8">
         <div className="flex flex-col gap-6 rounded-2xl bg-white px-8 py-10 text-center shadow-sm">
