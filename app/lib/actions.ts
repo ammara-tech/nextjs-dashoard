@@ -5,6 +5,7 @@ import postgres from 'postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { requireClinicStaff } from '@/app/medi-clinic/lib/access';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -113,26 +114,151 @@ export async function deleteInvoice(id: string) {
   revalidatePath('/dashboard/invoices');
 }
 
+// ---------------------------------------------------------------------
+// Clinic patients
+// ---------------------------------------------------------------------
+
 export type PatientState = {
   errors?: {
     full_name?: string[];
+    email?: string[];
     phone?: string[];
     date_of_birth?: string[];
   };
   message?: string | null;
 };
 
-export async function updatePatient(
-  _id: string,
+const PatientFormSchema = z.object({
+  full_name: z
+    .string()
+    .trim()
+    .min(2, 'Enter the patient’s full name.')
+    .max(160),
+  email: z.union([
+    z.string().trim().email('Enter a valid email address.').max(254),
+    z.literal(''),
+  ]),
+  phone: z.string().trim().max(40),
+  date_of_birth: z.union([
+    z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Enter a valid date.'),
+    z.literal(''),
+  ]),
+});
+
+function parsePatientForm(formData: FormData) {
+  return PatientFormSchema.safeParse({
+    full_name: formData.get('full_name') ?? '',
+    email: formData.get('email') ?? '',
+    phone: formData.get('phone') ?? '',
+    date_of_birth: formData.get('date_of_birth') ?? '',
+  });
+}
+
+export async function createPatient(
   _prevState: PatientState,
-  _formData: FormData,
+  formData: FormData,
 ): Promise<PatientState> {
+  const { supabase } = await requireClinicStaff();
+
+  const parsed = parsePatientForm(formData);
+  if (!parsed.success) {
+    return {
+      errors: parsed.error.flatten().fieldErrors,
+      message: 'Missing or invalid fields. Patient was not added.',
+    };
+  }
+
+  const { full_name, email, phone, date_of_birth } = parsed.data;
+
+  // user_id is intentionally omitted: the database fills it with the clinic
+  // owner's id, which is what the row-level security policy checks.
+  const { error } = await supabase.from('patients').insert({
+    full_name,
+    email: email || null,
+    phone: phone || null,
+    date_of_birth: date_of_birth || null,
+  });
+
+  if (error) {
+    console.error('Create patient error:', error);
+    return {
+      message:
+        error.code === '42501'
+          ? 'Your account is not allowed to add patients.'
+          : 'Database error: failed to add the patient.',
+    };
+  }
+
+  revalidatePath('/medi-clinic/patients');
   redirect('/medi-clinic/patients');
 }
 
-export async function deletePatient(_id: string) {
+export async function updatePatient(
+  id: string,
+  _prevState: PatientState,
+  formData: FormData,
+): Promise<PatientState> {
+  const { supabase } = await requireClinicStaff();
+
+  const parsed = parsePatientForm(formData);
+  if (!parsed.success) {
+    return {
+      errors: parsed.error.flatten().fieldErrors,
+      message: 'Missing or invalid fields. Patient was not updated.',
+    };
+  }
+
+  const { full_name, email, phone, date_of_birth } = parsed.data;
+
+  const { data, error } = await supabase
+    .from('patients')
+    .update({
+      full_name,
+      email: email || null,
+      phone: phone || null,
+      date_of_birth: date_of_birth || null,
+    })
+    .eq('id', id)
+    .select('id')
+    .maybeSingle();
+
+  if (error) {
+    console.error('Update patient error:', error);
+    return { message: 'Database error: failed to update the patient.' };
+  }
+  // An update blocked by row-level security returns no error and no row.
+  if (!data) {
+    return {
+      message: 'Patient not found, or you do not have permission to edit it.',
+    };
+  }
+
+  revalidatePath('/medi-clinic/patients');
   redirect('/medi-clinic/patients');
 }
+
+// DELETE is revoked on patients in the database (records are archived, not
+// erased), so this archives. Patient lists should filter `archived_at is null`.
+export async function deletePatient(id: string) {
+  const { supabase } = await requireClinicStaff();
+
+  const { error } = await supabase
+    .from('patients')
+    .update({ archived_at: new Date().toISOString() })
+    .eq('id', id);
+
+  if (error) {
+    console.error('Archive patient error:', error);
+    throw new Error('Failed to archive the patient.');
+  }
+
+  revalidatePath('/medi-clinic/patients');
+  redirect('/medi-clinic/patients');
+}
+
+// ---------------------------------------------------------------------
+// Auth
+// ---------------------------------------------------------------------
 
 export async function authenticate(
   _prevState: string | undefined,
