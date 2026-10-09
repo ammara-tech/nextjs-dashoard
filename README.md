@@ -124,6 +124,33 @@ Verify roles by signing in as the configured owner, front-desk, doctor, patient,
 
 To seed test data, run the seed insert in [`supabase/patients.sql`](./supabase/patients.sql) in the Supabase SQL Editor. It inserts 30 sample patients owned by the configured test-user UID. Change that UUID if the test user changes and run the seed only once.
 
+## Entry pages and patient portal features
+
+- `/` landing page, `/clinic-login` (sign in), `/clinic-register` (Create user), `/clinic-hub` and `/nextjs-hub` (choose which dashboard to open). The Family Clinic pages use the navy/blue logo palette.
+- The patient portal at `/medi-clinic/portal` is organised into tabs with dashboard-style stat cards:
+  - **Online booking:** patients book from active provider shifts and appointment types.
+  - **Card wallet:** patients save several payment cards (stored as masked details only: brand, last four digits, expiry, holder) and pick a default for clinic credit. Real card numbers and CVV are never stored, and no online gateway is connected.
+  - **Family Care plans:** the clinic's own medical aid promotion with perks, plan comparison and enrolment, alongside the provider-based medical aid panel.
+  - **Documents:** patients upload PDF, JPEG or PNG files (max 10 MB) in the identity, clinical history or invoices categories to the private `patients-medical-records` bucket, and open them through short-lived signed links.
+- The admin dashboard loads each panel independently; if one query fails (for example because of an RLS or clock-skew problem) an amber banner explains it instead of crashing the page.
+
+### Supabase SQL run order
+
+Run these in the Supabase SQL Editor, in order, after the base schema files above:
+
+1. `supabase/clinic-platform.sql`
+2. `supabase/clinic-medical-aid.sql`
+3. `supabase/fix-patients-rls-recursion.sql` (fixes "infinite recursion detected in policy for relation patients")
+4. `supabase/clinic-patient-booking-seed.sql` (assumes the owner account has `clinic_role = 'owner'`)
+5. `supabase/clinic-saved-cards.sql`
+6. `supabase/clinic-patient-documents-upload.sql`
+
+### Known issues
+
+- "JWT issued at future" errors come from clock skew between the machine and Supabase; sync the system clock.
+- `/medi-clinic/treatments` is owner-only and may fail for admin accounts.
+- If Create user fails, check the Supabase signup trigger and the exact error shown.
+
 ## Useful commands
 
 ```bash
@@ -153,6 +180,11 @@ supabase/patients.sql     Patient table for the Family Clinic dashboard
 supabase/medi-clinic.sql  Appointment/treatment schema and role-based RLS
 supabase/clinic-scheduling.sql  Providers, shifts, appointment types, booking rules
 supabase/clinic-platform.sql    Portal, private records, clinical, payment and pharmacy foundations
+supabase/clinic-medical-aid.sql Medical aid and Family Care plans
+supabase/fix-patients-rls-recursion.sql  Fixes recursive patients RLS policy
+supabase/clinic-patient-booking-seed.sql Booking seed data
+supabase/clinic-saved-cards.sql Saved card wallet
+supabase/clinic-patient-documents-upload.sql Patient document upload policies
 ```
 
 ## Important notes

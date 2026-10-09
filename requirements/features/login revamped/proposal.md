@@ -53,6 +53,12 @@ Deliver changes incrementally so that working patient intake, scheduling, and fr
 
 ---
 
+## ✅ Implementation Status (latest update)
+
+- Login flow built: landing page, `/clinic-hub` and `/nextjs-hub` selection pages, `/clinic-login` with a Create user link to `/clinic-register`, all in the navy/blue logo palette.
+- The patient portal now has tabs, online booking, a saved card wallet (masked details only), Family Care plans and patient document upload.
+- Pending: live payment tokenization (section 4 remains a design), production role testing.
+
 ## 🏥 2. Feature Specification: Integrated Medical Aid & Co-Payment Processing
 
 ### Feature Overview

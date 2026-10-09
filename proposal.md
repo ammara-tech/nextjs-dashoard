@@ -15,6 +15,11 @@ data using the existing PostgreSQL connection.
 The Family Clinic Dashboard is a separate experience at `/medi-clinic`, with
 its own proposal in [`family-clinic/proposal.md`](./family-clinic/proposal.md).
 
+Clinic features now delivered there include patient portal tabs, online
+booking, a saved card wallet, Family Care medical aid plans and patient
+document upload. The billing dashboard itself is unchanged, and the "Not
+included" list in section 4 applies to the billing dashboard only.
+
 ## 2. Problem and opportunity
 
 Teams need a convenient way to review invoices, customers, and revenue. The

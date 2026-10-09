@@ -182,6 +182,10 @@ To maintain total compliance with medical regulatory statutes, data mutation is 
 
 ---
 
+## 5a. Implementation Status (latest update)
+
+Implemented in the app: patient portal tabs, online appointment booking, saved card wallet (masked details only, no gateway), Family Care medical aid plans, patient document upload (PDF/JPEG/PNG, max 10 MB, private bucket, per-patient folders), resilient admin dashboard, and the `patients` RLS recursion fix. SQL files to run in order: `clinic-platform.sql`, `clinic-medical-aid.sql`, `fix-patients-rls-recursion.sql`, `clinic-patient-booking-seed.sql`, `clinic-saved-cards.sql`, `clinic-patient-documents-upload.sql`. Not yet implemented: payment gateway, wallet top-up, notifications.
+
 ## 6. Patient Enquiries & Support Nodes
 To facilitate omni-channel operational guidance, patients can easily verify parameters or escalate concerns across three specific channels:
 - **Telephonic Helpline**: Direct access line routed straight to clinic administrative desks.

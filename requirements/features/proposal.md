@@ -48,6 +48,13 @@ Deliver changes incrementally so that working patient intake, scheduling, and fr
 
 ---
 
+## ✅ Implementation Status (latest update)
+
+- Medical aid and Family Care plans (with promotional perks), online booking, saved card wallet (masked details only), and patient document upload are built into the portal at `/medi-clinic/portal`, organised into tabs.
+- Entry flow: landing, `/clinic-login`, `/clinic-register` (Create user), `/clinic-hub`, `/nextjs-hub`.
+- SQL run order: `clinic-platform.sql`, `clinic-medical-aid.sql`, `fix-patients-rls-recursion.sql`, `clinic-patient-booking-seed.sql`, `clinic-saved-cards.sql`, `clinic-patient-documents-upload.sql`.
+- Pending: live payment gateway/tokenization, wallet top-up, role-by-role testing in production.
+
 ## 🏥 2. Feature Specification: Integrated Medical Aid & Co-Payment Processing
 
 ### Feature Overview

@@ -277,6 +277,20 @@ require verified contact details, patient communication preferences, delivery
 logging, retry behavior, and a clear process for failed delivery. Do not
 include unnecessary sensitive clinical details in email or SMS.
 
+## 10a. Implementation status (latest update)
+
+Built and type-checked (`npx tsc --noEmit` clean); SQL migrations must still be run in Supabase and the flows tested per role:
+
+- **Entry flow:** landing page, `/clinic-login`, `/clinic-register` (Create user), `/clinic-hub`, `/nextjs-hub`, in the navy/blue logo palette.
+- **Patient portal tabs** with dashboard-style stat cards.
+- **Online booking** from active provider shifts (`clinic-patient-booking-seed.sql`).
+- **Saved card wallet:** masked card details only (brand, last four, expiry, holder), default card selection; no real PAN/CVV storage and no payment gateway yet (`clinic-saved-cards.sql`).
+- **Family Care plans:** the clinic's own medical aid with promoted perks (`clinic-medical-aid.sql`).
+- **Patient document upload:** PDF/JPEG/PNG up to 10 MB into the private `patients-medical-records` bucket under `pt_<patientId>/<category>/<uuid>`; categories identity, clinical_history, invoices (`clinic-patient-documents-upload.sql`).
+- **Resilient admin dashboard** with an amber banner for partial load failures; RLS recursion on `patients` fixed (`fix-patients-rls-recursion.sql`).
+
+Still open: payment gateway, wallet top-up/refund, treatments page for admin role, notifications.
+
 ## 11. Phased delivery plan
 
 | Phase | Deliverable | Completion gate |
