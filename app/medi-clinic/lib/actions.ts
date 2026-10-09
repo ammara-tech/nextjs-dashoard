@@ -182,6 +182,29 @@ export async function updateClinicPatient(id: string, formData: FormData) {
   revalidateClinicPages();
 }
 
+export async function createClinicPatient(formData: FormData) {
+  const { supabase } = await requireClinicStaff();
+  const patient = PatientSchema.parse({
+    full_name: formString(formData, 'full_name'),
+    phone: formString(formData, 'phone'),
+    date_of_birth: formString(formData, 'date_of_birth'),
+    email: formString(formData, 'email'),
+  });
+  // user_id is left out on purpose: the database fills in the clinic owner's id.
+  const { error } = await supabase.from('patients').insert({
+    full_name: patient.full_name,
+    phone: patient.phone || null,
+    date_of_birth: patient.date_of_birth || null,
+    email: patient.email || null,
+  });
+
+  if (error) {
+    console.error('Supabase patient create error:', error);
+    throw new Error(`Unable to add patient (${error.code}).`);
+  }
+  revalidateClinicPages();
+}
+
 export async function archiveClinicPatient(id: string) {
   const { supabase } = await requireClinicRole(['owner', 'admin']);
   const { data, error } = await supabase
