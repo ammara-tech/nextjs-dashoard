@@ -19,10 +19,16 @@ export default function ClinicHubPage() {
         <ClinicLogo />
         <div className="flex items-center gap-3">
           <Link
-            href="/clinic-register"
+            href="/clinic-login?callbackUrl=%2Fmedi-clinic"
             className="flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
           >
-            Create user <ArrowRightIcon className="w-4" />
+            Sign in <ArrowRightIcon className="w-4" />
+          </Link>
+          <Link
+            href="/clinic-register"
+            className="flex items-center gap-2 rounded-lg bg-[#1E2F66] px-4 py-2 text-sm font-medium text-white hover:bg-[#2b4190]"
+          >
+            Create user
           </Link>
         </div>
       </header>

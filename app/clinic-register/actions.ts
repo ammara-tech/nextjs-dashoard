@@ -46,8 +46,7 @@ export async function registerPatient(
   if (error) {
     console.error('Supabase patient registration error:', error);
     return {
-      message:
-        'Unable to create the patient account. Please try again or contact clinic reception.',
+      message: `Unable to create the patient account: ${error.message}`,
     };
   }
 
