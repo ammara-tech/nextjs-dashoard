@@ -83,6 +83,13 @@ export default async function ClinicDebugPage() {
         ),
       });
 
+      const now = new Date();
+      const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1).toISOString();
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1).toISOString();
+      const tomorrowStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString();
+      const dayAfterStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2).toISOString();
+
       let patientId: string | null = null;
       const patientRow = await check('patients: my own record', async () => {
         const result = await supabase
@@ -109,6 +116,36 @@ export default async function ClinicDebugPage() {
               'id, starts_at, status, duration_minutes, clinic_providers(display_name), clinic_appointment_types(name)',
             )
             .limit(25),
+        ),
+        await check('Overview: new patients chart', () =>
+          supabase
+            .from('patients')
+            .select('created_at')
+            .gte('created_at', sixMonthsAgo)
+            .lt('created_at', nextMonth),
+        ),
+        await check('Overview: appointment outcomes chart', () =>
+          supabase
+            .from('appointments')
+            .select('status, patients!inner(id)')
+            .gte('starts_at', monthStart)
+            .lt('starts_at', nextMonth),
+        ),
+        await check("Overview: tomorrow's appointments", () =>
+          supabase
+            .from('appointments')
+            .select(
+              'id, patient_id, provider_id, appointment_type_id, duration_minutes, starts_at, status, patients!inner(full_name, phone), clinic_providers(display_name, specialty), clinic_appointment_types(name, category)',
+            )
+            .eq('status', 'booked')
+            .gte('starts_at', tomorrowStart)
+            .lt('starts_at', dayAfterStart),
+        ),
+        await check('Patients page: patient list', () =>
+          supabase
+            .from('patients')
+            .select('id, full_name, phone, date_of_birth, email, patient_number, auth_user_id, created_at')
+            .is('archived_at', null),
         ),
       );
 
