@@ -1,124 +1,176 @@
-'use client';
+import {
+  archiveClinicPatient,
+  linkClinicPatientAccount,
+  updateClinicPatient,
+} from '../lib/actions';
+import { getClinicAccess } from '../lib/access';
+import { fetchPatients } from '../lib/data';
 
-import { useActionState } from 'react';
-import type { PatientState } from '@/app/lib/actions';
+const labelClass = 'block text-xs font-medium text-[#404960]';
+const fieldClass = 'mt-1 block w-full rounded-lg border-[#e3e5eb] text-sm';
 
-type PatientValues = {
-  full_name?: string | null;
-  phone?: string | null;
-  date_of_birth?: string | null;
-  email?: string | null;
-};
+export default async function ClinicPatientsPage() {
+  const [patients, { isOwner, canManageAppointments, role }] = await Promise.all([
+    fetchPatients(),
+    getClinicAccess(),
+  ]);
 
-const inputClass =
-  'mt-1 block w-full rounded-xl border border-[#e3e5eb] bg-white px-3 py-2.5 text-sm text-[#20263b] placeholder:text-[#9298a8] focus:border-[#647cf5] focus:outline-none focus:ring-2 focus:ring-[#647cf5]/20';
-
-const labelClass = 'block text-sm font-medium text-[#404960]';
-
-function FieldError({ messages }: { messages?: string[] }) {
-  if (!messages?.length) return null;
   return (
-    <p className="mt-1 text-xs text-red-600" role="alert">
-      {messages[0]}
-    </p>
+    <div className="space-y-6">
+      <PageHeading
+        description={
+          role === 'doctor'
+            ? 'Patients linked to your provider schedule.'
+            : 'Keep patient contact details up to date.'
+        }
+        title={role === 'doctor' ? 'My patients' : 'Patients'}
+      />
+
+      <section className="overflow-hidden rounded-2xl border border-[#e9eaf0] bg-white shadow-[0_8px_30px_rgba(31,41,55,0.04)]">
+        <div className="border-b border-[#eff0f4] px-5 py-4">
+          <h2 className="font-semibold">Patient records</h2>
+        </div>
+        {patients.length === 0 ? (
+          <p className="p-6 text-sm text-[#7b8296]">No patients have been added.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-left text-sm">
+              <thead className="bg-[#fafbfe] text-xs uppercase tracking-wide text-[#8b91a3]">
+                <tr>
+                  <th className="px-5 py-3 font-medium">Patient</th>
+                  <th className="px-5 py-3 font-medium">Phone</th>
+                  <th className="px-5 py-3 font-medium">Date of birth</th>
+                  <th className="px-5 py-3 font-medium">Patient number</th>
+                  {canManageAppointments && (
+                    <th className="px-5 py-3 font-medium">Actions</th>
+                  )}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#eff0f4]">
+                {patients.map((patient) => (
+                  <tr key={patient.id}>
+                    <td className="px-5 py-4 font-medium">{patient.full_name}</td>
+                    <td className="px-5 py-4 text-[#727a90]">
+                      {patient.phone || '—'}
+                    </td>
+                    <td className="px-5 py-4 text-[#727a90]">
+                      {patient.date_of_birth || '—'}
+                    </td>
+                    <td className="px-5 py-4 text-[#727a90]">
+                      {patient.patient_number || '—'}
+                    </td>
+                    {canManageAppointments && (
+                      <td className="min-w-72 px-5 py-3">
+                        <details>
+                          <summary className="cursor-pointer font-medium text-[#6077ed]">
+                            Edit
+                          </summary>
+                          <form
+                            action={updateClinicPatient.bind(null, patient.id)}
+                            className="mt-3 grid gap-3"
+                          >
+                            <label className={labelClass}>
+                              Full name
+                              <input
+                                className={fieldClass}
+                                defaultValue={patient.full_name}
+                                name="full_name"
+                                placeholder="e.g. Jane Smith"
+                                required
+                              />
+                            </label>
+                            <label className={labelClass}>
+                              Phone number
+                              <input
+                                className={fieldClass}
+                                defaultValue={patient.phone ?? ''}
+                                name="phone"
+                                placeholder="e.g. 082 123 4567"
+                                type="tel"
+                              />
+                            </label>
+                            <label className={labelClass}>
+                              Date of birth
+                              <input
+                                className={fieldClass}
+                                defaultValue={patient.date_of_birth ?? ''}
+                                name="date_of_birth"
+                                type="date"
+                              />
+                            </label>
+                            <label className={labelClass}>
+                              Email address
+                              <input
+                                className={fieldClass}
+                                defaultValue={patient.email ?? ''}
+                                name="email"
+                                placeholder="e.g. jane@example.com"
+                                type="email"
+                              />
+                            </label>
+                            <button className="rounded-lg bg-[#647cf5] px-3 py-2 text-sm font-semibold text-white">
+                              Save changes
+                            </button>
+                          </form>
+                          {(isOwner || role === 'admin') && (
+                            <form
+                              action={archiveClinicPatient.bind(null, patient.id)}
+                              className="mt-3 border-t border-[#eff0f4] pt-3"
+                            >
+                              <p className="mb-2 text-xs text-[#727a90]">
+                                Archiving removes this patient from active records
+                                while preserving their clinical history.
+                              </p>
+                              <button className="text-sm font-semibold text-red-600">
+                                Archive patient
+                              </button>
+                            </form>
+                          )}
+                        </details>
+                        {isOwner && (
+                          <form
+                            action={linkClinicPatientAccount.bind(null, patient.id)}
+                            className="mt-3 grid gap-2"
+                          >
+                            <label className="text-xs text-[#727a90]">
+                              Linked Supabase Auth user UUID
+                              <input
+                                className="mt-1 w-full rounded-lg border-[#e3e5eb] text-xs"
+                                defaultValue={patient.auth_user_id ?? ''}
+                                name="auth_user_id"
+                                placeholder="UUID from the verified patient account"
+                                required
+                              />
+                            </label>
+                            <button className="text-left text-sm font-medium text-[#6077ed]">
+                              Link patient portal account
+                            </button>
+                          </form>
+                        )}
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+    </div>
   );
 }
 
-export default function PatientForm({
-  action,
-  patient,
-  submitLabel,
+function PageHeading({
+  description,
+  title,
 }: {
-  // createPatient, or updatePatient.bind(null, patientId)
-  action: (state: PatientState, formData: FormData) => Promise<PatientState>;
-  patient?: PatientValues;
-  submitLabel: string;
+  description: string;
+  title: string;
 }) {
-  const [state, formAction, pending] = useActionState<PatientState, FormData>(
-    action,
-    {},
-  );
-
   return (
-    <form action={formAction} className="space-y-3">
-      <div>
-        <label className={labelClass} htmlFor="full_name">
-          Full name
-        </label>
-        <input
-          autoComplete="off"
-          className={inputClass}
-          defaultValue={patient?.full_name ?? ''}
-          id="full_name"
-          maxLength={160}
-          name="full_name"
-          placeholder="e.g. Jane Smith"
-          required
-        />
-        <FieldError messages={state.errors?.full_name} />
-      </div>
-
-      <div>
-        <label className={labelClass} htmlFor="phone">
-          Phone number
-        </label>
-        <input
-          autoComplete="off"
-          className={inputClass}
-          defaultValue={patient?.phone ?? ''}
-          id="phone"
-          maxLength={40}
-          name="phone"
-          placeholder="e.g. 082 123 4567"
-          type="tel"
-        />
-        <FieldError messages={state.errors?.phone} />
-      </div>
-
-      <div>
-        <label className={labelClass} htmlFor="date_of_birth">
-          Date of birth
-        </label>
-        <input
-          className={inputClass}
-          defaultValue={patient?.date_of_birth ?? ''}
-          id="date_of_birth"
-          name="date_of_birth"
-          type="date"
-        />
-        <FieldError messages={state.errors?.date_of_birth} />
-      </div>
-
-      <div>
-        <label className={labelClass} htmlFor="email">
-          Email address
-        </label>
-        <input
-          autoComplete="off"
-          className={inputClass}
-          defaultValue={patient?.email ?? ''}
-          id="email"
-          maxLength={254}
-          name="email"
-          placeholder="e.g. jane@example.com"
-          type="email"
-        />
-        <FieldError messages={state.errors?.email} />
-      </div>
-
-      <button
-        className="w-full rounded-xl bg-[#647cf5] px-4 py-3 text-sm font-semibold text-white hover:bg-[#526be8] disabled:opacity-60"
-        disabled={pending}
-        type="submit"
-      >
-        {pending ? 'Saving…' : submitLabel}
-      </button>
-
-      {state.message && (
-        <p aria-live="polite" className="text-sm text-red-600" role="alert">
-          {state.message}
-        </p>
-      )}
-    </form>
+    <div>
+      <p className="text-sm text-[#74809a]">{description}</p>
+      <h1 className="mt-1 text-3xl font-bold tracking-tight">{title}</h1>
+    </div>
   );
 }
