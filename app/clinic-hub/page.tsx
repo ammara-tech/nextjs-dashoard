@@ -19,12 +19,6 @@ export default function ClinicHubPage() {
         <ClinicLogo />
         <div className="flex items-center gap-3">
           <Link
-            href="/login"
-            className="hidden rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50 sm:block"
-          >
-            Next.js dashboard
-          </Link>
-          <Link
             href="/clinic-login?callbackUrl=%2Fmedi-clinic"
             className="flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
           >
@@ -55,12 +49,6 @@ export default function ClinicHubPage() {
               className="flex items-center gap-2 rounded-lg bg-[#1E2F66] px-6 py-3 font-medium text-white transition hover:bg-[#2b4190]"
             >
               Sign in to continue <ArrowRightIcon className="w-5" />
-            </Link>
-            <Link
-              href="/login"
-              className="flex items-center gap-2 rounded-lg border border-slate-300 px-6 py-3 font-medium text-slate-800 transition hover:bg-slate-50"
-            >
-              Next.js dashboard <ArrowRightIcon className="w-5" />
             </Link>
           </div>
           <p className="text-sm text-slate-500">
@@ -195,7 +183,6 @@ export default function ClinicHubPage() {
           <div className="flex gap-4">
             <Link href="/clinic-login?callbackUrl=%2Fmedi-clinic" className="hover:text-slate-900">Sign in</Link>
             <Link href="/clinic-register" className="hover:text-slate-900">Register</Link>
-            <Link href="/login" className="hover:text-slate-900">Next.js dashboard</Link>
           </div>
         </div>
       </footer>
