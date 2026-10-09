@@ -4,7 +4,7 @@ import {
   createClinicProviderBlock,
   createClinicProviderShift,
 } from '../lib/actions';
-import { requireClinicOwner } from '../lib/access';
+import { requireClinicRole } from '../lib/access';
 import {
   fetchClinicAppointmentTypes,
   fetchClinicProviders,
@@ -15,7 +15,7 @@ import {
 const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 export default async function ClinicProvidersPage() {
-  await requireClinicOwner();
+  await requireClinicRole(['owner', 'admin']);
   const [providers, appointmentTypes, shifts, blocks] = await Promise.all([
     fetchClinicProviders(),
     fetchClinicAppointmentTypes(),
