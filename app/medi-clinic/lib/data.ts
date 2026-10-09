@@ -99,11 +99,11 @@ export async function fetchClinicDashboard() {
 
   if (patientResult.error) {
     console.error('Supabase patient chart error:', patientResult.error);
-    throw new Error('Unable to load monthly patient counts.');
+    throw new Error(`Unable to load monthly patient counts: ${patientResult.error.message}`);
   }
   if (appointmentResult.error) {
     console.error('Supabase appointment chart error:', appointmentResult.error);
-    throw new Error('Unable to load this month’s appointment statuses.');
+    throw new Error(`Unable to load this month’s appointment statuses: ${appointmentResult.error.message}`);
   }
 
   const monthlyCounts = new Map<string, number>();
@@ -209,7 +209,7 @@ export async function fetchTomorrowAppointments(): Promise<Appointment[]> {
 
   if (error) {
     console.error('Supabase tomorrow appointment error:', error);
-    throw new Error('Unable to load tomorrow’s appointments.');
+    throw new Error(`Unable to load tomorrow’s appointments: ${error.message}`);
   }
   return data as unknown as Appointment[];
 }

@@ -51,6 +51,15 @@ export default async function MediClinicPage() {
           Some clinic data could not be loaded for this account yet. If you just
           signed in as an administrator, make sure the clinic owner link and
           database access policies have been configured.
+          {[dashboardResult, tomorrowAppointmentsResult].map((result, index) =>
+            result.status === 'rejected' ? (
+              <span className="mt-1 block font-mono text-xs" key={index}>
+                {result.reason instanceof Error
+                  ? result.reason.message
+                  : String(result.reason)}
+              </span>
+            ) : null,
+          )}
         </section>
       ) : null}
 
