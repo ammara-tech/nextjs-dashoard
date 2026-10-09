@@ -35,6 +35,23 @@ export default async function PatientPortalPage() {
     fetchClinicProviders(),
     fetchClinicAppointmentTypes(),
   ]);
+  // Missing migration must not take down the portal; the panel shows a notice.
+  const [aidProvidersResult, aidProfileResult] = await Promise.all([
+    supabase.from('medical_aid_providers').select('id, name, plans').order('name'),
+    supabase
+      .from('patient_insurance_profiles')
+      .select('provider_id, plan, member_id_last4, dependent_label, status, card_object_path')
+      .eq('patient_id', patient.id)
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  ]);
+  if (aidProvidersResult.error) {
+    console.error('Medical aid providers error:', aidProvidersResult.error);
+  }
+  if (aidProfileResult.error) {
+    console.error('Medical aid profile error:', aidProfileResult.error);
+  }
   const [
     appointmentsResult,
     documentsResult,
@@ -120,7 +137,11 @@ export default async function PatientPortalPage() {
         <InfoCard label="Date of birth" value={patient.date_of_birth ?? 'Not on file'} />
       </section>
 
-      <MedicalAidPanel patientName={patient.full_name} />
+      <MedicalAidPanel
+        patientName={patient.full_name}
+        providers={aidProvidersResult.data ?? []}
+        profile={aidProfileResult.data ?? null}
+      />
 
       <section className="rounded-2xl border border-[#e9eaf0] bg-white p-5">
         <h2 className="text-lg font-semibold">Book an appointment</h2>
