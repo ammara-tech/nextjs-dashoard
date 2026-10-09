@@ -10,10 +10,24 @@ import { getClinicAccess } from './lib/access';
 export default async function MediClinicPage() {
   const { role } = await getClinicAccess();
   if (role === 'patient') redirect('/medi-clinic/portal');
-  const [dashboard, tomorrowAppointments] = await Promise.all([
+  const [dashboardResult, tomorrowAppointmentsResult] = await Promise.allSettled([
     fetchClinicDashboard(),
     fetchTomorrowAppointments(),
   ]);
+  const dashboard =
+    dashboardResult.status === 'fulfilled'
+      ? dashboardResult.value
+      : {
+          monthlyPatients: [],
+          appointmentStatuses: [],
+        };
+  const tomorrowAppointments =
+    tomorrowAppointmentsResult.status === 'fulfilled'
+      ? tomorrowAppointmentsResult.value
+      : [];
+  const dashboardLoadFailed =
+    dashboardResult.status === 'rejected' ||
+    tomorrowAppointmentsResult.status === 'rejected';
   const newPatients = dashboard.monthlyPatients.reduce(
     (sum, month) => sum + month.count,
     0,
@@ -32,6 +46,14 @@ export default async function MediClinicPage() {
 
   return (
     <div className="space-y-8">
+      {dashboardLoadFailed ? (
+        <section className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          Some clinic data could not be loaded for this account yet. If you just
+          signed in as an administrator, make sure the clinic owner link and
+          database access policies have been configured.
+        </section>
+      ) : null}
+
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-[#74809a]">
