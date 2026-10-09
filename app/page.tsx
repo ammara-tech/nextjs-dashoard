@@ -18,7 +18,7 @@ export default function Page() {
             and clinic staff.
           </p>
           <Link
-            href="/medi-clinic"
+            href="/clinic-hub"
             className="mx-auto flex items-center gap-3 rounded-xl bg-[#5B7FFF] px-6 py-3 font-medium text-white transition-colors hover:bg-[#4a6be6]"
           >
             Open the Family Clinic dashboard
