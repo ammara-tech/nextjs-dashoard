@@ -1,39 +1,109 @@
 import Link from 'next/link';
-import { ArrowRightIcon } from '@heroicons/react/24/outline';
-import ClinicLogo from '@/app/ui/clinic-logo';
+import {
+  ArrowRightIcon,
+  ShieldCheckIcon,
+  UserGroupIcon,
+} from '@heroicons/react/24/outline';
+import ClinicLogo, { ClinicMark } from '@/app/ui/clinic-logo';
+import { lusitana } from '@/app/ui/fonts';
 
 export default function ClinicHubPage() {
   return (
-    <main className="flex min-h-screen flex-col bg-[#F8FAFC]">
-      <header className="bg-[#0F172A] p-5">
-        <ClinicLogo light />
+    <main className="min-h-screen bg-white">
+      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
+        <ClinicLogo />
+        <div className="flex items-center gap-3">
+          <Link
+            href="/login"
+            className="hidden rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50 sm:block"
+          >
+            Next.js dashboard
+          </Link>
+          <Link
+            href="/clinic-login?callbackUrl=%2Fmedi-clinic"
+            className="flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
+          >
+            Sign in <ArrowRightIcon className="w-4" />
+          </Link>
+        </div>
       </header>
-      <section className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center gap-6 px-6 py-16">
-        <span className="w-fit rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
-          Family Clinic
-        </span>
-        <h1 className="text-4xl font-bold text-[#0F172A]">
-          One sign-in. The right workspace.
-        </h1>
-        <p className="text-slate-600">
-          Patients, doctors, front desk, pharmacy and administrators all sign
-          in here and land in the workspace built for their role.
-        </p>
-        <Link
-          href="/clinic-login?callbackUrl=%2Fmedi-clinic"
-          className="flex w-fit items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 font-medium text-white transition hover:bg-emerald-500"
-        >
-          Sign in to continue <ArrowRightIcon className="w-5" />
-        </Link>
-        <Link
-          href="/login?callbackUrl=%2Fdashboard"
-          className="flex w-fit items-center gap-2 rounded-lg border border-slate-300 bg-white px-6 py-3 font-medium text-slate-800 transition hover:bg-slate-100"
-        >
-          Sign in to the Next.js dashboard <ArrowRightIcon className="w-5" />
-        </Link>
-        <Link href="/clinic-register" className="text-sm text-emerald-700 hover:underline">
-          New patient? Create an account
-        </Link>
+
+      <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-12 md:grid-cols-2">
+        <div className="flex flex-col items-start gap-6">
+          <span className="flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
+            <ShieldCheckIcon className="w-4" /> A dedicated workspace for every
+            role
+          </span>
+          <h1
+            className={`${lusitana.className} text-5xl font-bold leading-tight text-slate-900 md:text-6xl`}
+          >
+            Welcome to your
+            <span className="block text-teal-700">Family Clinic portal.</span>
+          </h1>
+          <p className="max-w-md text-lg text-slate-600">
+            Sign in to continue to the workspace assigned to your account.
+            Access is based on your clinic role.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/clinic-login?callbackUrl=%2Fmedi-clinic"
+              className="flex items-center gap-2 rounded-lg bg-teal-700 px-6 py-3 font-medium text-white transition hover:bg-teal-600"
+            >
+              Sign in to continue <ArrowRightIcon className="w-5" />
+            </Link>
+            <Link
+              href="/login"
+              className="flex items-center gap-2 rounded-lg border border-slate-300 px-6 py-3 font-medium text-slate-800 transition hover:bg-slate-50"
+            >
+              Next.js dashboard <ArrowRightIcon className="w-5" />
+            </Link>
+          </div>
+          <p className="text-sm text-slate-500">
+            Use the account credentials provided by your clinic.{' '}
+            <Link href="/clinic-register" className="text-teal-700 underline">
+              New patient? Create an account
+            </Link>
+          </p>
+        </div>
+
+        <div className="rounded-[2rem] bg-gradient-to-br from-teal-100 to-sky-100 p-5">
+          <div className="rounded-3xl bg-white p-8 shadow-xl">
+            <ClinicMark className="h-14 w-14" />
+            <h2
+              className={`${lusitana.className} mt-8 text-2xl font-bold text-slate-900`}
+            >
+              One sign-in. The right workspace.
+            </h2>
+            <p className="mt-3 text-slate-600">
+              Your account role determines which areas of the clinic portal you
+              can access.
+            </p>
+            <div className="mt-6 space-y-3">
+              <div className="flex items-center gap-4 rounded-xl bg-slate-50 p-4">
+                <UserGroupIcon className="w-6 text-teal-700" />
+                <div>
+                  <p className="font-semibold text-slate-900">
+                    Role-based access
+                  </p>
+                  <p className="text-sm text-slate-500">
+                    Patient, clinical, pharmacy, and admin areas
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 rounded-xl bg-slate-50 p-4">
+                <ShieldCheckIcon className="w-6 text-teal-700" />
+                <div>
+                  <p className="font-semibold text-slate-900">
+                    Account-protected pages
+                  </p>
+                  <p className="text-sm text-slate-500">
+                    Sign in to access your permitted workspace
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
   );
