@@ -36,14 +36,14 @@ export default function ClinicLogo({
       <ClinicMark />
       <span className="leading-tight">
         <span
-          className={`block text-lg font-bold tracking-wide ${light ? 'text-white' : 'text-[#0F172A]'}`}
+          className={`block text-xs uppercase tracking-wider ${light ? 'text-blue-200' : 'text-[#5B7FFF]'}`}
         >
-          FAMILY CLINIC
+          Health Care
         </span>
         <span
-          className={`block text-xs ${light ? 'text-blue-200' : 'text-[#5B7FFF]'}`}
+          className={`block text-xl font-bold ${light ? 'text-white' : 'text-[#1E2F66]'}`}
         >
-          Medical Care
+          Family Clinic
         </span>
       </span>
     </span>
