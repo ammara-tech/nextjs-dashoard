@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { signOut } from '@/app/lib/actions';
 import { getClinicAccess } from './lib/access';
 import ClinicNavigation from './ui/navigation';
+import ClinicLogo from '@/app/ui/clinic-logo';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,17 +19,7 @@ export default async function MediClinicLayout({
         <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-6 sm:px-8 lg:px-10">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <Link className="flex items-center gap-3" href="/medi-clinic">
-              <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#e8edff] text-lg font-bold text-[#6077ed]">
-                +
-              </span>
-              <span>
-                <span className="block text-lg font-bold tracking-tight">
-                  Family Clinic
-                </span>
-                <span className="block text-xs text-[#8b91a3]">
-                  Practice dashboard
-                </span>
-              </span>
+              <ClinicLogo />
             </Link>
             <div className="flex items-center gap-3">
               <span className="hidden text-right sm:block">

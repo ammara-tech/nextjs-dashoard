@@ -54,7 +54,10 @@ export async function getClinicAccess() {
     canManageAppointments:
       role === 'owner' || role === 'admin' || role === 'front_desk',
     canViewPatients:
-      role === 'owner' || role === 'front_desk' || role === 'doctor',
+      role === 'owner' ||
+      role === 'admin' ||
+      role === 'front_desk' ||
+      role === 'doctor',
   };
 }
 
