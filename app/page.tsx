@@ -8,8 +8,11 @@ export default function Page() {
       <div className="flex h-24 shrink-0 items-end rounded-2xl bg-[#0F172A] p-5 md:h-52">
         <ClinicLogo light />
       </div>
-      <div className="mt-4 flex grow items-center justify-center">
-        <div className="flex max-w-xl flex-col gap-6 rounded-2xl bg-white px-8 py-12 text-center shadow-sm">
+      <div className="mt-4 grid grow content-center gap-6 md:grid-cols-2 md:px-8">
+        <div className="flex flex-col gap-6 rounded-2xl bg-white px-8 py-10 text-center shadow-sm">
+          <span className="mx-auto rounded-full bg-[#EEF2FF] px-3 py-1 text-xs font-semibold text-[#1E2F66]">
+            Family Clinic
+          </span>
           <h1 className="text-3xl font-bold text-[#0F172A]">
             Care for the whole family, in one place.
           </h1>
@@ -19,9 +22,28 @@ export default function Page() {
           </p>
           <Link
             href="/clinic-hub"
-            className="mx-auto flex items-center gap-3 rounded-xl bg-[#5B7FFF] px-6 py-3 font-medium text-white transition-colors hover:bg-[#4a6be6]"
+            className="mx-auto mt-auto flex items-center gap-3 rounded-xl bg-[#5B7FFF] px-6 py-3 font-medium text-white transition-colors hover:bg-[#4a6be6]"
           >
             Open the Family Clinic dashboard
+            <ArrowRightIcon className="w-5" />
+          </Link>
+        </div>
+        <div className="flex flex-col gap-6 rounded-2xl bg-white px-8 py-10 text-center shadow-sm">
+          <span className="mx-auto rounded-full bg-[#EEF2FF] px-3 py-1 text-xs font-semibold text-[#1E2F66]">
+            Next.js
+          </span>
+          <h2 className="text-3xl font-bold text-[#0F172A]">
+            Next.js invoice dashboard
+          </h2>
+          <p className="text-[#475569]">
+            Manage customers, invoices and revenue in the original Next.js
+            dashboard.
+          </p>
+          <Link
+            href="/login"
+            className="mx-auto mt-auto flex items-center gap-3 rounded-xl border border-[#1E2F66] px-6 py-3 font-medium text-[#1E2F66] transition-colors hover:bg-[#EEF2FF]"
+          >
+            Open the Next.js dashboard
             <ArrowRightIcon className="w-5" />
           </Link>
         </div>
