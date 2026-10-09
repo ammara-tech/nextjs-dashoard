@@ -1,6 +1,11 @@
 import Link from 'next/link';
 import {
   ArrowRightIcon,
+  BeakerIcon,
+  CalendarDaysIcon,
+  ClipboardDocumentListIcon,
+  CreditCardIcon,
+  HeartIcon,
   ShieldCheckIcon,
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
@@ -105,6 +110,95 @@ export default function ClinicHubPage() {
           </div>
         </div>
       </section>
+
+      <section className="mx-auto max-w-6xl px-6">
+        <div className="grid grid-cols-2 gap-4 rounded-2xl bg-[#1E2F66] p-6 text-white md:grid-cols-4">
+          {[
+            ['7', 'Role workspaces'],
+            ['24/7', 'Patient portal access'],
+            ['Medical aid', 'Cover captured per patient'],
+            ['Encrypted', 'Member IDs & records'],
+          ].map(([value, label]) => (
+            <div key={label} className="text-center">
+              <p className="text-2xl font-bold">{value}</p>
+              <p className="text-sm text-[#C7D4FF]">{label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 py-16">
+        <h2
+          className={`${lusitana.className} text-3xl font-bold text-slate-900`}
+        >
+          A workspace for every role
+        </h2>
+        <p className="mt-2 max-w-xl text-slate-600">
+          Everyone on the care team sees only what they need.
+        </p>
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[
+            [CalendarDaysIcon, 'Patients', 'Book visits, view prescriptions and manage medical aid.'],
+            [HeartIcon, 'Doctors', 'Consultations, notes and prescriptions in one view.'],
+            [BeakerIcon, 'Pharmacy', 'Dispense prescribed medication and track stock.'],
+            [ClipboardDocumentListIcon, 'Front desk', 'Registration, scheduling and check-in.'],
+            [CreditCardIcon, 'Medical aid', 'Scheme details, dependants and cover status.'],
+            [ShieldCheckIcon, 'Admin', 'Clinic-wide reports, staff and access control.'],
+          ].map(([Icon, title, text]) => {
+            const I = Icon as typeof HeartIcon;
+            return (
+              <div
+                key={title as string}
+                className="rounded-2xl border border-slate-200 p-6 transition hover:border-[#5B7FFF] hover:shadow-md"
+              >
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#EEF2FF]">
+                  <I className="w-5 text-[#1E2F66]" />
+                </span>
+                <h3 className="mt-4 font-semibold text-slate-900">
+                  {title as string}
+                </h3>
+                <p className="mt-1 text-sm text-slate-600">{text as string}</p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="bg-[#F5F8FF] py-16">
+        <div className="mx-auto max-w-6xl px-6">
+          <h2
+            className={`${lusitana.className} text-center text-3xl font-bold text-slate-900`}
+          >
+            How it works
+          </h2>
+          <div className="mt-10 grid gap-6 md:grid-cols-3">
+            {[
+              ['1', 'Create your account', 'Register as a patient or use the login your clinic gave you.'],
+              ['2', 'Sign in securely', 'You are taken straight to the workspace for your role.'],
+              ['3', 'Get on with care', 'Book, prescribe, dispense and manage cover from one place.'],
+            ].map(([n, title, text]) => (
+              <div key={n} className="rounded-2xl bg-white p-6 shadow-sm">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#5B7FFF] font-bold text-white">
+                  {n}
+                </span>
+                <h3 className="mt-4 font-semibold text-slate-900">{title}</h3>
+                <p className="mt-1 text-sm text-slate-600">{text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <footer className="border-t border-slate-200 py-8">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-6 text-sm text-slate-500 sm:flex-row">
+          <ClinicLogo />
+          <div className="flex gap-4">
+            <Link href="/clinic-login?callbackUrl=%2Fmedi-clinic" className="hover:text-slate-900">Sign in</Link>
+            <Link href="/clinic-register" className="hover:text-slate-900">Register</Link>
+            <Link href="/login" className="hover:text-slate-900">Next.js dashboard</Link>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }
