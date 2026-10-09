@@ -24,7 +24,7 @@ email:admin@nextmail.com password:222222
 
 -patient1
 email:patient1@gmail.com
-password:18092007
+password:password
 
 -owner
 email:owner@nextmail.com
