@@ -10,6 +10,9 @@ import { getClinicAccess } from './lib/access';
 export default async function MediClinicPage() {
   const { role } = await getClinicAccess();
   if (role === 'patient') redirect('/medi-clinic/portal');
+  if (role === 'pharmacist' || role === 'stock_manager') {
+    redirect('/medi-clinic/pharmacy');
+  }
   const [dashboardResult, tomorrowAppointmentsResult] = await Promise.allSettled([
     fetchClinicDashboard(),
     fetchTomorrowAppointments(),
