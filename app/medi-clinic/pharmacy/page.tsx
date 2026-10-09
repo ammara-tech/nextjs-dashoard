@@ -3,6 +3,7 @@ import {
   createInventoryItem,
   dispenseClinicPrescription,
   receiveInventoryBatch,
+  setBatchAvailability,
 } from '../lib/actions';
 import { getClinicAccess, redirectToClinicSignIn } from '../lib/access';
 
@@ -24,7 +25,7 @@ export default async function PharmacyPage() {
       .order('name'),
     supabase
       .from('clinic_inventory_batches')
-      .select('id, item_id, batch_number, expires_on, quantity')
+      .select('id, item_id, batch_number, expires_on, quantity, available, unavailable_reason')
       .order('expires_on'),
     supabase
       .from('clinic_prescriptions')
@@ -127,6 +128,8 @@ export default async function PharmacyPage() {
                   <th className="px-3 py-2">Quantity</th>
                   <th className="px-3 py-2">Expiry</th>
                   <th className="px-3 py-2">Alert</th>
+                  <th className="px-3 py-2">Status</th>
+                  <th className="px-3 py-2">Availability</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#eff0f4]">
@@ -144,6 +147,41 @@ export default async function PharmacyPage() {
                       <td className="px-3 py-3">{batch.expires_on ?? '—'}</td>
                       <td className={`px-3 py-3 ${expired ? 'font-semibold text-red-600' : 'text-[#727a90]'}`}>
                         {expired ? 'Expired — review' : '—'}
+                      </td>
+                      <td className="px-3 py-3">
+                        {batch.available ? (
+                          <span className="rounded-full bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700">
+                            Available
+                          </span>
+                        ) : (
+                          <span className="rounded-full bg-red-50 px-2 py-1 text-xs font-semibold text-red-600">
+                            Unavailable
+                            {batch.unavailable_reason
+                              ? ` — ${batch.unavailable_reason}`
+                              : ''}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-3 py-3">
+                        <form action={setBatchAvailability} className="flex items-center gap-2">
+                          <input name="batch_id" type="hidden" value={batch.id} />
+                          <input
+                            name="available"
+                            type="hidden"
+                            value={batch.available ? 'false' : 'true'}
+                          />
+                          {batch.available && (
+                            <input
+                              className="w-40 rounded-lg border border-[#e9eaf0] px-2 py-1 text-xs"
+                              maxLength={200}
+                              name="reason"
+                              placeholder="Reason (optional)"
+                            />
+                          )}
+                          <button className="rounded-lg border border-[#1E4FD8] px-3 py-1 text-xs font-semibold text-[#1E4FD8] hover:bg-[#EEF2FF]">
+                            {batch.available ? 'Mark unavailable' : 'Mark available'}
+                          </button>
+                        </form>
                       </td>
                     </tr>
                   );

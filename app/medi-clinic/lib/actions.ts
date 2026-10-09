@@ -704,6 +704,33 @@ export async function receiveInventoryBatch(formData: FormData) {
   revalidatePath('/medi-clinic/pharmacy');
 }
 
+export async function setBatchAvailability(formData: FormData) {
+  const { supabase } = await requireClinicRole([
+    'owner',
+    'admin',
+    'stock_manager',
+    'pharmacist',
+  ]);
+  const batchId = formString(formData, 'batch_id');
+  const available = formString(formData, 'available') === 'true';
+  const reason = formString(formData, 'reason');
+  if (!z.string().uuid().safeParse(batchId).success || reason.length > 200) {
+    throw new Error('Check the batch availability details.');
+  }
+  const { error } = await supabase
+    .from('clinic_inventory_batches')
+    .update({
+      available,
+      unavailable_reason: available ? null : reason || null,
+    })
+    .eq('id', batchId);
+  if (error) {
+    console.error('Supabase batch availability error:', error);
+    throw new Error(`Unable to update batch availability (${error.code}).`);
+  }
+  revalidatePath('/medi-clinic/pharmacy');
+}
+
 export async function dispenseClinicPrescription(formData: FormData) {
   const { supabase } = await requireClinicRole(['owner', 'admin', 'pharmacist']);
   const prescriptionId = formString(formData, 'prescription_id');
