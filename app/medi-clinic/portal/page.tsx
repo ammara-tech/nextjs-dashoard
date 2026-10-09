@@ -6,6 +6,7 @@ import {
   fetchClinicProviders,
 } from '../lib/data';
 import CreateAppointmentForm from '../ui/create-appointment-form';
+import CardWallet, { type SavedCard } from '../ui/card-wallet';
 import MedicalAidPanel from '../ui/medical-aid-panel';
 
 const tabs = [
@@ -78,6 +79,7 @@ export default async function PatientPortalPage({
     paymentsResult,
     walletResult,
     prescriptionsResult,
+    cardsResult,
   ] =
     await Promise.all([
       supabase
@@ -109,7 +111,17 @@ export default async function PatientPortalPage({
         .eq('patient_id', patient.id)
         .order('created_at', { ascending: false })
         .limit(50),
+      supabase
+        .from('clinic_saved_cards')
+        .select(
+          'id, cardholder_name, brand, last4, exp_month, exp_year, nickname, is_default',
+        )
+        .order('created_at', { ascending: true }),
     ]);
+
+  if (cardsResult.error) {
+    console.error('Saved cards error:', cardsResult.error);
+  }
 
   for (const [label, error] of [
     ['appointments', appointmentsResult.error],
@@ -235,7 +247,8 @@ export default async function PatientPortalPage({
         <h2 className="text-lg font-semibold">Book an appointment</h2>
         {providers.length === 0 || appointmentTypes.length === 0 ? (
           <p className="mt-3 text-sm text-[#727a90]">
-            Online booking is not configured. Please contact the clinic.
+            The clinic is still setting up its online schedule. Please contact
+            the clinic to book for now.
           </p>
         ) : (
           <>
@@ -364,6 +377,10 @@ export default async function PatientPortalPage({
           </ul>
         )}
       </section>
+      )}
+
+      {tab === 'payments' && (
+        <CardWallet cards={(cardsResult.data ?? []) as SavedCard[]} />
       )}
 
       {tab === 'support' && (

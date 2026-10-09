@@ -881,3 +881,128 @@ export async function updateSupportRequestStatus(formData: FormData) {
   }
   revalidatePath('/medi-clinic/enquiries');
 }
+
+export type CardActionState = { message?: string; success?: boolean };
+
+function detectCardBrand(digits: string) {
+  if (/^4/.test(digits)) return 'Visa';
+  if (/^(5[1-5]|2[2-7])/.test(digits)) return 'Mastercard';
+  if (/^3[47]/.test(digits)) return 'Amex';
+  if (/^(36|38|30[0-5])/.test(digits)) return 'Diners';
+  return 'Card';
+}
+
+function passesLuhn(digits: string) {
+  let sum = 0;
+  let double = false;
+  for (let i = digits.length - 1; i >= 0; i--) {
+    let n = Number(digits[i]);
+    if (double) {
+      n *= 2;
+      if (n > 9) n -= 9;
+    }
+    sum += n;
+    double = !double;
+  }
+  return sum % 10 === 0;
+}
+
+export async function addClinicSavedCard(
+  _previousState: CardActionState,
+  formData: FormData,
+): Promise<CardActionState> {
+  const access = await requireClinicRole(['patient']);
+  const digits = formString(formData, 'card_number').replace(/[\s-]/g, '');
+  const name = formString(formData, 'cardholder_name');
+  const nickname = formString(formData, 'nickname');
+  const month = Number(formString(formData, 'exp_month'));
+  let year = Number(formString(formData, 'exp_year'));
+  if (year < 100) year += 2000;
+
+  if (!name) return { message: 'Enter the cardholder name.' };
+  if (!/^\d{13,19}$/.test(digits) || !passesLuhn(digits)) {
+    return { message: 'Enter a valid card number.' };
+  }
+  if (!Number.isInteger(month) || month < 1 || month > 12) {
+    return { message: 'Enter a valid expiry month (1-12).' };
+  }
+  const now = new Date();
+  if (
+    !Number.isInteger(year) ||
+    year < now.getFullYear() ||
+    (year === now.getFullYear() && month < now.getMonth() + 1)
+  ) {
+    return { message: 'This card has expired.' };
+  }
+
+  const { supabase, user } = access;
+  const { data: patient } = await supabase
+    .from('patients')
+    .select('id')
+    .eq('auth_user_id', user.id)
+    .maybeSingle();
+  if (!patient) {
+    return { message: 'Your account is not linked to a patient record.' };
+  }
+  const { count } = await supabase
+    .from('clinic_saved_cards')
+    .select('id', { count: 'exact', head: true })
+    .eq('auth_user_id', user.id);
+  if ((count ?? 0) >= 10) {
+    return { message: 'You can save up to 10 cards. Remove one first.' };
+  }
+
+  const { error } = await supabase.from('clinic_saved_cards').insert({
+    patient_id: patient.id,
+    auth_user_id: user.id,
+    cardholder_name: name.slice(0, 120),
+    brand: detectCardBrand(digits),
+    last4: digits.slice(-4),
+    exp_month: month,
+    exp_year: year,
+    nickname: nickname ? nickname.slice(0, 40) : null,
+    is_default: (count ?? 0) === 0,
+  });
+  if (error) {
+    console.error('Supabase saved card insert error:', error);
+    return {
+      message: `Unable to save card (${error.code}). Make sure supabase/clinic-saved-cards.sql has been run.`,
+    };
+  }
+  revalidatePath('/medi-clinic/portal');
+  return { message: 'Card saved to your wallet.', success: true };
+}
+
+export async function setDefaultClinicCard(formData: FormData) {
+  const { supabase, user } = await requireClinicRole(['patient']);
+  const id = z.string().uuid().parse(formString(formData, 'card_id'));
+  await supabase
+    .from('clinic_saved_cards')
+    .update({ is_default: false })
+    .eq('auth_user_id', user.id);
+  const { error } = await supabase
+    .from('clinic_saved_cards')
+    .update({ is_default: true })
+    .eq('id', id)
+    .eq('auth_user_id', user.id);
+  if (error) {
+    console.error('Supabase saved card default error:', error);
+    throw new Error(`Unable to update card (${error.code}).`);
+  }
+  revalidatePath('/medi-clinic/portal');
+}
+
+export async function removeClinicCard(formData: FormData) {
+  const { supabase, user } = await requireClinicRole(['patient']);
+  const id = z.string().uuid().parse(formString(formData, 'card_id'));
+  const { error } = await supabase
+    .from('clinic_saved_cards')
+    .delete()
+    .eq('id', id)
+    .eq('auth_user_id', user.id);
+  if (error) {
+    console.error('Supabase saved card delete error:', error);
+    throw new Error(`Unable to remove card (${error.code}).`);
+  }
+  revalidatePath('/medi-clinic/portal');
+}
