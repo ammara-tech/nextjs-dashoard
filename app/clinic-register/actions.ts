@@ -11,6 +11,17 @@ export type RegistrationState = {
 
 const RegistrationSchema = z.object({
   fullName: z.string().trim().min(2, 'Enter your full name.').max(160),
+  phone: z
+    .string()
+    .trim()
+    .regex(/^\+?[0-9 ()-]{7,20}$/, 'Enter a valid phone number.'),
+  dateOfBirth: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Enter your date of birth.')
+    .refine((value) => {
+      const date = new Date(`${value}T00:00:00Z`);
+      return !Number.isNaN(date.getTime()) && date <= new Date() && date.getUTCFullYear() >= 1900;
+    }, 'Enter a valid date of birth in the past.'),
   email: z.string().trim().email('Enter a valid email address.').max(254),
   password: z.string().min(8, 'Password must be at least 8 characters.').max(128),
 });
@@ -21,6 +32,8 @@ export async function registerPatient(
 ): Promise<RegistrationState> {
   const parsed = RegistrationSchema.safeParse({
     fullName: formData.get('full_name'),
+    phone: formData.get('phone'),
+    dateOfBirth: formData.get('date_of_birth'),
     email: formData.get('email'),
     password: formData.get('password'),
   });
@@ -38,6 +51,8 @@ export async function registerPatient(
     options: {
       data: {
         full_name: parsed.data.fullName,
+        phone: parsed.data.phone,
+        date_of_birth: parsed.data.dateOfBirth,
         family_clinic_patient_signup: true,
       },
     },

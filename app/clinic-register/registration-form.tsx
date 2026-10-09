@@ -25,6 +25,28 @@ export default function PatientRegistrationForm() {
         />
       </label>
       <label className="block text-sm font-medium text-[#404960]">
+        Phone number
+        <input
+          autoComplete="tel"
+          className="mt-1 block w-full rounded-xl border-[#e3e5eb]"
+          maxLength={20}
+          name="phone"
+          required
+          type="tel"
+        />
+      </label>
+      <label className="block text-sm font-medium text-[#404960]">
+        Date of birth
+        <input
+          autoComplete="bday"
+          className="mt-1 block w-full rounded-xl border-[#e3e5eb]"
+          max={new Date().toISOString().slice(0, 10)}
+          name="date_of_birth"
+          required
+          type="date"
+        />
+      </label>
+      <label className="block text-sm font-medium text-[#404960]">
         Email
         <input
           autoComplete="email"

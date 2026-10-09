@@ -9,6 +9,8 @@ declare
   clinic_owner_count integer;
   clinic_owner uuid;
   patient_name text;
+  patient_phone text;
+  patient_dob date;
 begin
   if coalesce(
     new.raw_user_meta_data ->> 'family_clinic_patient_signup',
@@ -22,6 +24,9 @@ begin
     raise exception 'Patient registration requires a valid full name.'
       using errcode = '22023';
   end if;
+
+  patient_phone := nullif(trim(coalesce(new.raw_user_meta_data ->> 'phone', '')), '');
+  patient_dob := nullif(new.raw_user_meta_data ->> 'date_of_birth', '')::date;
 
   select count(*)::integer, array_agg(u.id order by u.created_at)
   into clinic_owner_count, clinic_owner_ids
@@ -48,12 +53,16 @@ begin
   insert into public.patients (
     user_id,
     full_name,
+    phone,
+    date_of_birth,
     email,
     auth_user_id
   )
   values (
     clinic_owner,
     patient_name,
+    patient_phone,
+    patient_dob,
     new.email,
     new.id
   );
