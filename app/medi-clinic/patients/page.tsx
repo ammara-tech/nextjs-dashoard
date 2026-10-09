@@ -1,5 +1,6 @@
 import {
   archiveClinicPatient,
+  createClinicPatient,
   linkClinicPatientAccount,
   updateClinicPatient,
 } from '../lib/actions';
@@ -25,6 +26,50 @@ export default async function ClinicPatientsPage() {
         }
         title={role === 'doctor' ? 'My patients' : 'Patients'}
       />
+
+      {canManageAppointments && (
+        <details className="rounded-2xl border border-[#e9eaf0] bg-white p-5 shadow-[0_8px_30px_rgba(31,41,55,0.04)]">
+          <summary className="cursor-pointer text-sm font-semibold text-[#6077ed]">
+            + Add patient
+          </summary>
+          <form action={createClinicPatient} className="mt-4 grid max-w-md gap-3">
+            <label className={labelClass}>
+              Full name
+              <input
+                className={fieldClass}
+                name="full_name"
+                placeholder="e.g. Jane Smith"
+                required
+              />
+            </label>
+            <label className={labelClass}>
+              Phone number
+              <input
+                className={fieldClass}
+                name="phone"
+                placeholder="e.g. 082 123 4567"
+                type="tel"
+              />
+            </label>
+            <label className={labelClass}>
+              Date of birth
+              <input className={fieldClass} name="date_of_birth" type="date" />
+            </label>
+            <label className={labelClass}>
+              Email address
+              <input
+                className={fieldClass}
+                name="email"
+                placeholder="e.g. jane@example.com"
+                type="email"
+              />
+            </label>
+            <button className="rounded-lg bg-[#647cf5] px-3 py-2 text-sm font-semibold text-white">
+              Add patient
+            </button>
+          </form>
+        </details>
+      )}
 
       <section className="overflow-hidden rounded-2xl border border-[#e9eaf0] bg-white shadow-[0_8px_30px_rgba(31,41,55,0.04)]">
         <div className="border-b border-[#eff0f4] px-5 py-4">
