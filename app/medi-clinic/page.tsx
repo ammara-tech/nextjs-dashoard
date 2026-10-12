@@ -6,12 +6,46 @@ import {
 } from './ui/charts';
 import { fetchClinicDashboard, fetchTomorrowAppointments } from './lib/data';
 import { getClinicAccess } from './lib/access';
+import { getSelectedDoctor, loadDoctorSchedule } from './lib/doctor-context';
+import DoctorDashboard from './ui/doctor-dashboard';
+import DoctorPicker from './ui/doctor-picker';
 
-export default async function MediClinicPage() {
+export default async function MediClinicPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ switch?: string }>;
+}) {
   const { role } = await getClinicAccess();
   if (role === 'patient') redirect('/medi-clinic/portal');
   if (role === 'pharmacist' || role === 'stock_manager') {
     redirect('/medi-clinic/pharmacy');
+  }
+  if (role === 'doctor') {
+    // Doctors choose which doctor they are in a pop-up, then see that
+    // doctor's own dashboard.
+    const { switch: switchDoctor } = await searchParams;
+    const { doctors, isDemo, selected } = await getSelectedDoctor();
+    const showPicker = !selected || switchDoctor === '1';
+    const schedule = selected ? await loadDoctorSchedule(selected) : null;
+    return (
+      <>
+        {showPicker ? (
+          <DoctorPicker
+            currentId={selected?.id}
+            dismissHref={selected ? '/medi-clinic' : undefined}
+            doctors={doctors}
+            isDemo={isDemo}
+          />
+        ) : null}
+        {selected && schedule ? (
+          <DoctorDashboard doctor={selected} schedule={schedule} />
+        ) : (
+          <div className="rounded-2xl border border-[#e9eaf0] bg-white p-8 text-center text-[#727a90]">
+            Choose a doctor to open their dashboard.
+          </div>
+        )}
+      </>
+    );
   }
   const [dashboardResult, tomorrowAppointmentsResult] = await Promise.allSettled([
     fetchClinicDashboard(),

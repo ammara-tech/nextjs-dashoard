@@ -2,79 +2,114 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import {
+  ArchiveBoxIcon,
+  BanknotesIcon,
+  BeakerIcon,
+  CalendarDaysIcon,
+  ChatBubbleLeftRightIcon,
+  ClipboardDocumentCheckIcon,
+  ClockIcon,
+  FolderOpenIcon,
+  HeartIcon,
+  HomeIcon,
+  SunIcon,
+  UserCircleIcon,
+  UserGroupIcon,
+  UsersIcon,
+} from '@heroicons/react/24/outline';
 import type { ClinicRole } from '../lib/access';
 
-const links = [
-  { href: '/medi-clinic', label: 'Overview' },
-  { href: '/medi-clinic/patients', label: 'Patients' },
-  { href: '/medi-clinic/appointments', label: 'Appointments' },
-  { href: '/medi-clinic/tomorrow', label: 'Tomorrow' },
-];
+type Icon = typeof HomeIcon;
+type NavLink = { href: string; label: string; icon: Icon };
 
-export default function ClinicNavigation({
-  role,
-}: {
-  role: ClinicRole;
-}) {
+const overview: NavLink = { href: '/medi-clinic', label: 'Overview', icon: HomeIcon };
+const patients: NavLink = { href: '/medi-clinic/patients', label: 'Patients', icon: UsersIcon };
+const appointments: NavLink = {
+  href: '/medi-clinic/appointments',
+  label: 'Appointments',
+  icon: CalendarDaysIcon,
+};
+const tomorrow: NavLink = { href: '/medi-clinic/tomorrow', label: 'Tomorrow', icon: SunIcon };
+const shifts: NavLink = { href: '/medi-clinic/shifts', label: 'Shifts', icon: ClockIcon };
+const clinical: NavLink = {
+  href: '/medi-clinic/clinical',
+  label: 'Clinical',
+  icon: ClipboardDocumentCheckIcon,
+};
+const documents: NavLink = {
+  href: '/medi-clinic/documents',
+  label: 'Documents',
+  icon: FolderOpenIcon,
+};
+const pharmacy: NavLink = { href: '/medi-clinic/pharmacy', label: 'Pharmacy', icon: BeakerIcon };
+const payments: NavLink = { href: '/medi-clinic/payments', label: 'Payments', icon: BanknotesIcon };
+const enquiries: NavLink = {
+  href: '/medi-clinic/enquiries',
+  label: 'Enquiries',
+  icon: ChatBubbleLeftRightIcon,
+};
+
+const linksByRole: Record<ClinicRole, NavLink[]> = {
+  patient: [{ href: '/medi-clinic/portal', label: 'My clinic', icon: UserCircleIcon }],
+  owner: [
+    overview,
+    patients,
+    appointments,
+    tomorrow,
+    { href: '/medi-clinic/providers', label: 'Providers & availability', icon: UserGroupIcon },
+    shifts,
+    { href: '/medi-clinic/treatments', label: 'Treatments', icon: HeartIcon },
+    clinical,
+    documents,
+    pharmacy,
+    payments,
+    enquiries,
+  ],
+  admin: [
+    overview,
+    patients,
+    appointments,
+    tomorrow,
+    { href: '/medi-clinic/providers', label: 'Providers', icon: UserGroupIcon },
+    shifts,
+    clinical,
+    documents,
+    pharmacy,
+    payments,
+    enquiries,
+  ],
+  front_desk: [overview, patients, appointments, tomorrow, shifts, documents, enquiries, payments],
+  doctor: [
+    overview,
+    { ...appointments, label: 'My appointments' },
+    { ...shifts, label: 'My shifts' },
+    { ...patients, label: 'My patients' },
+    clinical,
+  ],
+  pharmacist: [pharmacy],
+  stock_manager: [{ ...pharmacy, label: 'Inventory', icon: ArchiveBoxIcon }],
+};
+
+export default function ClinicNavigation({ role }: { role: ClinicRole }) {
   const pathname = usePathname();
-  const visibleLinks =
-    role === 'patient'
-      ? [{ href: '/medi-clinic/portal', label: 'My clinic' }]
-      : role === 'owner'
-        ? [
-            ...links,
-            { href: '/medi-clinic/providers', label: 'Providers & availability' },
-            { href: '/medi-clinic/treatments', label: 'Treatments' },
-            { href: '/medi-clinic/clinical', label: 'Clinical' },
-            { href: '/medi-clinic/documents', label: 'Documents' },
-            { href: '/medi-clinic/pharmacy', label: 'Pharmacy' },
-            { href: '/medi-clinic/payments', label: 'Payments' },
-            { href: '/medi-clinic/enquiries', label: 'Enquiries' },
-          ]
-      : role === 'doctor'
-        ? [
-            { href: '/medi-clinic', label: 'Overview' },
-            { href: '/medi-clinic/appointments', label: 'My appointments' },
-            { href: '/medi-clinic/patients', label: 'My patients' },
-            { href: '/medi-clinic/clinical', label: 'Clinical' },
-          ]
-        : role === 'pharmacist'
-          ? [{ href: '/medi-clinic/pharmacy', label: 'Pharmacy' }]
-          : role === 'stock_manager'
-            ? [{ href: '/medi-clinic/pharmacy', label: 'Inventory' }]
-            : role === 'admin'
-              ? [
-                  ...links,
-                  { href: '/medi-clinic/providers', label: 'Providers' },
-                  { href: '/medi-clinic/clinical', label: 'Clinical' },
-                  { href: '/medi-clinic/documents', label: 'Documents' },
-                  { href: '/medi-clinic/pharmacy', label: 'Pharmacy' },
-                  { href: '/medi-clinic/payments', label: 'Payments' },
-                  { href: '/medi-clinic/enquiries', label: 'Enquiries' },
-                ]
-              : role === 'front_desk'
-                ? [
-                    ...links,
-                    { href: '/medi-clinic/documents', label: 'Documents' },
-                    { href: '/medi-clinic/enquiries', label: 'Enquiries' },
-                    { href: '/medi-clinic/payments', label: 'Payments' },
-                  ]
-                : [];
+  const visibleLinks = linksByRole[role] ?? [];
 
   return (
     <nav
       aria-label="Clinic dashboard"
-      className="flex gap-1 overflow-x-auto rounded-2xl border border-[#e9eaf0] bg-white p-1.5 shadow-sm"
+      className="flex gap-1 overflow-x-auto rounded-2xl border border-[#e9eaf0] bg-white p-1.5 shadow-sm lg:flex-col lg:overflow-visible"
     >
       {visibleLinks.map((link) => {
         const active =
           link.href === '/medi-clinic'
             ? pathname === link.href
             : pathname.startsWith(link.href);
+        const LinkIcon = link.icon;
         return (
           <Link
             aria-current={active ? 'page' : undefined}
-            className={`whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium transition-colors ${
+            className={`flex items-center gap-2.5 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition-colors lg:px-3 ${
               active
                 ? 'bg-[#1E2F66] text-white'
                 : 'text-[#727a90] hover:bg-[#EEF2FF] hover:text-[#1E2F66]'
@@ -82,6 +117,7 @@ export default function ClinicNavigation({
             href={link.href}
             key={link.href}
           >
+            <LinkIcon aria-hidden className="h-5 w-5 shrink-0" />
             {link.label}
           </Link>
         );

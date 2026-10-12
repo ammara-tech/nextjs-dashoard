@@ -6,11 +6,25 @@ import {
 } from '../lib/actions';
 import { getClinicAccess } from '../lib/access';
 import { fetchPatients } from '../lib/data';
+import { loadDoctorSchedule, requireSelectedDoctor } from '../lib/doctor-context';
+import { DoctorPatientsView } from '../ui/doctor-views';
 
 const labelClass = 'block text-xs font-medium text-[#404960]';
 const fieldClass = 'mt-1 block w-full rounded-lg border-[#e3e5eb] text-sm';
 
 export default async function ClinicPatientsPage() {
+  const access = await getClinicAccess();
+  if (access.role === 'doctor') {
+    // Doctors see the patients on the chosen doctor's schedule.
+    const { selected } = await requireSelectedDoctor();
+    return (
+      <DoctorPatientsView
+        doctor={selected}
+        schedule={await loadDoctorSchedule(selected)}
+      />
+    );
+  }
+
   const [patients, { isOwner, canManageAppointments, role }] = await Promise.all([
     fetchPatients(),
     getClinicAccess(),

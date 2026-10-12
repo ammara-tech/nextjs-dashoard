@@ -6,5 +6,7 @@ export default async function DoctorsEntryPage() {
   if (role !== 'doctor') {
     redirectToClinicSignIn('/medi-clinic/doctors');
   }
-  redirect('/medi-clinic/clinical');
+  // The overview opens the "which doctor are you?" pop-up, then that doctor's
+  // dashboard.
+  redirect('/medi-clinic');
 }

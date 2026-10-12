@@ -11,8 +11,18 @@ import {
   fetchProviderBlocks,
   fetchProviderShifts,
 } from '../lib/data';
+import WeeklyShifts from '../ui/weekly-shifts';
 
-const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+// Monday first, since shifts are normally entered as a Monday to Friday range.
+const weekdayOptions = [
+  { value: 1, label: 'Monday' },
+  { value: 2, label: 'Tuesday' },
+  { value: 3, label: 'Wednesday' },
+  { value: 4, label: 'Thursday' },
+  { value: 5, label: 'Friday' },
+  { value: 6, label: 'Saturday' },
+  { value: 0, label: 'Sunday' },
+];
 
 export default async function ClinicProvidersPage() {
   await requireClinicRole(['owner', 'admin']);
@@ -118,7 +128,7 @@ export default async function ClinicProvidersPage() {
         ) : (
           <form
             action={createClinicProviderShift}
-            className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5"
+            className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
           >
             <Field label="Provider">
               <select className={inputClass} name="provider_id" required>
@@ -130,10 +140,17 @@ export default async function ClinicProvidersPage() {
                 ))}
               </select>
             </Field>
-            <Field label="Weekday">
-              <select className={inputClass} name="weekday" required>
-                {weekdays.map((day, index) => (
-                  <option key={day} value={index}>{day}</option>
+            <Field label="From day">
+              <select className={inputClass} defaultValue="1" name="weekday_from" required>
+                {weekdayOptions.map((day) => (
+                  <option key={day.value} value={day.value}>{day.label}</option>
+                ))}
+              </select>
+            </Field>
+            <Field label="To day">
+              <select className={inputClass} defaultValue="5" name="weekday_to" required>
+                {weekdayOptions.map((day) => (
+                  <option key={day.value} value={day.value}>{day.label}</option>
                 ))}
               </select>
             </Field>
@@ -148,15 +165,20 @@ export default async function ClinicProvidersPage() {
             </div>
           </form>
         )}
-        {shifts.length > 0 && (
-          <ul className="mt-4 divide-y divide-[#eff0f4]">
-            {shifts.map((shift) => (
-              <li className="py-2 text-sm text-[#727a90]" key={shift.id}>
-                {providers.find((provider) => provider.id === shift.provider_id)?.display_name}
-                {' — '}{weekdays[shift.weekday]} {shift.starts_at.slice(0, 5)}–{shift.ends_at.slice(0, 5)}
-              </li>
+        <p className="text-xs text-[#9298a8]">
+          Pick a day range (Monday to Friday by default) and one shift is added for
+          every day in it.
+        </p>
+        {providers.length > 0 && (
+          <div className="mt-4 space-y-5">
+            {providers.map((provider) => (
+              <WeeklyShifts
+                heading={provider.display_name}
+                key={provider.id}
+                shifts={shifts.filter((shift) => shift.provider_id === provider.id)}
+              />
             ))}
-          </ul>
+          </div>
         )}
       </ConfigCard>
 

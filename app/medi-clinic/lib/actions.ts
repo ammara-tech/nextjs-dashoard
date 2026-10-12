@@ -52,11 +52,18 @@ const AppointmentTypeSchema = z.object({
     .pipe(z.number().int().min(5).max(480)),
 });
 
+// Weekdays in the order a working week reads (Postgres: 0 = Sunday).
+const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0];
+
 const ProviderShiftSchema = z.object({
   provider_id: z.string().uuid('Select a provider.'),
-  weekday: z
+  weekday_from: z
     .string()
-    .regex(/^[0-6]$/, 'Select a weekday.')
+    .regex(/^[0-6]$/, 'Select the first day.')
+    .transform(Number),
+  weekday_to: z
+    .string()
+    .regex(/^[0-6]$/, 'Select the last day.')
     .transform(Number),
   starts_at: z.string().regex(/^\d{2}:\d{2}$/, 'Choose a start time.'),
   ends_at: z.string().regex(/^\d{2}:\d{2}$/, 'Choose an end time.'),
@@ -470,19 +477,56 @@ export async function createClinicProviderShift(formData: FormData) {
   const { supabase } = await requireClinicOwner();
   const shift = ProviderShiftSchema.parse({
     provider_id: formString(formData, 'provider_id'),
-    weekday: formString(formData, 'weekday'),
+    weekday_from: formString(formData, 'weekday_from'),
+    weekday_to: formString(formData, 'weekday_to'),
     starts_at: formString(formData, 'starts_at'),
     ends_at: formString(formData, 'ends_at'),
   });
   if (shift.starts_at >= shift.ends_at) {
     throw new Error('Shift end time must be later than its start time.');
   }
-  const { error } = await supabase.from('clinic_provider_shifts').insert(shift);
-  if (error) {
-    console.error('Supabase provider shift create error:', error);
-    throw new Error(`Unable to create provider shift (${error.code}).`);
+  const first = WEEK_ORDER.indexOf(shift.weekday_from);
+  const last = WEEK_ORDER.indexOf(shift.weekday_to);
+  if (first > last) {
+    throw new Error('The last day of the range cannot come before the first day.');
+  }
+  const weekdays = WEEK_ORDER.slice(first, last + 1);
+
+  // Skip days that already have exactly this shift, so re-submitting a range
+  // does not create duplicates.
+  const { data: existing, error: existingError } = await supabase
+    .from('clinic_provider_shifts')
+    .select('weekday, starts_at, ends_at')
+    .eq('provider_id', shift.provider_id)
+    .in('weekday', weekdays);
+  if (existingError) {
+    console.error('Supabase provider shift lookup error:', existingError);
+    throw new Error(`Unable to check existing shifts (${existingError.code}).`);
+  }
+  const taken = new Set(
+    (existing ?? []).map(
+      (row: { weekday: number; starts_at: string; ends_at: string }) =>
+        `${row.weekday}|${row.starts_at.slice(0, 5)}|${row.ends_at.slice(0, 5)}`,
+    ),
+  );
+  const rows = weekdays
+    .filter((weekday) => !taken.has(`${weekday}|${shift.starts_at}|${shift.ends_at}`))
+    .map((weekday) => ({
+      provider_id: shift.provider_id,
+      weekday,
+      starts_at: shift.starts_at,
+      ends_at: shift.ends_at,
+    }));
+
+  if (rows.length > 0) {
+    const { error } = await supabase.from('clinic_provider_shifts').insert(rows);
+    if (error) {
+      console.error('Supabase provider shift create error:', error);
+      throw new Error(`Unable to create provider shift (${error.code}).`);
+    }
   }
   revalidatePath('/medi-clinic/providers');
+  revalidatePath('/medi-clinic/shifts');
   revalidatePath('/medi-clinic/appointments');
 }
 

@@ -3,9 +3,11 @@
 import { z } from 'zod';
 import postgres from 'postgres';
 import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { requireClinicStaff } from '@/app/medi-clinic/lib/access';
+import { DOCTOR_COOKIE } from '@/app/medi-clinic/lib/doctor-cookie';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -282,6 +284,10 @@ export async function authenticate(
     return 'Invalid email or password.';
   }
 
+  // Forget any doctor chosen in an earlier session so the doctor pop-up shows
+  // on every new sign-in.
+  (await cookies()).delete(DOCTOR_COOKIE);
+
   const requestedPath = formData.get('redirectTo');
   const redirectTo =
     typeof requestedPath === 'string' &&
@@ -299,5 +305,6 @@ export async function signOut() {
     console.error('Supabase sign-out error:', error);
     throw new Error('Failed to sign out.');
   }
+  (await cookies()).delete(DOCTOR_COOKIE);
   redirect('/');
 }
