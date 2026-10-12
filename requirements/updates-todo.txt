@@ -3,3 +3,4 @@
 3.fix patient1@nextmail.com ->created appointments,prescription,etc
 4.(include a few demo placeholders->appointments,etc)
 5.when doctor signs in it shows automatic dashboard suited for that doctor
+6.for provider shifts it gives a range from mon-friday,etc
