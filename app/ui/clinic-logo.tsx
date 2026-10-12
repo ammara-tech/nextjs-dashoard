@@ -24,6 +24,26 @@ export function ClinicMark({ className = 'h-11 w-11' }: { className?: string }) 
   );
 }
 
+/** Logo for the Care Plans (medical aid) dashboard: a shield with a cross. */
+export function MedicalAidMark({ className = 'h-11 w-11' }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 64 64"
+      className={className}
+      role="img"
+      aria-label="Medical aid logo"
+    >
+      <circle cx="32" cy="32" r="30" fill="#0D9488" />
+      <path
+        d="M32 13l15 5.5V31c0 9.2-6.4 15.8-15 19.5C23.4 46.8 17 40.2 17 31V18.5L32 13z"
+        fill="#fff"
+      />
+      <rect x="29" y="23" width="6" height="18" rx="1.5" fill="#0D9488" />
+      <rect x="23" y="29" width="18" height="6" rx="1.5" fill="#0D9488" />
+    </svg>
+  );
+}
+
 export default function ClinicLogo({
   className = '',
   light = false,
