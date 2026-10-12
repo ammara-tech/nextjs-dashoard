@@ -1,6 +1,14 @@
 # Patient and Billing Dashboard
 
-A Next.js application with the original invoice/customer dashboard and a separate family clinic dashboard. Patient and clinic data are managed only from the family clinic area.
+A Next.js application with three separate dashboards, chosen from the landing page at `/`:
+
+| Dashboard | Route | What it is |
+|---|---|---|
+| Family Clinic | `/clinic-hub` → `/medi-clinic` | Patients, doctors, reception, pharmacy and stock. Patient and clinic data live only here. |
+| Next.js invoice dashboard | `/nextjs-hub` → `/dashboard` | The original customer, invoice and revenue dashboard. |
+| Medical Aid (Care Plans) | `/medical-aid` | Join a Family Clinic Care Plan, save cards, choose the card the plan is paid from, and see cover and sample PDFs. Uses the same logins as the clinic. |
+
+The landing page header shows the three logos with the title "Family Clinic Dashboard & Next.js Dashboard & Medical Aid Dashboard", and each dashboard has its own card.
 
 The app also includes a separate family practice dashboard at `/medi-clinic`. It manages patients, appointments, and treatments; shows patient growth and appointment outcomes; and includes a tomorrow appointment list.
 
@@ -19,10 +27,13 @@ These links identify the deployed entry points. Users still need valid Supabase 
 - View the dashboard overview, revenue, and latest invoices.
 - Browse customers and search/filter invoices.
 - Keep patient records out of the original dashboard; legacy patient URLs redirect to the family clinic.
-- Open the family clinic dashboard at `/medi-clinic` with owner/front-desk access.
+- Open the family clinic dashboard at `/medi-clinic` with owner/front-desk access. The clinic layout is a header with a tab bar of links for your role (including Shifts); doctors also get a "Dr. Name · Switch" button.
 - Manage appointments and owner-only treatments, review the two clinic charts, and view tomorrow's booked appointments with patient phone numbers.
 - Enforce patient ownership in PostgreSQL with Supabase RLS policies.
 - Keep the invoice and customer data layer backed by the existing `POSTGRES_URL` connection.
+- Doctor sign-in opens a pop-up to choose which doctor you are, then shows that doctor's own dashboard (today's schedule, coming up, weekly shifts, patients). Doctors without database access to another doctor's data see clearly labelled sample data.
+- Provider shifts are entered and shown as a day range (Monday to Friday by default), with a weekly grid per provider.
+- Join a Family Clinic Care Plan at `/medical-aid` (Essential, Family Plus, Premium), pay from a chosen saved card (demo payment only), and open sample plan PDFs.
 - Manage patient medical aid and co-payment coverage, with provider selection, dependent mapping, digital card uploads, verification badges, and in-network billing summaries.
 
 ## Medical aid & co-payment flow
@@ -106,11 +117,13 @@ This is implemented as a patient-facing clinic integration aligned to the `/medi
 - Patient records and patient-management pages appear only in the Family Clinic dashboard. Legacy `/dashboard/patients` URLs redirect to `/medi-clinic/patients`, and `/dashboard/chart-check` redirects to the clinic overview.
 - The first chart counts patients by creation month for the current and previous five calendar months. The second chart counts this month's appointments by `booked`, `done`, and `no_show`, joined to their patients.
 - `/medi-clinic/patients` and `/medi-clinic/appointments` support create and edit for owner/front-desk staff. Provider-based bookings require an active provider, appointment type, and matching weekly shift. SQL functions enforce provider time conflicts and daily appointment caps.
+- Shifts are created as a day range: choosing Monday to Friday adds one shift per day and skips days that already exist.
 - `/medi-clinic/treatments` is owner-only. `/medi-clinic/tomorrow` lists booked appointments for the next calendar day, including patient phone numbers.
 - Owners can configure providers, specialties, time zones, appointment types/durations, shifts, and availability blocks at `/medi-clinic/providers`.
 - `/medi-clinic/portal` is for accounts with the trusted `patient` role and a linked patient record. Linked patients can book from configured provider shifts and appointment types.
 - Patients can create an account from `/clinic-register` (also reachable from clinic sign-in; the old `/medi-clinic/register` URL redirects there). The signup trigger creates a linked patient profile and grants the trusted patient role immediately; patients land in their own portal at `/medi-clinic/portal`. Clinic staff continue to receive access only through trusted staff-role provisioning. Doctors see patients through their assigned appointments; pharmacists see patients with prescription records. Stock managers manage inventory without patient-chart access.
 - Documents are uploaded to a private bucket at `/medi-clinic/documents`; authorized patients receive short-lived signed links in their portal. Configure and test the storage policies before uploading real documents.
+- Doctor accounts see a pop-up to pick a doctor (stored in an httpOnly cookie, cleared at sign-in and sign-out), then that doctor's dashboard at `/medi-clinic`, plus `/medi-clinic/appointments`, `/medi-clinic/shifts` and `/medi-clinic/patients` filtered to that doctor. Use "Switch" in the header to change doctor.
 - Doctors linked to a provider can draft/sign encounter notes, append addenda, and issue prescriptions. Pharmacists can mark issued prescriptions dispensed; stock managers can register inventory items and batches. Inventory is not yet decremented on dispensing.
 - `/medi-clinic/payments` supports staff entry of in-person payments only. No online gateway, automated invoice delivery, or wallet credit/refund action is configured. Wallet rows are a ledger foundation, not a patient-accessible payment method or withdrawable balance.
 - `/medi-clinic/portal` accepts non-urgent support requests; reception staff can triage them at `/medi-clinic/enquiries`. It is not live chat or an emergency channel.
@@ -126,7 +139,7 @@ To seed test data, run the seed insert in [`supabase/patients.sql`](./supabase/p
 
 ## Entry pages and patient portal features
 
-- `/` landing page, `/clinic-login` (sign in), `/clinic-register` (Create user), `/clinic-hub` and `/nextjs-hub` (choose which dashboard to open). The Family Clinic pages use the navy/blue logo palette.
+- `/` landing page with three dashboard cards (Family Clinic, Next.js, Medical Aid), `/clinic-login` (sign in), `/clinic-register` (Create user), `/clinic-hub` and `/nextjs-hub` (choose which dashboard to open). The Family Clinic pages use the navy/blue logo palette.
 - The patient portal at `/medi-clinic/portal` is organised into tabs with dashboard-style stat cards:
   - **Online booking:** patients book from active provider shifts and appointment types.
   - **Card wallet:** patients save several payment cards (stored as masked details only: brand, last four digits, expiry, holder) and pick a default for clinic credit. Real card numbers and CVV are never stored, and no online gateway is connected.
@@ -194,6 +207,15 @@ supabase/clinic-patient-documents-upload.sql Patient document upload policies
 supabase/clinic-care-plans.sql Care Plans, memberships and demo payment records
 supabase/clinic-demo-data.sql Sample doctors, shifts, patients and appointments
 ```
+
+## Presentations and proposals
+
+- Proposals: [`proposal.md`](./proposal.md) (Next.js billing dashboard), [`family-clinic/proposal.md`](./family-clinic/proposal.md) (Family Clinic) and [`medical-aid/proposal.md`](./medical-aid/proposal.md) (Care Plans).
+- Presentations (PDF with a 60-second speaker script each) are in [`presentations/`](./presentations): billing dashboard, Family Clinic, Medical Aid, and the colour and font guide.
+
+## Deployment
+
+Vercel deploys the `main` branch to production. Merge work into `main` to publish it; other branches get preview deployments only.
 
 ## Important notes
 

@@ -12,7 +12,7 @@ The following deployed URLs are the intended entry points for the clinic audienc
 
 - [Patients](https://nextjs-dashoard-psi.vercel.app/medi-clinic) — patient sign-in.
 - [Administration](https://nextjs-dashoard-psi.vercel.app/medi-clinic/dashboard) — administrative sign-in; create staff accounts with name, surname, and occupation/role such as reception or nurse.
-- [Doctors](https://nextjs-dashoard-psi.vercel.app/medi-clinic/doctors) — doctor sign-in; create doctor accounts with the doctor's name and occupation.
+- [Doctors](https://nextjs-dashoard-psi.vercel.app/medi-clinic/doctors) — doctor sign-in; create doctor accounts with the doctor's name and occupation. After signing in, a pop-up asks which doctor you are and opens that doctor's own dashboard.
 - [Pharmacy](https://nextjs-dashoard-psi.vercel.app/medi-clinic/pharmacy) — pharmacy sign-in; create accounts with name, surname, and role: front desk/reception, stocker, or pharmacist.
 
 These are access links, not account-creation links. Sign-in requires an existing Supabase Auth account with the appropriate trusted clinic role and clinic association. The administrative link opens the existing clinic overview, and the doctors link opens the clinical workspace. Pharmacist and stock-manager roles access the pharmacy workspace; front-desk users are sent to the in-person payment register. A different signed-in role is sent to clinic sign-in with the requested route as the return destination.
@@ -279,17 +279,20 @@ include unnecessary sensitive clinical details in email or SMS.
 
 ## 10a. Implementation status (latest update)
 
-Built and type-checked (`npx tsc --noEmit` clean); SQL migrations must still be run in Supabase and the flows tested per role:
+Built and type-checked; SQL migrations must still be run in Supabase and the flows tested per role:
 
-- **Entry flow:** landing page, `/clinic-login`, `/clinic-register` (Create user), `/clinic-hub`, `/nextjs-hub`, in the navy/blue logo palette.
+- **Entry flow:** landing page with three dashboard cards (Family Clinic, Next.js, Medical Aid) under a header showing the three logos, `/clinic-login`, `/clinic-register` (Create user), `/clinic-hub`, `/nextjs-hub`, in the navy/blue logo palette (teal accent for Medical Aid).
+- **Doctor dashboards:** doctor sign-in opens a pop-up to choose the doctor; the selected doctor (kept in an httpOnly cookie, cleared at sign-in and sign-out) sees today's schedule, coming-up appointments, weekly shifts and their patients, with "Switch" in the header. A doctor account can only read its own provider's rows under RLS, so other doctors fall back to clearly labelled sample data (`supabase/clinic-demo-data.sql` adds three sample doctors, shifts, patients and appointments).
+- **Shifts as a range:** providers' shifts are entered as a day range (Monday to Friday by default) and shown in a weekly grid; one shift is created per day and duplicates are skipped.
+- **Navigation:** header and tab bar by role (including Shifts), instant loading skeletons between pages. The original header-and-tab-bar layout was kept.
 - **Patient portal tabs** with dashboard-style stat cards.
 - **Online booking** from active provider shifts (`clinic-patient-booking-seed.sql`).
 - **Saved card wallet:** masked card details only (brand, last four, expiry, holder), default card selection; no real PAN/CVV storage and no payment gateway yet (`clinic-saved-cards.sql`).
-- **Family Care plans:** the clinic's own medical aid with promoted perks (`clinic-medical-aid.sql`).
+- **Family Care plans:** "Enquire about..." sends the patient to the separate Medical Aid (Care Plans) dashboard, see [`../medical-aid/proposal.md`](../medical-aid/proposal.md). The patient portal's Medical aid tab then shows the joined plan, status, card, payments and sample PDFs (`clinic-care-plans.sql`).
 - **Patient document upload:** PDF/JPEG/PNG up to 10 MB into the private `patients-medical-records` bucket under `pt_<patientId>/<category>/<uuid>`; categories identity, clinical_history, invoices (`clinic-patient-documents-upload.sql`).
 - **Resilient admin dashboard** with an amber banner for partial load failures; RLS recursion on `patients` fixed (`fix-patients-rls-recursion.sql`).
 
-Still open: payment gateway, wallet top-up/refund, treatments page for admin role, notifications.
+Still open: real payment gateway (Care Plan payments are labelled demo records), wallet top-up/refund, treatments page for admin role, notifications, a staff view of Care Plan members, and doctor cards with a speciality description.
 
 ## 11. Phased delivery plan
 
@@ -300,7 +303,7 @@ Still open: payment gateway, wallet top-up/refund, treatments page for admin rol
 | 2. Operational queue | Add check-in, delay, cancellation, reschedule, and staff audit events; show clear save and error states. | Allowed status transitions and actor attribution are enforced server-side. |
 | 3. Patient portal and documents | Add verified patient-account linking, self-service profile, patient-owned appointment views, private document storage, and storage policies. | Patient A cannot read or mutate patient B's records or objects; signed links expire as configured. |
 | 4. Clinical records | Add encounter workflow, signed notes/addenda, chart access controls, and audit events. | Clinical permissions and immutable signature/addendum behavior pass security and workflow review. |
-| 5. Payments and notifications | Integrate payment provider, invoices, reconciliation, verified email notifications, and—only if approved—wallet ledger/refunds. | Webhook verification, duplicate-event handling, refund idempotency, and reconciliation are tested. |
+| 5. Payments and notifications | (Care Plans already record demo payments only.) Integrate payment provider, invoices, reconciliation, verified email notifications, and—only if approved—wallet ledger/refunds. | Webhook verification, duplicate-event handling, refund idempotency, and reconciliation are tested. |
 | 6. Pharmacy and inventory | Add prescription fulfillment, stock movements, batches, expiry alerts, and role-scoped access. | Clinical, pharmacy, and inventory permissions are independently verified. |
 
 Phases may be reprioritized by clinic needs, but dependencies and completion

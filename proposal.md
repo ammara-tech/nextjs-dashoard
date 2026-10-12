@@ -12,13 +12,22 @@ This project is a web dashboard for reviewing billing, customer, and revenue
 activity. It is built with the Next.js App Router, with invoice and customer
 data using the existing PostgreSQL connection.
 
-The Family Clinic Dashboard is a separate experience at `/medi-clinic`, with
-its own proposal in [`family-clinic/proposal.md`](./family-clinic/proposal.md).
+The application now has three separate dashboards, each with its own card on
+the landing page at `/`:
 
-Clinic features now delivered there include patient portal tabs, online
-booking, a saved card wallet, Family Care medical aid plans and patient
-document upload. The billing dashboard itself is unchanged, and the "Not
-included" list in section 4 applies to the billing dashboard only.
+- **Next.js billing dashboard** (this document).
+- **Family Clinic Dashboard** at `/medi-clinic`, with its own proposal in
+  [`family-clinic/proposal.md`](./family-clinic/proposal.md). Delivered there:
+  patient portal tabs, online booking, a saved card wallet, patient document
+  upload, a doctor pop-up with a dashboard per doctor, Monday to Friday
+  provider shifts and clinic navigation.
+- **Medical Aid (Care Plans)** at `/medical-aid`, with its own proposal in
+  [`medical-aid/proposal.md`](./medical-aid/proposal.md): plans, sign-up,
+  saved cards, a chosen card for the plan, demo payments and sample PDFs.
+
+The billing dashboard itself is unchanged, and the "Not included" list in
+section 4 applies to the billing dashboard only. Production deploys from the
+`main` branch on Vercel.
 
 ## 2. Problem and opportunity
 
@@ -115,7 +124,9 @@ separate Family Clinic proposal.
 1. Configure Supabase and PostgreSQL environment variables.
 2. Create test accounts in Supabase Auth and apply the documented database
    setup SQL.
-3. Build the application and resolve TypeScript errors.
+3. Build the application and resolve TypeScript errors. Run
+   `supabase/clinic-care-plans.sql` (needed for Care Plans) and, optionally,
+   `supabase/clinic-demo-data.sql` (sample doctors and appointments).
 4. Verify authentication and dashboard route access.
 5. Test invoice and customer pages against the existing PostgreSQL service.
 6. Confirm patient management is available only through `/medi-clinic`.
@@ -139,3 +150,6 @@ management is available only through the Family Clinic Dashboard.
 - Next.js dashboard: [`app/dashboard`](./app/dashboard)
 - Separate Family Clinic proposal:
   [`family-clinic/proposal.md`](./family-clinic/proposal.md)
+- Separate Medical Aid (Care Plans) proposal:
+  [`medical-aid/proposal.md`](./medical-aid/proposal.md)
+- Presentations and colour guide: [`presentations/`](./presentations)
