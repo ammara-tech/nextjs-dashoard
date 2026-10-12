@@ -1,6 +1,6 @@
 1.add navigation to allow easier and smoother movement across pages for user
 2.additonal feature:descriptive cards for each doctor->allows user to know which doctor to pick depending on what their needs may be
-3.fix patient1@nextmail.com ->created appointments,prescription,etc
 4.(include a few demo placeholders->appointments,etc)
 5.when doctor signs in it shows automatic dashboard suited for that doctor
 6.for provider shifts it gives a range from mon-friday,etc
+7.fix doctor login ->should show for all doctors-pop up shows to select which doctor->according to which doctor is selected,the dashboard for that doctor is shown.
