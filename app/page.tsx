@@ -96,6 +96,22 @@ export default function Page() {
           );
         })}
       </div>
+      <footer className="mt-8 flex flex-col items-center gap-3 text-center text-sm text-[#64748B]">
+        <ul className="flex flex-wrap justify-center gap-2">
+          {['Role-based access', 'Private documents', 'Demo payments only'].map((item) => (
+            <li
+              className="rounded-full border border-[#dbe3ff] bg-white px-3 py-1 text-xs font-medium text-[#1E2F66]"
+              key={item}
+            >
+              {item}
+            </li>
+          ))}
+        </ul>
+        <p>
+          Demonstration system with sample data. Built by Ammara Badat with
+          Next.js and Supabase.
+        </p>
+      </footer>
     </main>
   );
 }

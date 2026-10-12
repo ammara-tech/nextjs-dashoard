@@ -25,6 +25,12 @@ the landing page at `/`:
   [`medical-aid/proposal.md`](./medical-aid/proposal.md): plans, sign-up,
   saved cards, a chosen card for the plan, demo payments and sample PDFs.
 
+Across the platform: automatic PDF invoices for payments and appointments,
+back, forward and refresh arrows on every login page and dashboard, and small
+professional touches (branded 404 page, favicon, page titles, keyboard focus
+and reduced-motion support). The walkthrough deck in
+[`presentations/`](./presentations) explains all of it in about five minutes.
+
 The billing dashboard itself is unchanged, and the "Not included" list in
 section 4 applies to the billing dashboard only. Production deploys from the
 `main` branch on Vercel.
@@ -126,7 +132,9 @@ separate Family Clinic proposal.
    setup SQL.
 3. Build the application and resolve TypeScript errors. Run
    `supabase/clinic-care-plans.sql` (needed for Care Plans) and, optionally,
-   `supabase/clinic-demo-data.sql` (sample doctors and appointments).
+   `supabase/clinic-demo-data.sql` (sample doctors and appointments) and
+   `supabase/clinic-invoices.sql` (patient access to appointment services for
+   invoices).
 4. Verify authentication and dashboard route access.
 5. Test invoice and customer pages against the existing PostgreSQL service.
 6. Confirm patient management is available only through `/medi-clinic`.

@@ -1,15 +1,21 @@
 import '@/app/ui/global.css';
 import { inter } from '@/app/ui/fonts';
-import { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Acme Dashboard',
-    default: 'Acme Dashboard',
+    template: '%s | Family Clinic Platform',
+    default: 'Family Clinic, Medical Aid and Invoice Dashboards',
   },
-  description: 'The official Next.js Learn Dashboard built with App Router.',
-  metadataBase: new URL('https://next-learn-dashboard.vercel.sh'),
+  description:
+    'Three dashboards in one app: the Family Clinic for patients, doctors, reception and pharmacy, Medical Aid Care Plans, and the Next.js invoice dashboard.',
+  metadataBase: new URL('https://nextjs-dashoard-psi.vercel.app'),
 };
+
+export const viewport: Viewport = {
+  themeColor: '#0F172A',
+};
+
 export default function RootLayout({
   children,
 }: {

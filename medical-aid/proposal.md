@@ -40,6 +40,8 @@ sign in once.
 - Payment history of demo payments and six sample PDFs in `public/care-plans`
   (three benefit guides, membership certificate, terms and debit authorisation).
 - The patient portal's Medical aid tab shows the joined plan.
+- A PDF invoice for every payment, downloadable from the payments table (`/medi-clinic/invoices/care-plan/[id]`), marked as a demo.
+- Teal Medical Aid colours and logo, and back, forward and refresh arrows on its pages.
 
 ### Not included
 

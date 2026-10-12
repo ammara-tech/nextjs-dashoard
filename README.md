@@ -212,6 +212,12 @@ supabase/clinic-sample-doctors-only.sql Removes or hides non-sample providers
 supabase/clinic-invoices.sql Read access to appointment services for invoices
 ```
 
+## Navigation and polish
+
+- Back, forward and refresh arrows (like the browser's) appear on every login and sign-up page, each hub page and inside each dashboard (`app/ui/history-nav.tsx`). If there is no earlier page, Back goes to that area's home.
+- Branded 404 page (`app/not-found.tsx`), favicon (`app/icon.svg`), page title and description for the whole app, theme colour, smooth scrolling, visible keyboard focus, aligned table numbers and reduced-motion support (`app/ui/global.css`).
+- The landing page shows the three dashboard cards with a short trust strip (role-based access, private documents, demo payments only).
+
 ## Invoices
 
 PDF invoices are generated automatically on request, in the clinic's invoice layout (header, billing details, services table, total), with no extra packages:
@@ -225,7 +231,7 @@ Invoice numbers come from the record date and id (for example `INV-CP-20261012-3
 ## Presentations and proposals
 
 - Proposals: [`proposal.md`](./proposal.md) (Next.js billing dashboard), [`family-clinic/proposal.md`](./family-clinic/proposal.md) (Family Clinic) and [`medical-aid/proposal.md`](./medical-aid/proposal.md) (Care Plans).
-- Presentations (PDF with a 60-second speaker script each) are in [`presentations/`](./presentations): billing dashboard, Family Clinic, Medical Aid, and the colour and font guide.
+- Presentations (PDF) are in [`presentations/`](./presentations): the full walkthrough [`family-clinic-platform-walkthrough.pdf`](./presentations/family-clinic-platform-walkthrough.pdf) (12 slides, speaker notes, likely questions and a live demo order), plus short 60-second decks for the billing dashboard, Family Clinic and Medical Aid, and the colour and font guide.
 
 ## Deployment
 
