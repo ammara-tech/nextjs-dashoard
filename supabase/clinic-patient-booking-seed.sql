@@ -15,10 +15,20 @@ begin
     raise exception 'No user with app_metadata clinic_role = owner was found.';
   end if;
 
+  -- Prefer an existing "Dr. Sample ..." provider; only create the default GP
+  -- when there is none, so this seed does not bring back removed doctors.
   select id into provider
   from public.clinic_providers
-  where user_id = owner_id and display_name = 'Dr. Family Clinic GP'
+  where user_id = owner_id and display_name like 'Dr. Sample%' and active
+  order by display_name
   limit 1;
+
+  if provider is null then
+    select id into provider
+    from public.clinic_providers
+    where user_id = owner_id and display_name = 'Dr. Family Clinic GP'
+    limit 1;
+  end if;
 
   if provider is null then
     insert into public.clinic_providers

@@ -159,7 +159,8 @@ Run these in the Supabase SQL Editor, in order, after the base schema files abov
 5. `supabase/clinic-saved-cards.sql`
 6. `supabase/clinic-patient-documents-upload.sql`
 7. `supabase/clinic-care-plans.sql` (Care Plans: plans, memberships, demo payments and the secure join/change-card/cancel functions; run after `clinic-saved-cards.sql`)
-8. `supabase/clinic-demo-data.sql` (optional: three sample doctors with Monday to Friday shifts, sample patients and appointments; assumes an owner account exists)
+8. `supabase/clinic-demo-data.sql` (optional: Monday to Friday shifts, sample patients and appointments for the existing "Dr. Sample ..." providers; assumes an owner account exists)
+9. `supabase/clinic-sample-doctors-only.sql` (optional clean-up: removes every provider that is not a "Dr. Sample ..." provider, or hides it if it has history)
 
 The app still loads if steps 7 and 8 have not been run: the Care Plans pages show a setup notice and the doctor dashboards fall back to clearly labelled sample data.
 
@@ -205,7 +206,8 @@ supabase/clinic-patient-booking-seed.sql Booking seed data
 supabase/clinic-saved-cards.sql Saved card wallet
 supabase/clinic-patient-documents-upload.sql Patient document upload policies
 supabase/clinic-care-plans.sql Care Plans, memberships and demo payment records
-supabase/clinic-demo-data.sql Sample doctors, shifts, patients and appointments
+supabase/clinic-demo-data.sql Shifts, patients and appointments for the Dr. Sample providers
+supabase/clinic-sample-doctors-only.sql Removes or hides non-sample providers
 ```
 
 ## Presentations and proposals

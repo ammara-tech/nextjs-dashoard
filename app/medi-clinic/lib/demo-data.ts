@@ -13,23 +13,23 @@ export type DoctorOption = {
 
 export const demoDoctors: DoctorOption[] = [
   {
-    id: 'demo-amara-naidoo',
-    display_name: 'Dr. Amara Naidoo',
-    specialty: 'General practice',
+    id: 'demo-sample-cardiologist',
+    display_name: 'Dr. Sample Cardiologist',
+    specialty: 'Cardiology',
     time_zone: 'Africa/Johannesburg',
     isDemo: true,
   },
   {
-    id: 'demo-thabo-mokoena',
-    display_name: 'Dr. Thabo Mokoena',
-    specialty: 'Paediatrics',
+    id: 'demo-sample-gastroenterologist',
+    display_name: 'Dr. Sample Gastroenterologist',
+    specialty: 'Gastroenterology',
     time_zone: 'Africa/Johannesburg',
     isDemo: true,
   },
   {
-    id: 'demo-sarah-patel',
-    display_name: 'Dr. Sarah Patel',
-    specialty: 'Dermatology',
+    id: 'demo-sample-geriatrician',
+    display_name: 'Dr. Sample Geriatrician',
+    specialty: 'Geriatric medicine',
     time_zone: 'Africa/Johannesburg',
     isDemo: true,
   },

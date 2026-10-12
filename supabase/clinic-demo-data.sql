@@ -1,8 +1,8 @@
--- Demo data for the Family Clinic dashboards: three doctors with Monday to
--- Friday shifts, six sample patients (patient numbers DEMO-0001 to DEMO-0006)
+-- Demo data for the Family Clinic dashboards: Monday to Friday shifts for the
+-- existing "Dr. Sample ..." providers (no other doctors are created), six sample patients (patient numbers DEMO-0001 to DEMO-0006)
 -- and a week of appointments around today for each doctor.
 --
--- Run once in the Supabase SQL editor. Safe to re-run: existing doctors,
+-- Run once in the Supabase SQL editor. Safe to re-run: existing
 -- patients and shifts are reused, and a doctor who already has appointments
 -- is left alone. Remove the demo patients later by archiving them in the app.
 do $$
@@ -26,6 +26,13 @@ begin
     raise exception 'No user with app_metadata clinic_role = owner was found.';
   end if;
 
+  if not exists (
+    select 1 from public.clinic_providers
+    where user_id = owner_id and display_name like 'Dr. Sample%' and active
+  ) then
+    raise exception 'No active "Dr. Sample ..." providers found. Add them first in the Providers page.';
+  end if;
+
   insert into public.clinic_appointment_types (user_id, name, category, duration_minutes)
   values
     (owner_id, 'General consultation', 'Consultation', 30),
@@ -34,26 +41,18 @@ begin
     (owner_id, 'Child wellness check', 'Preventive', 30)
   on conflict (user_id, name) do nothing;
 
-  -- Doctors and their Monday to Friday shifts.
+  -- Uses only the existing "Dr. Sample ..." providers; no other doctors are
+  -- created. Each gets Monday to Friday shifts if it has none yet.
   for doc in
-    select * from (values
-      (1, 'Dr. Amara Naidoo', 'General practice'),
-      (2, 'Dr. Thabo Mokoena', 'Paediatrics'),
-      (3, 'Dr. Sarah Patel', 'Dermatology')
-    ) as t(n, name, specialty)
+    select
+      p.id,
+      row_number() over (order by p.display_name)::int as n
+    from public.clinic_providers p
+    where p.user_id = owner_id
+      and p.display_name like 'Dr. Sample%'
+      and p.active
   loop
-    select id into prov
-    from public.clinic_providers
-    where user_id = owner_id and display_name = doc.name
-    limit 1;
-
-    if prov is null then
-      insert into public.clinic_providers
-        (user_id, display_name, specialty, time_zone, max_daily_appointments)
-      values
-        (owner_id, doc.name, doc.specialty, 'Africa/Johannesburg', 20)
-      returning id into prov;
-    end if;
+    prov := doc.id;
     provider_ids := provider_ids || prov;
 
     if not exists (select 1 from public.clinic_provider_shifts where provider_id = prov) then
