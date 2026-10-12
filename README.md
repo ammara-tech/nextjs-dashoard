@@ -31,7 +31,7 @@ The patient portal now includes a dedicated medical aid panel designed around th
 
 This is implemented as a patient-facing clinic integration aligned to the `/medi-clinic` portal and keeps the role separation intact for the rest of the app.
 
-## Technology
+## Technology/Stack used
 
 - Next.js App Router and React
 - TypeScript
