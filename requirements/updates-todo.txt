@@ -1,12 +1,4 @@
 1.add navigation to allow easier and smoother movement across pages for user
-2.create presentations for both the nextjs and family clinic (proposal.md and readme.md) ->NB: 60 second time limit for each
-3.minute debrief:
-->what is it? (1 sentence)
-->does it run?(a live link that works)
-->can this person explain their choices ->NB: do research on fonts and colors(according to each dashboard) ->readme and demo must answer these questions
-
-4.additonal feature:descriptive cards for each doctor->allows user to know which doctor to pick depending on what their needs may be
-5.know how to apply business rules for both dashboards include basic POPIA measures
-6.know why the stack used(eg:auth,supabase,etc)
-7.fix patient1@nextmail.com ->ensure all details does show,include upload documents,created appointments,prescription,etc
-8.(include a few demo placeholders->appointments,etc)
+2.additonal feature:descriptive cards for each doctor->allows user to know which doctor to pick depending on what their needs may be
+3.fix patient1@nextmail.com ->ensure all details does show,include upload documents,created appointments,prescription,etc
+4.(include a few demo placeholders->appointments,etc)
