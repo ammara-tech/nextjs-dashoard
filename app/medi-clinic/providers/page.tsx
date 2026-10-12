@@ -128,7 +128,7 @@ export default async function ClinicProvidersPage() {
         ) : (
           <form
             action={createClinicProviderShift}
-            className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+            className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6"
           >
             <Field label="Provider">
               <select className={inputClass} name="provider_id" required>
