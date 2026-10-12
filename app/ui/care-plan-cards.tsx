@@ -44,7 +44,7 @@ export default function CarePlanCards({
           ring: 'ring-[#9CC9FF]',
           badge: 'bg-[#5B7FFF]',
           btnFeatured: 'bg-white text-[#1E2F66] hover:bg-[#EEF2FF]',
-          btn: t.btn,
+          btn: 'bg-[#1E4FD8] text-white hover:bg-[#2b4190]',
           note: 'text-[#9CC9FF]',
         };
   return (
