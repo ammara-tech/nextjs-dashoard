@@ -2,3 +2,4 @@
 2.additonal feature:descriptive cards for each doctor->allows user to know which doctor to pick depending on what their needs may be
 3.fix patient1@nextmail.com ->created appointments,prescription,etc
 4.(include a few demo placeholders->appointments,etc)
+5.when doctor signs in it shows automatic dashboard suited for that doctor
