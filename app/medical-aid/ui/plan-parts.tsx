@@ -86,6 +86,7 @@ export function PaymentsTable({
               <th className="px-5 py-3 font-medium">Card</th>
               <th className="px-5 py-3 font-medium">Amount</th>
               <th className="px-5 py-3 font-medium">Status</th>
+              <th className="px-5 py-3 font-medium">Invoice</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#eff0f4]">
@@ -116,6 +117,16 @@ export function PaymentsTable({
                       Demo
                     </span>
                   ) : null}
+                </td>
+                <td className="whitespace-nowrap px-5 py-4">
+                  <a
+                    className="font-medium text-[#0D9488] hover:underline"
+                    href={`/medi-clinic/invoices/care-plan/${payment.id}`}
+                    rel="noopener"
+                    target="_blank"
+                  >
+                    Download PDF
+                  </a>
                 </td>
               </tr>
             ))}

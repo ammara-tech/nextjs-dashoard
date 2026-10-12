@@ -160,7 +160,8 @@ Run these in the Supabase SQL Editor, in order, after the base schema files abov
 6. `supabase/clinic-patient-documents-upload.sql`
 7. `supabase/clinic-care-plans.sql` (Care Plans: plans, memberships, demo payments and the secure join/change-card/cancel functions; run after `clinic-saved-cards.sql`)
 8. `supabase/clinic-demo-data.sql` (optional: Monday to Friday shifts, sample patients and appointments for the existing "Dr. Sample ..." providers; assumes an owner account exists)
-9. `supabase/clinic-sample-doctors-only.sql` (optional clean-up: removes every provider that is not a "Dr. Sample ..." provider, or hides it if it has history)
+9. `supabase/clinic-invoices.sql` (lets patients and front desk read the services on appointments so appointment invoices work; optional but needed for patient appointment invoices)
+10. `supabase/clinic-sample-doctors-only.sql` (optional clean-up: removes every provider that is not a "Dr. Sample ..." provider, or hides it if it has history)
 
 The app still loads if steps 7 and 8 have not been run: the Care Plans pages show a setup notice and the doctor dashboards fall back to clearly labelled sample data.
 
@@ -208,7 +209,18 @@ supabase/clinic-patient-documents-upload.sql Patient document upload policies
 supabase/clinic-care-plans.sql Care Plans, memberships and demo payment records
 supabase/clinic-demo-data.sql Shifts, patients and appointments for the Dr. Sample providers
 supabase/clinic-sample-doctors-only.sql Removes or hides non-sample providers
+supabase/clinic-invoices.sql Read access to appointment services for invoices
 ```
+
+## Invoices
+
+PDF invoices are generated automatically on request, in the clinic's invoice layout (header, billing details, services table, total), with no extra packages:
+
+- Care Plan payments: "Download PDF" in the Care Plans payments table (`/medi-clinic/invoices/care-plan/[id]`).
+- Recorded payments: "Invoice" in the patient portal and "PDF" in the staff payments register (`/medi-clinic/invoices/payment/[id]`).
+- Appointments: "Invoice (PDF)" in the patient portal and staff appointment list (`/medi-clinic/invoices/appointment/[id]`), built from the services recorded for the appointment. It shows Unpaid until paid payments cover the total, and returns a clear message when no services are recorded yet.
+
+Invoice numbers come from the record date and id (for example `INV-CP-20261012-3F9A2C`), so a record always has the same number. Access follows row-level security, so patients only get their own invoices.
 
 ## Presentations and proposals
 

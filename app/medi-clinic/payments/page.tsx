@@ -69,6 +69,7 @@ export default async function ClinicPaymentsPage() {
                   <th className="px-5 py-3 font-medium">Method</th>
                   <th className="px-5 py-3 font-medium">Status</th>
                   <th className="px-5 py-3 font-medium">Recorded</th>
+                  <th className="px-5 py-3 font-medium">Invoice</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#eff0f4]">
@@ -83,6 +84,16 @@ export default async function ClinicPaymentsPage() {
                     <td className="px-5 py-4 capitalize">{payment.method.replace('_', ' ')}</td>
                     <td className="px-5 py-4 capitalize">{payment.status.replace('_', ' ')}</td>
                     <td className="px-5 py-4">{new Date(payment.created_at).toLocaleString()}</td>
+                    <td className="px-5 py-4">
+                      <a
+                        className="font-medium text-[#1E4FD8] hover:underline"
+                        href={`/medi-clinic/invoices/payment/${payment.id}`}
+                        rel="noopener"
+                        target="_blank"
+                      >
+                        PDF
+                      </a>
+                    </td>
                   </tr>
                 ))}
               </tbody>

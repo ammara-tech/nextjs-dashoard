@@ -110,6 +110,14 @@ export default async function ClinicAppointmentsPage() {
                     </td>
                     <td className="px-5 py-4 capitalize text-[#727a90]">
                       {appointment.status.replace('_', ' ')}
+                      <a
+                        className="mt-1 block text-xs font-medium normal-case text-[#1E4FD8] hover:underline"
+                        href={`/medi-clinic/invoices/appointment/${appointment.id}`}
+                        rel="noopener"
+                        target="_blank"
+                      >
+                        Invoice (PDF)
+                      </a>
                     </td>
                     {canManageAppointments && (
                     <td className="min-w-72 px-5 py-3">

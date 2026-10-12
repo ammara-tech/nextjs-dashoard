@@ -330,6 +330,14 @@ export default async function PatientPortalPage({
                   <span className="text-xs capitalize text-[#727a90]">
                     {appointment.status.replace('_', ' ')}
                   </span>
+                  <a
+                    className="mt-1 block text-xs font-medium text-[#1E4FD8] hover:underline"
+                    href={`/medi-clinic/invoices/appointment/${appointment.id}`}
+                    rel="noopener"
+                    target="_blank"
+                  >
+                    Invoice (PDF)
+                  </a>
                 </div>
               </li>
             ))}
@@ -388,8 +396,16 @@ export default async function PatientPortalPage({
                 <span>
                   {payment.method.replace('_', ' ')} · {payment.status.replace('_', ' ')}
                 </span>
-                <span>
+                <span className="text-right">
                   {(payment.amount_minor / 100).toFixed(2)} {payment.currency.toUpperCase()}
+                  <a
+                    className="ml-3 font-medium text-[#1E4FD8] hover:underline"
+                    href={`/medi-clinic/invoices/payment/${payment.id}`}
+                    rel="noopener"
+                    target="_blank"
+                  >
+                    Invoice
+                  </a>
                 </span>
               </li>
             ))}
