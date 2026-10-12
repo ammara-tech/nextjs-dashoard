@@ -82,7 +82,7 @@ cards are rejected.
 | Risk | Mitigation |
 |---|---|
 | Demo payments mistaken for real ones | Every payment and plan page says demo; no gateway is wired. |
-| Presenting the plans as an insurance product | Disclaimer on the pages that Care Plans are a clinic membership demo, not regulated insurance. |
+| Presenting the plans as an insurance product | Pages state that plan prices, benefits and documents are illustrative and final terms are confirmed by the clinic. |
 | Card data exposure | Only brand, last four digits and expiry are stored. |
 | Price tampering | Price comes from the database function, not the form. |
 
