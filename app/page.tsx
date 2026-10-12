@@ -1,6 +1,41 @@
-import { ArrowRightIcon } from '@heroicons/react/24/outline';
+import {
+  ArrowRightIcon,
+  HeartIcon,
+  ShieldCheckIcon,
+  Squares2X2Icon,
+} from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { ClinicMark, MedicalAidMark } from '@/app/ui/clinic-logo';
+
+const cards = [
+  {
+    href: '/clinic-hub',
+    badge: 'Family Clinic',
+    title: 'Care for the whole family, in one place.',
+    text: 'Appointments, prescriptions, medical aid and records for patients and clinic staff.',
+    cta: 'Open Family Clinic',
+    icon: HeartIcon,
+    accent: 'from-[#1E4FD8] to-[#5B7FFF]',
+  },
+  {
+    href: '/nextjs-hub',
+    badge: 'Next.js',
+    title: 'Next.js invoice dashboard',
+    text: 'Manage customers, invoices and revenue in the original Next.js dashboard.',
+    cta: 'Open Next.js dashboard',
+    icon: Squares2X2Icon,
+    accent: 'from-[#0F172A] to-[#1E2F66]',
+  },
+  {
+    href: '/medical-aid',
+    badge: 'Medical Aid',
+    title: 'Medical aid dashboard',
+    text: 'Join a Family Clinic Care Plan, choose the card it is paid from, and see your cover and documents.',
+    cta: 'Open Medical Aid',
+    icon: ShieldCheckIcon,
+    accent: 'from-[#0D9488] to-[#2DD4BF]',
+  },
+];
 
 export default function Page() {
   return (
@@ -29,63 +64,37 @@ export default function Page() {
         </div>
       </div>
       <div className="mt-4 grid grow content-center gap-6 md:grid-cols-3 md:px-8">
-        <div className="flex flex-col gap-6 rounded-2xl bg-white px-8 py-10 text-center shadow-sm">
-          <span className="mx-auto rounded-full bg-[#EEF2FF] px-3 py-1 text-xs font-semibold text-[#1E2F66]">
-            Family Clinic
-          </span>
-          <h1 className="text-3xl font-bold text-[#0F172A]">
-            Care for the whole family, in one place.
-          </h1>
-          <p className="text-[#475569]">
-            Appointments, prescriptions, medical aid and records for patients
-            and clinic staff.
-          </p>
-          <Link
-            href="/clinic-hub"
-            className="mx-auto mt-auto flex items-center gap-3 rounded-xl bg-[#5B7FFF] px-6 py-3 font-medium text-white transition-colors hover:bg-[#4a6be6]"
-          >
-            Open the Family Clinic dashboard
-            <ArrowRightIcon className="w-5" />
-          </Link>
-        </div>
-        <div className="flex flex-col gap-6 rounded-2xl bg-white px-8 py-10 text-center shadow-sm">
-          <span className="mx-auto rounded-full bg-[#EEF2FF] px-3 py-1 text-xs font-semibold text-[#1E2F66]">
-            Next.js
-          </span>
-          <h2 className="text-3xl font-bold text-[#0F172A]">
-            Next.js invoice dashboard
-          </h2>
-          <p className="text-[#475569]">
-            Manage customers, invoices and revenue in the original Next.js
-            dashboard.
-          </p>
-          <Link
-            href="/nextjs-hub"
-            className="mx-auto mt-auto flex items-center gap-3 rounded-xl border border-[#1E2F66] px-6 py-3 font-medium text-[#1E2F66] transition-colors hover:bg-[#EEF2FF]"
-          >
-            Open the Next.js dashboard
-            <ArrowRightIcon className="w-5" />
-          </Link>
-        </div>
-        <div className="flex flex-col gap-6 rounded-2xl bg-white px-8 py-10 text-center shadow-sm">
-          <span className="mx-auto rounded-full bg-[#EEF2FF] px-3 py-1 text-xs font-semibold text-[#1E2F66]">
-            Medical Aid
-          </span>
-          <h2 className="text-3xl font-bold text-[#0F172A]">
-            Medical aid dashboard
-          </h2>
-          <p className="text-[#475569]">
-            Join a Family Clinic Care Plan, choose the card it is paid from, and
-            see your cover and documents.
-          </p>
-          <Link
-            href="/medical-aid"
-            className="mx-auto mt-auto flex items-center gap-3 rounded-xl border border-[#1E2F66] px-6 py-3 font-medium text-[#1E2F66] transition-colors hover:bg-[#EEF2FF]"
-          >
-            Open the Medical Aid dashboard
-            <ArrowRightIcon className="w-5" />
-          </Link>
-        </div>
+        {cards.map((card) => {
+          const Icon = card.icon;
+          return (
+            <Link
+              className="group relative flex flex-col gap-5 overflow-hidden rounded-3xl border border-[#e3e8f5] bg-gradient-to-b from-white to-[#F3F6FF] px-8 pb-8 pt-10 text-center shadow-sm transition duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-[#5B7FFF]/15"
+              href={card.href}
+              key={card.href}
+            >
+              <span
+                className={`absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r ${card.accent}`}
+                aria-hidden="true"
+              />
+              <span
+                className={`mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br ${card.accent} text-white shadow-lg ring-4 ring-white`}
+              >
+                <Icon className="h-8 w-8" />
+              </span>
+              <span className="mx-auto rounded-full border border-[#dbe3ff] bg-[#EEF2FF] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#1E2F66]">
+                {card.badge}
+              </span>
+              <h2 className="text-3xl font-bold text-[#0F172A]">{card.title}</h2>
+              <p className="text-[#475569]">{card.text}</p>
+              <span
+                className={`mt-auto flex items-center justify-center gap-3 rounded-xl bg-gradient-to-r ${card.accent} px-6 py-3 font-medium text-white shadow-md transition-all group-hover:gap-4 group-hover:shadow-lg`}
+              >
+                {card.cta}
+                <ArrowRightIcon className="w-5" />
+              </span>
+            </Link>
+          );
+        })}
       </div>
     </main>
   );
