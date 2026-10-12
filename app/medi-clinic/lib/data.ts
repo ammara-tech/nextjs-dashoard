@@ -273,6 +273,44 @@ export async function fetchProviderShifts(): Promise<ProviderShift[]> {
   return data;
 }
 
+// Appointments for one provider. Row-level security still applies, so a doctor
+// account only receives rows for the provider profile linked to its own login.
+export async function fetchDoctorAppointments(
+  providerId: string,
+): Promise<Appointment[]> {
+  const { supabase } = await getClinicAccess();
+  const { data, error } = await supabase
+    .from('appointments')
+    .select(
+      'id, patient_id, provider_id, appointment_type_id, duration_minutes, starts_at, status, patients!inner(full_name, phone), clinic_providers(display_name, specialty), clinic_appointment_types(name, category)',
+    )
+    .eq('provider_id', providerId)
+    .order('starts_at', { ascending: true });
+
+  if (error) {
+    console.error('Supabase doctor appointment list error:', error);
+    throw new Error('Unable to load this doctor’s appointments.');
+  }
+  return data as unknown as Appointment[];
+}
+
+export async function fetchDoctorShifts(
+  providerId: string,
+): Promise<ProviderShift[]> {
+  const { supabase } = await getClinicAccess();
+  const { data, error } = await supabase
+    .from('clinic_provider_shifts')
+    .select('id, provider_id, weekday, starts_at, ends_at')
+    .eq('provider_id', providerId)
+    .order('weekday')
+    .order('starts_at');
+  if (error) {
+    console.error('Supabase doctor shift list error:', error);
+    throw new Error('Unable to load this doctor’s shifts.');
+  }
+  return data;
+}
+
 export async function fetchProviderBlocks(): Promise<ProviderBlock[]> {
   const { supabase } = await getClinicAccess();
   const { data, error } = await supabase

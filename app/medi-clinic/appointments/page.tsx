@@ -6,9 +6,23 @@ import {
   fetchClinicProviders,
   fetchPatients,
 } from '../lib/data';
+import { loadDoctorSchedule, requireSelectedDoctor } from '../lib/doctor-context';
 import CreateAppointmentForm from '../ui/create-appointment-form';
+import { DoctorAppointmentsView } from '../ui/doctor-views';
 
 export default async function ClinicAppointmentsPage() {
+  const { role } = await getClinicAccess();
+  if (role === 'doctor') {
+    // Doctors see the appointments of the doctor chosen in the pop-up.
+    const { selected } = await requireSelectedDoctor();
+    return (
+      <DoctorAppointmentsView
+        doctor={selected}
+        schedule={await loadDoctorSchedule(selected)}
+      />
+    );
+  }
+
   const [
     appointments,
     patients,
