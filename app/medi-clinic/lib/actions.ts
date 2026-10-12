@@ -1135,3 +1135,62 @@ export async function removeClinicCard(formData: FormData) {
   revalidatePath('/medi-clinic/portal');
   revalidatePath('/medical-aid/dashboard');
 }
+
+export type AvailabilityState = { message?: string; success?: boolean };
+
+const AVAILABILITY_DAYS = [1, 2, 3, 4, 5, 6, 0];
+const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+/**
+ * Saves a provider's weekly availability from the admin form. Days marked as
+ * locked (a day with split shifts) are not sent, so they stay as they are.
+ */
+export async function saveProviderAvailability(
+  _previous: AvailabilityState,
+  formData: FormData,
+): Promise<AvailabilityState> {
+  const { supabase } = await requireClinicRole(['owner', 'admin']);
+  const providerId = formString(formData, 'provider_id');
+  if (!z.string().uuid().safeParse(providerId).success) {
+    return { message: 'Choose a provider.' };
+  }
+
+  const preset = formString(formData, 'preset');
+  const days: { weekday: number; working: boolean; starts_at: string; ends_at: string }[] = [];
+  for (const weekday of AVAILABILITY_DAYS) {
+    if (formData.get(`locked_${weekday}`)) continue;
+    const isWeekday = weekday >= 1 && weekday <= 5;
+    const working =
+      preset === 'weekdays' ? isWeekday : formData.get(`work_${weekday}`) === 'on';
+    const start = preset === 'weekdays' ? '08:00' : formString(formData, `start_${weekday}`);
+    const end = preset === 'weekdays' ? '17:00' : formString(formData, `end_${weekday}`);
+    if (working && (!TIME_PATTERN.test(start) || !TIME_PATTERN.test(end))) {
+      return { message: 'Enter a start and end time for every working day.' };
+    }
+    if (working && start >= end) {
+      return { message: 'Each shift must end later than it starts.' };
+    }
+    days.push({ weekday, working, starts_at: start || '08:00', ends_at: end || '17:00' });
+  }
+
+  const { error } = await supabase.rpc('set_provider_availability', {
+    p_provider_id: providerId,
+    p_days: days,
+  });
+  if (error) {
+    console.error('Supabase set_provider_availability error:', error);
+    return {
+      message:
+        error.code === 'P0001'
+          ? error.message
+          : error.code === '42883' || error.code === 'PGRST202'
+            ? 'Availability editing is not set up yet. Run supabase/clinic-admin-availability.sql in Supabase.'
+            : `Unable to save availability (${error.code}).`,
+    };
+  }
+
+  revalidatePath('/medi-clinic/shifts');
+  revalidatePath('/medi-clinic/providers');
+  revalidatePath('/medi-clinic/appointments');
+  return { message: 'Availability saved.', success: true };
+}

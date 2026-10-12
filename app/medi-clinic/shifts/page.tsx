@@ -3,6 +3,7 @@ import { fetchClinicProviders, fetchProviderShifts } from '../lib/data';
 import { demoDoctors, demoShifts } from '../lib/demo-data';
 import { loadDoctorSchedule, requireSelectedDoctor } from '../lib/doctor-context';
 import { SampleBanner } from '../ui/doctor-dashboard';
+import AvailabilityForm from '../ui/availability-form';
 import WeeklyShifts from '../ui/weekly-shifts';
 
 export default async function ClinicShiftsPage() {
@@ -35,10 +36,15 @@ export default async function ClinicShiftsPage() {
     providersResult.status === 'fulfilled' ? providersResult.value : [];
   const shifts = shiftsResult.status === 'fulfilled' ? shiftsResult.value : [];
   const useSample = providers.length === 0;
+  const canEdit = (role === 'owner' || role === 'admin') && !useSample;
 
   return (
     <div className="space-y-6">
-      <PageHeading subtitle="Weekly availability, Monday to Friday" title="Provider shifts" />
+      <PageHeading subtitle={
+          role === 'owner' || role === 'admin'
+            ? 'Weekly availability. Open "Change availability" to edit when a provider works.'
+            : 'Weekly availability, Monday to Friday'
+        } title="Provider shifts" />
       {useSample ? (
         <SampleBanner>
           No providers are set up yet, so sample doctors and shifts are shown. Add real
@@ -58,6 +64,17 @@ export default async function ClinicShiftsPage() {
                 : shifts.filter((shift) => shift.provider_id === provider.id)
             }
           />
+          {canEdit ? (
+            <details className="mt-4 rounded-xl border border-[#e9eaf0] bg-[#fafbfe] px-4 py-3">
+              <summary className="cursor-pointer text-sm font-semibold text-[#1E4FD8]">
+                Change availability
+              </summary>
+              <AvailabilityForm
+                providerId={provider.id}
+                shifts={shifts.filter((shift) => shift.provider_id === provider.id)}
+              />
+            </details>
+          ) : null}
         </section>
       ))}
     </div>

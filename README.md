@@ -117,6 +117,7 @@ This is implemented as a patient-facing clinic integration aligned to the `/medi
 - Patient records and patient-management pages appear only in the Family Clinic dashboard. Legacy `/dashboard/patients` URLs redirect to `/medi-clinic/patients`, and `/dashboard/chart-check` redirects to the clinic overview.
 - The first chart counts patients by creation month for the current and previous five calendar months. The second chart counts this month's appointments by `booked`, `done`, and `no_show`, joined to their patients.
 - `/medi-clinic/patients` and `/medi-clinic/appointments` support create and edit for owner/front-desk staff. Provider-based bookings require an active provider, appointment type, and matching weekly shift. SQL functions enforce provider time conflicts and daily appointment caps.
+- Owners and administrators can change when a provider is available on `/medi-clinic/shifts`: open "Change availability" under a provider, tick the days they work, set the hours for each day (or use "Set Monday to Friday, 08:00-17:00") and save. Changes are saved in one step through `set_provider_availability`, and a day with split shifts is left as it is.
 - Shifts are created as a day range: choosing Monday to Friday adds one shift per day and skips days that already exist.
 - `/medi-clinic/treatments` is owner-only. `/medi-clinic/tomorrow` lists booked appointments for the next calendar day, including patient phone numbers.
 - Owners can configure providers, specialties, time zones, appointment types/durations, shifts, and availability blocks at `/medi-clinic/providers`.
@@ -161,7 +162,8 @@ Run these in the Supabase SQL Editor, in order, after the base schema files abov
 7. `supabase/clinic-care-plans.sql` (Care Plans: plans, memberships, demo payments and the secure join/change-card/cancel functions; run after `clinic-saved-cards.sql`)
 8. `supabase/clinic-demo-data.sql` (optional: Monday to Friday shifts, sample patients and appointments for the existing "Dr. Sample ..." providers; assumes an owner account exists)
 9. `supabase/clinic-invoices.sql` (lets patients and front desk read the services on appointments so appointment invoices work; optional but needed for patient appointment invoices)
-10. `supabase/clinic-sample-doctors-only.sql` (optional clean-up: removes every provider that is not a "Dr. Sample ..." provider, or hides it if it has history)
+10. `supabase/clinic-admin-availability.sql` (lets the owner and administrators change when providers are available from the Provider shifts page)
+11. `supabase/clinic-sample-doctors-only.sql` (optional clean-up: removes every provider that is not a "Dr. Sample ..." provider, or hides it if it has history)
 
 The app still loads if steps 7 and 8 have not been run: the Care Plans pages show a setup notice and the doctor dashboards fall back to clearly labelled sample data.
 
@@ -210,6 +212,7 @@ supabase/clinic-care-plans.sql Care Plans, memberships and demo payment records
 supabase/clinic-demo-data.sql Shifts, patients and appointments for the Dr. Sample providers
 supabase/clinic-sample-doctors-only.sql Removes or hides non-sample providers
 supabase/clinic-invoices.sql Read access to appointment services for invoices
+supabase/clinic-admin-availability.sql Atomic function to change provider availability
 ```
 
 ## Navigation and polish
