@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import LoginForm from '@/app/ui/login-form';
 import { MedicalAidLogo } from '@/app/ui/clinic-logo';
+import HistoryNav from '@/app/ui/history-nav';
 
 export const metadata = { title: 'Sign in · Care Plans' };
 
@@ -16,7 +17,8 @@ export default async function MedicalAidLoginPage({
     : '/medical-aid/register';
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#F8FAFC]">
+    <main className="relative flex min-h-screen items-center justify-center bg-[#F8FAFC]">
+      <HistoryNav fallbackHref="/medical-aid" variant="floating" />
       <div className="w-full max-w-[440px] p-5">
         <div className="mb-5 rounded-2xl bg-[#0F172A] p-6 text-white">
           <MedicalAidLogo light />

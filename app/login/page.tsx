@@ -2,10 +2,12 @@ import Link from 'next/link';
 import { ClinicMark } from '@/app/ui/clinic-logo';
 import LoginForm from '@/app/ui/login-form';
 import { Suspense } from 'react';
+import HistoryNav from '@/app/ui/history-nav';
 
 export default function LoginPage() {
   return (
-    <main className="flex items-center justify-center md:h-screen">
+    <main className="relative flex items-center justify-center md:h-screen">
+      <HistoryNav fallbackHref="/" variant="floating" />
       <div className="relative mx-auto flex w-full max-w-[400px] flex-col space-y-2.5 p-4 md:-mt-32">
         <div className="flex w-full flex-col items-center gap-3 rounded-lg bg-[#0F172A] px-4 py-6 text-center">
           <div className="flex items-center gap-4">

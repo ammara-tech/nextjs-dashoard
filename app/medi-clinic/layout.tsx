@@ -4,6 +4,7 @@ import { getClinicAccess } from './lib/access';
 import { getSelectedDoctor } from './lib/doctor-context';
 import ClinicNavigation from './ui/navigation';
 import ClinicLogo from '@/app/ui/clinic-logo';
+import HistoryNav from '@/app/ui/history-nav';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,9 +22,12 @@ export default async function MediClinicLayout({
       <header className="border-b border-[#e9eaf0] border-t-4 border-t-[#1E4FD8] bg-white">
         <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-6 sm:px-8 lg:px-10">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <Link className="flex items-center gap-3" href="/medi-clinic">
-              <ClinicLogo />
-            </Link>
+            <div className="flex items-center gap-4">
+              <HistoryNav fallbackHref="/medi-clinic" />
+              <Link className="flex items-center gap-3" href="/medi-clinic">
+                <ClinicLogo />
+              </Link>
+            </div>
             <div className="flex items-center gap-3">
               {role === 'doctor' && (
                 <Link

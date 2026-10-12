@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { signOut } from '@/app/lib/actions';
 import { getClinicAccess } from '@/app/medi-clinic/lib/access';
 import { MedicalAidLogo } from '@/app/ui/clinic-logo';
+import HistoryNav from '@/app/ui/history-nav';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,9 +17,12 @@ export default async function MedicalAidDashboardLayout({
     <main className="min-h-screen bg-[#f7f8fc] text-[#0F766E]">
       <header className="sticky top-0 z-30 border-b border-[#e9eaf0] border-t-4 border-t-[#0D9488] bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-4 sm:px-8">
-          <Link className="flex items-center gap-3" href="/medical-aid">
-            <MedicalAidLogo />
-          </Link>
+          <div className="flex items-center gap-4">
+            <HistoryNav fallbackHref="/medical-aid" />
+            <Link className="flex items-center gap-3" href="/medical-aid">
+              <MedicalAidLogo />
+            </Link>
+          </div>
           <div className="flex flex-wrap items-center gap-3">
             {role === 'patient' ? (
               <Link
