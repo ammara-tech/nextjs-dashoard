@@ -231,7 +231,7 @@ Invoice numbers come from the record date and id (for example `INV-CP-20261012-3
 ## Presentations and proposals
 
 - Proposals: [`proposal.md`](./proposal.md) (Next.js billing dashboard), [`family-clinic/proposal.md`](./family-clinic/proposal.md) (Family Clinic) and [`medical-aid/proposal.md`](./medical-aid/proposal.md) (Care Plans).
-- Presentations (PDF) are in [`presentations/`](./presentations): the full walkthrough [`family-clinic-platform-walkthrough.pdf`](./presentations/family-clinic-platform-walkthrough.pdf) (12 slides, speaker notes, likely questions and a live demo order), plus short 60-second decks for the billing dashboard, Family Clinic and Medical Aid, and the colour and font guide.
+- Presentations (PDF) are in [`presentations/`](./presentations): the full walkthrough [`family-clinic-platform-walkthrough.pdf`](./presentations/family-clinic-platform-walkthrough.pdf) (12 slides, speaker notes, likely questions and a live demo order), and the speech [`walkthrough-speech.md`](./presentations/walkthrough-speech.md) (also as PDF), plus short 60-second decks for the billing dashboard, Family Clinic and Medical Aid, and the colour and font guide.
 
 ## Deployment
 
