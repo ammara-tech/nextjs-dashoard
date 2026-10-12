@@ -1052,6 +1052,7 @@ export async function addClinicSavedCard(
     };
   }
   revalidatePath('/medi-clinic/portal');
+  revalidatePath('/medical-aid/dashboard');
   return { message: 'Card saved to your wallet.', success: true };
 }
 
@@ -1072,6 +1073,7 @@ export async function setDefaultClinicCard(formData: FormData) {
     throw new Error(`Unable to update card (${error.code}).`);
   }
   revalidatePath('/medi-clinic/portal');
+  revalidatePath('/medical-aid/dashboard');
 }
 
 export async function removeClinicCard(formData: FormData) {
@@ -1087,4 +1089,5 @@ export async function removeClinicCard(formData: FormData) {
     throw new Error(`Unable to remove card (${error.code}).`);
   }
   revalidatePath('/medi-clinic/portal');
+  revalidatePath('/medical-aid/dashboard');
 }

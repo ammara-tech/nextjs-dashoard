@@ -6,7 +6,12 @@ import {
   type RegistrationState,
 } from './actions';
 
-export default function PatientRegistrationForm() {
+export default function PatientRegistrationForm({
+  redirectTo,
+}: {
+  /** Where to go after sign-up. Defaults to the clinic overview. */
+  redirectTo?: string;
+}) {
   const [state, formAction, pending] = useActionState<RegistrationState, FormData>(
     registerPatient,
     {},
@@ -14,6 +19,9 @@ export default function PatientRegistrationForm() {
 
   return (
     <form action={formAction} className="space-y-4">
+      {redirectTo ? (
+        <input name="redirect_to" type="hidden" value={redirectTo} />
+      ) : null}
       <label className="block text-sm font-medium text-[#404960]">
         Full name
         <input

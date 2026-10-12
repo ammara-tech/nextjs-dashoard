@@ -8,11 +8,15 @@ export async function middleware(request: NextRequest) {
     registrationUrl.pathname = '/clinic-register';
     return NextResponse.redirect(registrationUrl);
   }
+  const isMedicalAidDashboard =
+    pathname === '/medical-aid/dashboard' ||
+    pathname.startsWith('/medical-aid/dashboard/');
   const isDashboard =
     pathname === '/dashboard' ||
     pathname.startsWith('/dashboard/') ||
     pathname === '/medi-clinic' ||
-    pathname.startsWith('/medi-clinic/');
+    pathname.startsWith('/medi-clinic/') ||
+    isMedicalAidDashboard;
   const isLoginPage = pathname === '/login';
 
   if (!isDashboard && !isLoginPage) {
@@ -57,9 +61,11 @@ export async function middleware(request: NextRequest) {
 
   if (isDashboard && !user) {
     const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = pathname.startsWith('/medi-clinic')
-      ? '/clinic-login'
-      : '/login';
+    loginUrl.pathname = isMedicalAidDashboard
+      ? '/medical-aid/login'
+      : pathname.startsWith('/medi-clinic')
+        ? '/clinic-login'
+        : '/login';
     loginUrl.searchParams.set(
       'callbackUrl',
       `${request.nextUrl.pathname}${request.nextUrl.search}`,

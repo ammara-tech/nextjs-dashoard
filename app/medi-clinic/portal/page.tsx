@@ -9,6 +9,10 @@ import CreateAppointmentForm from '../ui/create-appointment-form';
 import CardWallet, { type SavedCard } from '../ui/card-wallet';
 import DocumentUpload from '../ui/document-upload';
 import MedicalAidPanel from '../ui/medical-aid-panel';
+import CarePlanCards from '@/app/ui/care-plan-cards';
+import { getCarePlan, type CarePlanCode } from '@/app/lib/care-plans';
+import { loadCarePlanState } from '@/app/medical-aid/lib/data';
+import PortalPlanCard from '@/app/medical-aid/ui/portal-plan-card';
 
 const tabs = [
   { id: 'overview', label: 'Overview' },
@@ -124,6 +128,10 @@ export default async function PatientPortalPage({
     console.error('Saved cards error:', cardsResult.error);
   }
 
+  // Missing care plan tables must not take down the portal; the state just
+  // reports not-ready and the plan sections are hidden.
+  const carePlan = await loadCarePlanState(supabase, patient.id);
+
   for (const [label, error] of [
     ['appointments', appointmentsResult.error],
     ['documents', documentsResult.error],
@@ -229,11 +237,20 @@ export default async function PatientPortalPage({
             <InfoCard label="Phone" value={patient.phone ?? 'Not on file'} />
             <InfoCard label="Date of birth" value={patient.date_of_birth ?? 'Not on file'} />
           </section>
-          <FamilyCarePromo />
+          <FamilyCarePromo activePlanName={carePlan.active ? getCarePlan(carePlan.active.plan_code)?.name : undefined} />
         </>
       )}
 
-      {tab === 'plans' && <FamilyCarePlans />}
+      {tab === 'plans' && (
+        <CarePlanCards
+          currentCode={(carePlan.active?.plan_code as CarePlanCode | undefined) ?? null}
+          hrefFor={(plan) => `/medical-aid?plan=${plan.code}`}
+        />
+      )}
+
+      {tab === 'medical-aid' && (
+        <PortalPlanCard cards={(cardsResult.data ?? []) as SavedCard[]} state={carePlan} />
+      )}
 
       {tab === 'medical-aid' && (
         <MedicalAidPanel
@@ -460,48 +477,7 @@ function StatCard({
   );
 }
 
-const plans = [
-  {
-    name: 'Essential',
-    tagline: 'Everyday care for one person',
-    price: 'R199',
-    featured: false,
-    perks: [
-      '2 discounted GP consultations a month',
-      'Annual wellness check-up included',
-      '10% off clinic pharmacy items',
-      'Online booking and records',
-    ],
-  },
-  {
-    name: 'Family Plus',
-    tagline: 'Cover for the whole household',
-    price: 'R549',
-    featured: true,
-    perks: [
-      'Up to 2 adults and 4 children',
-      'Unlimited discounted consultations',
-      'Free child immunisation visits',
-      'Priority same-day booking',
-      '20% off pharmacy and treatments',
-    ],
-  },
-  {
-    name: 'Premium',
-    tagline: 'Full-service care and extras',
-    price: 'R899',
-    featured: false,
-    perks: [
-      'Everything in Family Plus',
-      'Dental and optical benefits',
-      'Chronic medication management',
-      'Dedicated care coordinator',
-      'Free specialist referral letters',
-    ],
-  },
-];
-
-function FamilyCarePromo() {
+function FamilyCarePromo({ activePlanName }: { activePlanName?: string }) {
   return (
     <section className="relative overflow-hidden rounded-2xl bg-[#0F172A] p-6 text-white shadow-sm sm:p-8">
       <div className="absolute -right-10 -top-10 h-48 w-48 rounded-full bg-[#1E4FD8]/40 blur-2xl" />
@@ -510,7 +486,9 @@ function FamilyCarePromo() {
           Family Clinic Care Plans
         </p>
         <h2 className="mt-2 text-2xl font-bold sm:text-3xl">
-          Our own medical aid, built for your family
+          {activePlanName
+            ? `You are on the ${activePlanName} plan`
+            : 'Our own medical aid, built for your family'}
         </h2>
         <p className="mt-2 text-sm text-[#C7D4FF]">
           Save on consultations, medication and check-ups with a plan that
@@ -518,76 +496,15 @@ function FamilyCarePromo() {
         </p>
         <Link
           className="mt-5 inline-block rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-[#1E2F66] hover:bg-[#EEF2FF]"
-          href="/medi-clinic/portal?tab=plans"
+          href={
+            activePlanName
+              ? '/medi-clinic/portal?tab=medical-aid'
+              : '/medi-clinic/portal?tab=plans'
+          }
         >
-          Learn more about our plans
+          {activePlanName ? 'View my plan' : 'Learn more about our plans'}
         </Link>
       </div>
-    </section>
-  );
-}
-
-function FamilyCarePlans() {
-  return (
-    <section className="rounded-2xl bg-[#0F172A] p-6 text-white shadow-sm sm:p-8">
-      <div className="text-center">
-        <h2 className="text-3xl font-bold">Plans that grow with you</h2>
-        <p className="mx-auto mt-2 max-w-xl text-sm text-[#C7D4FF]">
-          Family Clinic Care Plans give you perks you will actually use.
-          Choose the one that fits your household.
-        </p>
-      </div>
-      <div className="mt-8 grid gap-4 lg:grid-cols-3">
-        {plans.map((plan) => (
-          <div
-            className={`flex flex-col rounded-2xl border p-6 ${
-              plan.featured
-                ? 'border-[#5B7FFF] bg-[#1E2F66]'
-                : 'border-white/10 bg-white/5'
-            }`}
-            key={plan.name}
-          >
-            <div className="flex items-center justify-between">
-              <h3 className="text-xl font-semibold">{plan.name}</h3>
-              {plan.featured && (
-                <span className="rounded-full bg-[#5B7FFF] px-2.5 py-0.5 text-xs font-semibold">
-                  Most popular
-                </span>
-              )}
-            </div>
-            <p className="mt-1 text-sm text-[#C7D4FF]">{plan.tagline}</p>
-            <p className="mt-5 text-4xl font-bold">
-              {plan.price}
-              <span className="text-sm font-normal text-[#C7D4FF]"> / month</span>
-            </p>
-            <Link
-              className={`mt-5 rounded-xl px-4 py-2.5 text-center text-sm font-semibold ${
-                plan.featured
-                  ? 'bg-white text-[#1E2F66] hover:bg-[#EEF2FF]'
-                  : 'bg-[#1E4FD8] text-white hover:bg-[#2b4190]'
-              }`}
-              href="/medi-clinic/portal?tab=support"
-            >
-              Enquire about {plan.name}
-            </Link>
-            <p className="mt-2 text-center text-xs text-[#9CC9FF]">
-              No commitment · Cancel anytime
-            </p>
-            <ul className="mt-5 space-y-2.5 text-sm">
-              {plan.perks.map((perk) => (
-                <li className="flex gap-2" key={perk}>
-                  <span className="text-[#9CC9FF]">✓</span>
-                  <span>{perk}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-      <p className="mt-6 text-center text-xs text-[#9CC9FF]">
-        Plan prices and benefits are illustrative. Final terms are confirmed by
-        the clinic.
-      </p>
     </section>
   );
 }

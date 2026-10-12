@@ -130,8 +130,9 @@ To seed test data, run the seed insert in [`supabase/patients.sql`](./supabase/p
 - The patient portal at `/medi-clinic/portal` is organised into tabs with dashboard-style stat cards:
   - **Online booking:** patients book from active provider shifts and appointment types.
   - **Card wallet:** patients save several payment cards (stored as masked details only: brand, last four digits, expiry, holder) and pick a default for clinic credit. Real card numbers and CVV are never stored, and no online gateway is connected.
-  - **Family Care plans:** the clinic's own medical aid promotion with perks, plan comparison and enrolment, alongside the provider-based medical aid panel.
+  - **Family Care plans:** the clinic's own medical aid promotion with perks and plan comparison. "Enquire about..." sends the patient to the Care Plans area below. Once a patient has joined, the Medical aid tab shows their plan, status, card, recent payments and sample plan PDFs, alongside the provider-based medical aid panel.
   - **Documents:** patients upload PDF, JPEG or PNG files (max 10 MB) in the identity, clinical history or invoices categories to the private `patients-medical-records` bucket, and open them through short-lived signed links.
+- **Care Plans (`/medical-aid`):** a separate dashboard with its own landing page (sign up, plans, questions and answers), `/medical-aid/login` and `/medical-aid/register` (the same Supabase accounts as the clinic portal), and `/medical-aid/dashboard` for patients to join a plan, save cards, choose which saved card the plan is paid from, see payments and open sample PDFs (served from `public/care-plans`). **No payment gateway is connected:** joining records a clearly labelled demo payment and no money moves. Card numbers and CVV are never stored.
 - The admin dashboard loads each panel independently; if one query fails (for example because of an RLS or clock-skew problem) an amber banner explains it instead of crashing the page.
 
 ### Supabase SQL run order
@@ -144,6 +145,10 @@ Run these in the Supabase SQL Editor, in order, after the base schema files abov
 4. `supabase/clinic-patient-booking-seed.sql` (assumes the owner account has `clinic_role = 'owner'`)
 5. `supabase/clinic-saved-cards.sql`
 6. `supabase/clinic-patient-documents-upload.sql`
+7. `supabase/clinic-care-plans.sql` (Care Plans: plans, memberships, demo payments and the secure join/change-card/cancel functions; run after `clinic-saved-cards.sql`)
+8. `supabase/clinic-demo-data.sql` (optional: three sample doctors with Monday to Friday shifts, sample patients and appointments; assumes an owner account exists)
+
+The app still loads if steps 7 and 8 have not been run: the Care Plans pages show a setup notice and the doctor dashboards fall back to clearly labelled sample data.
 
 ### Known issues
 
@@ -164,6 +169,7 @@ npm run start   # Serve a production build
 ```text
 app/
   medi-clinic/          Separate family clinic dashboard and CRUD routes
+  medical-aid/          Care Plans landing page, login/register and patient dashboard
   dashboard/
     (overview)/          Dashboard overview
     customers/           Customer view
@@ -185,6 +191,8 @@ supabase/fix-patients-rls-recursion.sql  Fixes recursive patients RLS policy
 supabase/clinic-patient-booking-seed.sql Booking seed data
 supabase/clinic-saved-cards.sql Saved card wallet
 supabase/clinic-patient-documents-upload.sql Patient document upload policies
+supabase/clinic-care-plans.sql Care Plans, memberships and demo payment records
+supabase/clinic-demo-data.sql Sample doctors, shifts, patients and appointments
 ```
 
 ## Important notes

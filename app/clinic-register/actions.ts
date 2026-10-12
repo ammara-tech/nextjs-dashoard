@@ -73,7 +73,16 @@ export async function registerPatient(
     if (refreshError) {
       console.error('Supabase session refresh error:', refreshError);
     }
-    redirect('/medi-clinic');
+    // Only same-site paths are allowed, so a crafted form cannot send the new
+    // user to another website.
+    const requested = formData.get('redirect_to');
+    redirect(
+      typeof requested === 'string' &&
+        requested.startsWith('/') &&
+        !requested.startsWith('//')
+        ? requested
+        : '/medi-clinic',
+    );
   }
 
   return {
