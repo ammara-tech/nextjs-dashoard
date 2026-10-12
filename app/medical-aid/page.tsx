@@ -5,7 +5,7 @@ import {
   DocumentTextIcon,
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
-import ClinicLogo, { ClinicMark } from '@/app/ui/clinic-logo';
+import { MedicalAidLogo, MedicalAidMark } from '@/app/ui/clinic-logo';
 import CarePlanCards from '@/app/ui/care-plan-cards';
 import { lusitana } from '@/app/ui/fonts';
 import { getCarePlan } from '@/app/lib/care-plans';
@@ -52,7 +52,7 @@ export default async function MedicalAidLandingPage({
   return (
     <main className="min-h-screen bg-white">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-        <ClinicLogo />
+        <MedicalAidLogo />
         <Link
           className="text-sm font-medium text-slate-600 hover:text-slate-900"
           href="/clinic-hub"
@@ -63,21 +63,21 @@ export default async function MedicalAidLandingPage({
 
       <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-12 md:grid-cols-2">
         <div className="flex flex-col items-start gap-6">
-          <span className="flex items-center gap-2 rounded-full bg-[#EEF2FF] px-3 py-1 text-xs font-semibold text-[#1E2F66]">
+          <span className="flex items-center gap-2 rounded-full bg-[#E6F7F5] px-3 py-1 text-xs font-semibold text-[#0F766E]">
             <ShieldCheckIcon className="w-4" /> Care plans for the whole family
           </span>
           <h1
             className={`${lusitana.className} text-5xl font-bold leading-tight text-slate-900 md:text-6xl`}
           >
             Welcome to your
-            <span className="block text-[#5B7FFF]">Family Clinic Care Plans.</span>
+            <span className="block text-[#0D9488]">Family Clinic Care Plans.</span>
           </h1>
           <p className="max-w-md text-lg text-slate-600">
             Choose a plan, save the card it is paid from, and see your cover and
             documents in your patient portal. Same login as the clinic.
           </p>
           {asked ? (
-            <p className="rounded-xl bg-[#EEF2FF] px-4 py-3 text-sm text-[#1E2F66]">
+            <p className="rounded-xl bg-[#E6F7F5] px-4 py-3 text-sm text-[#0F766E]">
               You asked about <strong>{asked.name}</strong>. Sign in or create a
               user to continue with it.
             </p>
@@ -86,7 +86,7 @@ export default async function MedicalAidLandingPage({
             {isPatient ? (
               <Link
                 href={dashboardFor(asked?.code)}
-                className="flex items-center gap-2 rounded-lg bg-[#1E2F66] px-6 py-3 font-medium text-white transition hover:bg-[#2b4190]"
+                className="flex items-center gap-2 rounded-lg bg-[#0F766E] px-6 py-3 font-medium text-white transition hover:bg-[#115E59]"
               >
                 {asked ? `Continue with ${asked.name}` : 'Open my care plans'}{' '}
                 <ArrowRightIcon className="w-5" />
@@ -94,7 +94,7 @@ export default async function MedicalAidLandingPage({
             ) : signedIn ? (
               <Link
                 href="/medi-clinic"
-                className="flex items-center gap-2 rounded-lg bg-[#1E2F66] px-6 py-3 font-medium text-white transition hover:bg-[#2b4190]"
+                className="flex items-center gap-2 rounded-lg bg-[#0F766E] px-6 py-3 font-medium text-white transition hover:bg-[#115E59]"
               >
                 Open the clinic dashboard <ArrowRightIcon className="w-5" />
               </Link>
@@ -102,13 +102,13 @@ export default async function MedicalAidLandingPage({
               <>
                 <Link
                   href={signInFor(asked?.code)}
-                  className="flex items-center gap-2 rounded-lg bg-[#1E2F66] px-6 py-3 font-medium text-white transition hover:bg-[#2b4190]"
+                  className="flex items-center gap-2 rounded-lg bg-[#0F766E] px-6 py-3 font-medium text-white transition hover:bg-[#115E59]"
                 >
                   Sign in to continue <ArrowRightIcon className="w-5" />
                 </Link>
                 <Link
                   href={registerFor(asked?.code)}
-                  className="flex items-center gap-2 rounded-lg border border-[#1E2F66] px-6 py-3 font-medium text-[#1E2F66] transition hover:bg-[#EEF2FF]"
+                  className="flex items-center gap-2 rounded-lg border border-[#0F766E] px-6 py-3 font-medium text-[#0F766E] transition hover:bg-[#E6F7F5]"
                 >
                   Create user
                 </Link>
@@ -121,9 +121,9 @@ export default async function MedicalAidLandingPage({
           </p>
         </div>
 
-        <div className="rounded-[2rem] bg-gradient-to-br from-[#DCE5FF] to-[#EEF2FF] p-5">
+        <div className="rounded-[2rem] bg-gradient-to-br from-[#CDEFEA] to-[#E6F7F5] p-5">
           <div className="rounded-3xl bg-white p-8 shadow-xl">
-            <ClinicMark className="h-14 w-14" />
+            <MedicalAidMark className="h-14 w-14" />
             <h2
               className={`${lusitana.className} mt-8 text-2xl font-bold text-slate-900`}
             >
@@ -145,7 +145,7 @@ export default async function MedicalAidLandingPage({
                     className="flex items-center gap-4 rounded-xl bg-slate-50 p-4"
                     key={title as string}
                   >
-                    <I className="w-6 shrink-0 text-[#5B7FFF]" />
+                    <I className="w-6 shrink-0 text-[#0D9488]" />
                     <div>
                       <p className="font-semibold text-slate-900">{title as string}</p>
                       <p className="text-sm text-slate-500">{text as string}</p>
@@ -159,7 +159,7 @@ export default async function MedicalAidLandingPage({
       </section>
 
       <section className="mx-auto max-w-6xl px-6">
-        <div className="grid grid-cols-2 gap-4 rounded-2xl bg-[#1E2F66] p-6 text-white md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 rounded-2xl bg-[#0F766E] p-6 text-white md:grid-cols-4">
           {[
             ['3', 'Care plans to choose from'],
             ['No contract', 'Cancel anytime'],
@@ -168,7 +168,7 @@ export default async function MedicalAidLandingPage({
           ].map(([value, label]) => (
             <div key={label} className="text-center">
               <p className="text-2xl font-bold">{value}</p>
-              <p className="text-sm text-[#C7D4FF]">{label}</p>
+              <p className="text-sm text-[#99E0D6]">{label}</p>
             </div>
           ))}
         </div>
@@ -176,6 +176,7 @@ export default async function MedicalAidLandingPage({
 
       <section className="mx-auto max-w-6xl px-6 py-16">
         <CarePlanCards
+          theme="teal"
           buttonLabel={(plan) =>
             isPatient ? `Choose ${plan.name}` : `Sign in to choose ${plan.name}`
           }
@@ -200,7 +201,7 @@ export default async function MedicalAidLandingPage({
               ['3', 'See your cover', 'Your plan, payments and documents show in your patient portal.'],
             ].map(([n, title, text]) => (
               <div key={n} className="rounded-2xl bg-white p-6 shadow-sm">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#5B7FFF] font-bold text-white">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0D9488] font-bold text-white">
                   {n}
                 </span>
                 <h3 className="mt-4 font-semibold text-slate-900">{title}</h3>
@@ -227,7 +228,7 @@ export default async function MedicalAidLandingPage({
                 {faq.question}
                 <span
                   aria-hidden="true"
-                  className="text-xl text-[#5B7FFF] transition group-open:rotate-45"
+                  className="text-xl text-[#0D9488] transition group-open:rotate-45"
                 >
                   +
                 </span>
@@ -243,13 +244,13 @@ export default async function MedicalAidLandingPage({
           <h2 className={`${lusitana.className} text-3xl font-bold`}>
             Ready to join?
           </h2>
-          <p className="mx-auto mt-2 max-w-md text-[#C7D4FF]">
+          <p className="mx-auto mt-2 max-w-md text-[#99E0D6]">
             Sign up in a couple of minutes. No commitment, cancel anytime.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             {isPatient ? (
               <Link
-                className="rounded-lg bg-white px-6 py-3 font-medium text-[#1E2F66] hover:bg-[#EEF2FF]"
+                className="rounded-lg bg-white px-6 py-3 font-medium text-[#0F766E] hover:bg-[#E6F7F5]"
                 href={dashboardFor(asked?.code)}
               >
                 Open my care plans
@@ -257,7 +258,7 @@ export default async function MedicalAidLandingPage({
             ) : (
               <>
                 <Link
-                  className="rounded-lg bg-white px-6 py-3 font-medium text-[#1E2F66] hover:bg-[#EEF2FF]"
+                  className="rounded-lg bg-white px-6 py-3 font-medium text-[#0F766E] hover:bg-[#E6F7F5]"
                   href={registerFor(asked?.code)}
                 >
                   Create user
@@ -276,7 +277,7 @@ export default async function MedicalAidLandingPage({
 
       <footer className="border-t border-slate-200 py-8">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-6 text-sm text-slate-500 sm:flex-row">
-          <ClinicLogo />
+          <MedicalAidLogo />
           <div className="flex gap-4">
             <Link href={signInFor(asked?.code)} className="hover:text-slate-900">Sign in</Link>
             <Link href={registerFor(asked?.code)} className="hover:text-slate-900">Register</Link>

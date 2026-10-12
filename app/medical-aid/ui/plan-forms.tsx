@@ -11,7 +11,7 @@ import {
 } from '../actions';
 
 const buttonClass =
-  'rounded-xl bg-[#1E4FD8] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1E2F66] disabled:cursor-not-allowed disabled:opacity-60';
+  'rounded-xl bg-[#0D9488] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#0F766E] disabled:cursor-not-allowed disabled:opacity-60';
 
 function isExpired(card: SavedCard) {
   const now = new Date();
@@ -64,7 +64,7 @@ export function EnrolForm({
     return (
       <div className="rounded-xl bg-[#f7f8fc] p-4 text-sm text-[#727a90]">
         Save a card first. It is the card your plan is paid from.{' '}
-        <Link className="font-semibold text-[#1E4FD8] hover:underline" href={cardsHref}>
+        <Link className="font-semibold text-[#0D9488] hover:underline" href={cardsHref}>
           Add a card
         </Link>
       </div>
@@ -91,7 +91,7 @@ export function EnrolForm({
                 key={card.id}
               >
                 <input
-                  className="text-[#1E4FD8] focus:ring-[#1E4FD8]"
+                  className="text-[#0D9488] focus:ring-[#0D9488]"
                   defaultChecked={card.id === defaultId}
                   disabled={expired}
                   name="card_id"

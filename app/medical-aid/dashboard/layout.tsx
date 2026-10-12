@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { signOut } from '@/app/lib/actions';
 import { getClinicAccess } from '@/app/medi-clinic/lib/access';
-import ClinicLogo from '@/app/ui/clinic-logo';
+import { MedicalAidLogo } from '@/app/ui/clinic-logo';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,23 +13,23 @@ export default async function MedicalAidDashboardLayout({
   const { user, role } = await getClinicAccess();
 
   return (
-    <main className="min-h-screen bg-[#f7f8fc] text-[#1E2F66]">
-      <header className="sticky top-0 z-30 border-b border-[#e9eaf0] border-t-4 border-t-[#1E4FD8] bg-white/95 backdrop-blur">
+    <main className="min-h-screen bg-[#f7f8fc] text-[#0F766E]">
+      <header className="sticky top-0 z-30 border-b border-[#e9eaf0] border-t-4 border-t-[#0D9488] bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-4 sm:px-8">
           <Link className="flex items-center gap-3" href="/medical-aid">
-            <ClinicLogo />
+            <MedicalAidLogo />
           </Link>
           <div className="flex flex-wrap items-center gap-3">
             {role === 'patient' ? (
               <Link
-                className="rounded-xl bg-[#EEF2FF] px-4 py-2 text-sm font-medium text-[#1E4FD8] hover:bg-[#dfe7ff]"
+                className="rounded-xl bg-[#E6F7F5] px-4 py-2 text-sm font-medium text-[#0D9488] hover:bg-[#CDEFEA]"
                 href="/medi-clinic/portal?tab=medical-aid"
               >
                 Patient portal
               </Link>
             ) : (
               <Link
-                className="rounded-xl bg-[#EEF2FF] px-4 py-2 text-sm font-medium text-[#1E4FD8] hover:bg-[#dfe7ff]"
+                className="rounded-xl bg-[#E6F7F5] px-4 py-2 text-sm font-medium text-[#0D9488] hover:bg-[#CDEFEA]"
                 href="/medi-clinic"
               >
                 Clinic dashboard

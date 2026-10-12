@@ -40,14 +40,14 @@ export function DocumentList({ planCode }: { planCode: string }) {
       {carePlanDocuments(code).map((doc) => (
         <li key={doc.href}>
           <a
-            className="flex items-start gap-3 rounded-xl border border-[#e9eaf0] p-4 hover:border-[#1E4FD8] hover:bg-[#f7f9ff]"
+            className="flex items-start gap-3 rounded-xl border border-[#e9eaf0] p-4 hover:border-[#0D9488] hover:bg-[#f7f9ff]"
             href={doc.href}
             rel="noopener"
             target="_blank"
           >
             <span
               aria-hidden="true"
-              className="mt-0.5 rounded bg-[#EEF2FF] px-2 py-1 text-[10px] font-bold text-[#1E4FD8]"
+              className="mt-0.5 rounded bg-[#E6F7F5] px-2 py-1 text-[10px] font-bold text-[#0D9488]"
             >
               PDF
             </span>

@@ -69,3 +69,30 @@ export default function ClinicLogo({
     </span>
   );
 }
+
+/** Wordmark for the Medical Aid (Care Plans) dashboard. */
+export function MedicalAidLogo({
+  className = '',
+  light = false,
+}: {
+  className?: string;
+  light?: boolean;
+}) {
+  return (
+    <span className={`flex items-center gap-3 ${className}`}>
+      <MedicalAidMark />
+      <span className="leading-tight">
+        <span
+          className={`block text-xs uppercase tracking-wider ${light ? 'text-teal-200' : 'text-[#0D9488]'}`}
+        >
+          Family Clinic
+        </span>
+        <span
+          className={`block text-xl font-bold ${light ? 'text-white' : 'text-[#0F172A]'}`}
+        >
+          Medical Aid
+        </span>
+      </span>
+    </span>
+  );
+}

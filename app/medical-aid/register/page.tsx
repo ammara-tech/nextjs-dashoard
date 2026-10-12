@@ -32,7 +32,7 @@ export default async function MedicalAidRegisterPage({
           </Link>
         </p>
         <p className="mt-2 text-center text-sm text-[#727a90]">
-          <Link className="hover:text-[#1E2F66]" href="/medical-aid">
+          <Link className="hover:text-[#0F766E]" href="/medical-aid">
             Back to Care Plans
           </Link>
         </p>

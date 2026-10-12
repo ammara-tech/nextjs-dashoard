@@ -49,7 +49,7 @@ export default async function MedicalAidDashboardPage({
           clinic dashboard.
         </p>
         <Link
-          className="mt-4 inline-block rounded-xl bg-[#1E4FD8] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1E2F66]"
+          className="mt-4 inline-block rounded-xl bg-[#0D9488] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#0F766E]"
           href="/medi-clinic"
         >
           Open the clinic dashboard
@@ -119,8 +119,8 @@ export default async function MedicalAidDashboardPage({
             aria-current={tab === item.id ? 'page' : undefined}
             className={`whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium transition-colors ${
               tab === item.id
-                ? 'bg-[#1E2F66] text-white'
-                : 'text-[#727a90] hover:bg-[#EEF2FF] hover:text-[#1E2F66]'
+                ? 'bg-[#0F766E] text-white'
+                : 'text-[#727a90] hover:bg-[#E6F7F5] hover:text-[#0F766E]'
             }`}
             href={`/medical-aid/dashboard?tab=${item.id}`}
             key={item.id}
@@ -194,7 +194,7 @@ export default async function MedicalAidDashboardPage({
               <ul className="mt-5 grid gap-2 text-sm sm:grid-cols-2">
                 {activePlan.perks.map((perk) => (
                   <li className="flex gap-2" key={perk}>
-                    <span className="text-[#1E4FD8]">✓</span>
+                    <span className="text-[#0D9488]">✓</span>
                     <span>{perk}</span>
                   </li>
                 ))}
@@ -209,7 +209,7 @@ export default async function MedicalAidDashboardPage({
                     <p className="text-sm text-[#727a90]">
                       No saved cards.{' '}
                       <Link
-                        className="font-semibold text-[#1E4FD8] hover:underline"
+                        className="font-semibold text-[#0D9488] hover:underline"
                         href="/medical-aid/dashboard?tab=cards"
                       >
                         Add a card
@@ -228,7 +228,7 @@ export default async function MedicalAidDashboardPage({
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold">Your documents</h2>
                 <Link
-                  className="text-sm font-semibold text-[#1E4FD8] hover:underline"
+                  className="text-sm font-semibold text-[#0D9488] hover:underline"
                   href="/medical-aid/dashboard?tab=documents"
                 >
                   View all
@@ -241,7 +241,7 @@ export default async function MedicalAidDashboardPage({
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold">Recent payments</h2>
                 <Link
-                  className="text-sm font-semibold text-[#1E4FD8] hover:underline"
+                  className="text-sm font-semibold text-[#0D9488] hover:underline"
                   href="/medical-aid/dashboard?tab=payments"
                 >
                   View all
@@ -265,13 +265,13 @@ export default async function MedicalAidDashboardPage({
               </p>
             )}
             {asked ? (
-              <p className="mt-3 rounded-xl bg-[#EEF2FF] px-4 py-3 text-sm text-[#1E2F66]">
+              <p className="mt-3 rounded-xl bg-[#E6F7F5] px-4 py-3 text-sm text-[#0F766E]">
                 You asked about <strong>{asked.name}</strong> ({formatRand(asked.priceMinor)} /
                 month).
               </p>
             ) : null}
             <Link
-              className="mt-4 inline-block rounded-xl bg-[#1E4FD8] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1E2F66]"
+              className="mt-4 inline-block rounded-xl bg-[#0D9488] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0F766E]"
               href={`/medical-aid/dashboard?tab=plans${asked ? `&plan=${asked.code}` : ''}#enrol`}
             >
               {asked ? `Continue with ${asked.name}` : 'Choose a plan'}
@@ -283,6 +283,7 @@ export default async function MedicalAidDashboardPage({
       {tab === 'plans' && state.ready ? (
         <>
           <CarePlanCards
+          theme="teal"
             buttonLabel={(plan) => `Choose ${plan.name}`}
             currentCode={(state.active?.plan_code as CarePlanCode | undefined) ?? null}
             hrefFor={(plan) => `/medical-aid/dashboard?tab=plans&plan=${plan.code}#enrol`}

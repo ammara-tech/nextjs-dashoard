@@ -31,10 +31,10 @@ export default function NextjsHubPage() {
           <span className="h-8 w-px bg-slate-300" aria-hidden />
           <NextMark className="h-10 w-10" />
           <div className="leading-tight">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#5B7FFF]">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#1E2F66]">
               Next.js
             </p>
-            <p className="text-lg font-bold text-[#1E2F66]">Dashboard</p>
+            <p className="text-lg font-bold text-[#0F172A]">Dashboard</p>
           </div>
         </div>
         <Link
@@ -47,14 +47,14 @@ export default function NextjsHubPage() {
 
       <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-12 md:grid-cols-2">
         <div className="flex flex-col items-start gap-6">
-          <span className="flex items-center gap-2 rounded-full bg-[#EEF2FF] px-3 py-1 text-xs font-semibold text-[#1E2F66]">
+          <span className="flex items-center gap-2 rounded-full bg-[#EDF0F8] px-3 py-1 text-xs font-semibold text-[#1E2F66]">
             <ShieldCheckIcon className="w-4" /> Account-protected workspace
           </span>
           <h1
             className={`${lusitana.className} text-5xl font-bold leading-tight text-slate-900 md:text-6xl`}
           >
             Welcome to your
-            <span className="block text-[#5B7FFF]">Next.js dashboard.</span>
+            <span className="block bg-gradient-to-r from-[#0F172A] to-[#2B4190] bg-clip-text text-transparent">Next.js dashboard.</span>
           </h1>
           <p className="max-w-md text-lg text-slate-600">
             Sign in to continue to your invoices, customers and revenue
@@ -62,19 +62,19 @@ export default function NextjsHubPage() {
           </p>
           <Link
             href="/login"
-            className="flex items-center gap-2 rounded-lg bg-[#1E2F66] px-6 py-3 font-medium text-white transition hover:bg-[#2b4190]"
+            className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-[#0F172A] to-[#1E2F66] px-6 py-3 font-medium text-white shadow-md transition hover:shadow-lg hover:brightness-125"
           >
             Sign in to continue <ArrowRightIcon className="w-5" />
           </Link>
           <p className="text-sm text-slate-500">
             Looking for the clinic?{' '}
-            <Link href="/clinic-hub" className="text-[#5B7FFF] underline">
+            <Link href="/clinic-hub" className="text-[#1E2F66] underline">
               Go to the Family Clinic portal
             </Link>
           </p>
         </div>
 
-        <div className="rounded-[2rem] bg-gradient-to-br from-[#DCE5FF] to-[#EEF2FF] p-5">
+        <div className="rounded-[2rem] bg-gradient-to-br from-[#D5DBEC] to-[#EDF0F8] p-5">
           <div className="rounded-3xl bg-white p-8 shadow-xl">
             <NextMark />
             <h2
@@ -94,7 +94,7 @@ export default function NextjsHubPage() {
                     key={title as string}
                     className="flex items-center gap-4 rounded-xl bg-slate-50 p-4"
                   >
-                    <I className="w-6 text-[#5B7FFF]" />
+                    <I className="w-6 text-[#1E2F66]" />
                     <div>
                       <p className="font-semibold text-slate-900">{title as string}</p>
                       <p className="text-sm text-slate-500">{text as string}</p>

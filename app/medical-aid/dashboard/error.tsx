@@ -18,7 +18,7 @@ export default function MedicalAidDashboardError({
         <p className="mt-2 font-mono text-xs text-[#9298a8]">Reference: {error.digest}</p>
       ) : null}
       <button
-        className="mt-4 rounded-xl bg-[#1E4FD8] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1E2F66]"
+        className="mt-4 rounded-xl bg-[#0D9488] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#0F766E]"
         onClick={reset}
         type="button"
       >
