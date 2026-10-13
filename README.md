@@ -37,7 +37,7 @@ These links identify the deployed entry points. Users still need valid Supabase 
 - Manage patient medical aid and co-payment coverage, with provider selection, dependent mapping, digital card uploads, verification badges, and in-network billing summaries.
 - Dark and light mode, and an English / Afrikaans language toggle, in every header and on every login page.
 - A guided demo tour, keyboard shortcuts, and live updates with a notification bell.
-- An appointment calendar (week grid per doctor), Care Plan progress and payment tracking, medical aid claim tracking, and patient profile editing.
+- An appointment calendar, Care Plan progress and payment tracking, medical aid claim tracking, patient profile editing, a staff Care Plan members page, and CSV export of payments, claims and members.
 
 ## Medical aid & co-payment flow
 
@@ -231,7 +231,9 @@ app/ui/
   claim-parts.tsx                         Claim stage tracker, badge and statistics
 app/lib/i18n.ts, lang.ts                  English / Afrikaans dictionaries and helpers
 app/lib/claims.ts                         Claim stage rules
-app/medi-clinic/calendar, claims          Appointment calendar and claims board (staff)
+app/medi-clinic/calendar, claims, members Appointment calendar, claims board and Care Plan members (staff)
+app/medi-clinic/export/*                  CSV downloads: payments, claims, members
+app/lib/csv.ts                            CSV builder (quotes values, blocks spreadsheet formulas)
 ```
 
 ## Chart hover cards
@@ -285,6 +287,14 @@ The Medical Aid overview shows the first 12 months of the plan as a progress bar
 ## Medical aid claims
 
 Patients submit a claim (what it was for and the amount) from the Claims tab of the Medical Aid dashboard and follow it through Submitted, In review, Approved or Rejected, and Paid with a stage tracker. Owner, admin and front desk use the Claims board at `/medi-clinic/claims` to move claims one allowed step at a time (with an optional reason), and see open claims, approval rate, total claimed and total paid. The allowed moves and who may make them are enforced in the database (`set_claim_status`), not in the browser.
+
+## Care Plan members (staff)
+
+`/medi-clinic/members` (owner and admin) lists everyone on a Care Plan: member, plan and monthly price, status, member since, next payment (or cancellation date) and total paid with the number of payments. Cards show active members, the monthly value of active plans, cancelled plans and the next payment due. Filter by plan and by status. It is read-only and uses the existing row-level security, so it needs no new SQL beyond `clinic-care-plans.sql`.
+
+## CSV export
+
+"Export CSV" buttons download spreadsheet-ready files (UTF-8, opens in Excel) from the Payments page (`/medi-clinic/export/payments`, owner, admin and front desk), the Claims board (`/medi-clinic/export/claims`, same roles) and the Members page (`/medi-clinic/export/members`, owner and admin). Each route checks the signed-in role and relies on row-level security for which rows come back. Amounts are in plain decimals, and any text that starts with `=`, `+`, `-` or `@` gets a leading apostrophe so a spreadsheet cannot run it as a formula.
 
 ## Patient profile
 

@@ -47,12 +47,13 @@ sign in once.
 - Claim tracking: members submit claims and follow them through Submitted, In review, Approved or Rejected, and Paid; staff update the stage on a board at `/medi-clinic/claims`, with approval rate and totals (`supabase/clinic-claims.sql`).
 - Live updates and a notification bell when payments or claims change (`supabase/clinic-realtime.sql`).
 - Dark and light mode and an English / Afrikaans toggle on every page.
+- A staff Care Plan members page (plan, status, next payment, total paid) and CSV export of members, payments and claims.
 
 ### Not included
 
 - A real payment gateway, real debit orders or card verification.
 - Provider network checks, automatic claim adjudication against a scheme, or regulatory approval as a medical scheme. Claim tracking is a workflow record only: staff decide each stage by hand.
-- A staff view of plan members and refunds.
+- Refunds for plan members.
 - Storage of card numbers or CVV (never stored).
 
 ## 4. Data and security
@@ -96,5 +97,5 @@ cards are rejected.
 
 ## 7. Next steps
 
-A payment gateway with verified webhooks, a staff view of members, cancellation
+A payment gateway with verified webhooks, cancellation
 and refund rules, and legal review before any real members are taken on.

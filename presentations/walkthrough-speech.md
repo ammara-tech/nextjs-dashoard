@@ -67,7 +67,7 @@ About 8 to 9 minutes spoken. Read the paragraphs as your speech, glance at the k
 
 ## 8. Plan progress and claims (1 minute)
 
-> Once a member has joined, the plan page shows how far along they are: a progress bar over the first twelve months, the date of the next payment and how many days remain, the total paid so far, and a schedule of every month, marked paid or upcoming. Members can also submit a medical aid claim, saying what it was for and the amount, and follow it through Submitted, In review, Approved or Rejected, and Paid. On the staff side, the owner, admins and front desk see a board of claims and move each one a single step at a time, with a reason if they reject it. The allowed steps are enforced in the database, so nobody can jump a claim straight to paid. To be clear, claims here are tracked by hand: staff decide each stage, and nothing is adjudicated automatically.
+> Once a member has joined, the plan page shows how far along they are: a progress bar over the first twelve months, the date of the next payment and how many days remain, the total paid so far, and a schedule of every month, marked paid or upcoming. Members can also submit a medical aid claim, saying what it was for and the amount, and follow it through Submitted, In review, Approved or Rejected, and Paid. On the staff side, the owner and admins also have a Care Plan members page showing who is on which plan, their next payment and what they have paid, and payments, claims and members can be exported to a spreadsheet. The owner, admins and front desk see a board of claims and move each one a single step at a time, with a reason if they reject it. The allowed steps are enforced in the database, so nobody can jump a claim straight to paid. To be clear, claims here are tracked by hand: staff decide each stage, and nothing is adjudicated automatically.
 
 **Key points:** progress bar and schedule; next payment date; submit a claim; four-stage tracker; staff board; rules enforced in the database; claims are tracked, not adjudicated.
 **Demo cue:** open the Care Plans overview, then the Claims tab, submit a claim; then switch to a staff account and move it forward on the Claims board.
@@ -128,9 +128,9 @@ About 8 to 9 minutes spoken. Read the paragraphs as your speech, glance at the k
 
 ## 15. What comes next and closing (30 seconds)
 
-> Next, I would connect a real payment gateway with verified webhooks, add staff tools to view plan members and handle refunds, add e-mail and text-message alerts on top of the in-app notifications, translate the rest of the pages into Afrikaans, and complete the legal and privacy review. Thank you. I am happy to take questions.
+> Next, I would connect a real payment gateway with verified webhooks, handle refunds for plan members, add e-mail and text-message alerts on top of the in-app notifications, translate the rest of the pages into Afrikaans, and complete the legal and privacy review. Thank you. I am happy to take questions.
 
-**Key points:** real payments; staff tools; e-mail and SMS alerts; finish the Afrikaans translation; legal review; invite questions.
+**Key points:** real payments; refunds; e-mail and SMS alerts; finish the Afrikaans translation; legal review; invite questions.
 
 ---
 

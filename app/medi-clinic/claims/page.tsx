@@ -53,9 +53,17 @@ export default async function ClaimsBoardPage({
 
   return (
     <div className="space-y-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
       <div>
         <p className="text-sm text-[#74809a]">{t('claims.subtitle')}</p>
         <h1 className="mt-1 text-3xl font-bold tracking-tight">{t('claims.title')}</h1>
+      </div>
+      <a
+        className="rounded-xl border border-[#e3e8f5] bg-white px-4 py-2.5 text-sm font-semibold text-[#1E4FD8] shadow-sm hover:bg-[#EEF2FF]"
+        href="/medi-clinic/export/claims"
+      >
+        {t('ui.exportCsv')}
+      </a>
       </div>
 
       {errorMessage ? (

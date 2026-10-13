@@ -1,6 +1,7 @@
 import { recordInPersonPayment } from '../lib/actions';
 import { requireClinicRole } from '../lib/access';
 import { fetchPatients } from '../lib/data';
+import { getT } from '@/app/lib/lang';
 
 export default async function ClinicPaymentsPage() {
   const { supabase, role } = await requireClinicRole([
@@ -8,6 +9,7 @@ export default async function ClinicPaymentsPage() {
     'admin',
     'front_desk',
   ]);
+  const { t } = await getT();
   const [patients, paymentsResult] = await Promise.all([
     fetchPatients(),
     supabase
@@ -55,7 +57,15 @@ export default async function ClinicPaymentsPage() {
 
       <section className="overflow-hidden rounded-2xl border border-[#e9eaf0] bg-white">
         <div className="border-b border-[#eff0f4] px-5 py-4">
-          <h2 className="font-semibold">Payment records</h2>
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="font-semibold">Payment records</h2>
+            <a
+              className="rounded-lg border border-[#e3e8f5] px-3 py-1.5 text-xs font-semibold text-[#1E4FD8] hover:bg-[#EEF2FF]"
+              href="/medi-clinic/export/payments"
+            >
+              {t('ui.exportCsv')}
+            </a>
+          </div>
         </div>
         {(paymentsResult.data ?? []).length === 0 ? (
           <p className="p-5 text-sm text-[#727a90]">No payment records.</p>

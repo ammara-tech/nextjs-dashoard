@@ -296,6 +296,7 @@ Built and type-checked; SQL migrations must still be run in Supabase and the flo
 - **Live updates and notifications:** changes to appointments, Care Plan payments and claims refresh the page and add a bell notification, through Supabase Realtime (`supabase/clinic-realtime.sql`).
 - **Appointment calendar:** a week view with status colours and hover details: a time grid with the doctor's available hours shaded for one doctor, and a day-by-day card list with full names for all doctors (`/medi-clinic/calendar`).
 - **Claims board for staff:** owner, admin and front desk move claims through Submitted, In review, Approved or Rejected, and Paid (`/medi-clinic/claims`, `supabase/clinic-claims.sql`).
+- **Care Plan members page and CSV export:** owners and admins see every member with plan, status, next payment and total paid (`/medi-clinic/members`), and payments, claims and members can be exported to CSV.
 - **Patient profile editing:** patients update their own name, phone, email and date of birth (`supabase/clinic-patient-profile.sql`).
 - **Polish:** branded 404 page, favicon, page titles, keyboard focus styling, aligned table numbers and reduced-motion support.
 - **Patient portal tabs** with dashboard-style stat cards.
@@ -305,7 +306,7 @@ Built and type-checked; SQL migrations must still be run in Supabase and the flo
 - **Patient document upload:** PDF/JPEG/PNG up to 10 MB into the private `patients-medical-records` bucket under `pt_<patientId>/<category>/<uuid>`; categories identity, clinical_history, invoices (`clinic-patient-documents-upload.sql`).
 - **Resilient admin dashboard** with an amber banner for partial load failures; RLS recursion on `patients` fixed (`fix-patients-rls-recursion.sql`).
 
-Still open: real payment gateway (Care Plan payments are labelled demo records), wallet top-up/refund, treatments page for admin role, e-mail and SMS notifications (in-app notifications are built), a staff view of Care Plan members, translating the remaining page text into Afrikaans, and doctor cards with a speciality description.
+Still open: real payment gateway (Care Plan payments are labelled demo records), wallet top-up/refund, treatments page for admin role, e-mail and SMS notifications (in-app notifications are built), refunds for Care Plan members, translating the remaining page text into Afrikaans, and doctor cards with a speciality description.
 
 ## 11. Phased delivery plan
 

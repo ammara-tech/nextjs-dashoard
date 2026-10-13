@@ -14,6 +14,7 @@ import {
   FolderOpenIcon,
   HeartIcon,
   HomeIcon,
+  IdentificationIcon,
   ShieldCheckIcon,
   SunIcon,
   UserCircleIcon,
@@ -43,6 +44,11 @@ const claims: NavLink = {
   href: '/medi-clinic/claims',
   label: 'nav.claims',
   icon: ShieldCheckIcon,
+};
+const members: NavLink = {
+  href: '/medi-clinic/members',
+  label: 'nav.members',
+  icon: IdentificationIcon,
 };
 const tomorrow: NavLink = { href: '/medi-clinic/tomorrow', label: 'nav.tomorrow', icon: SunIcon };
 const shifts: NavLink = { href: '/medi-clinic/shifts', label: 'nav.shifts', icon: ClockIcon };
@@ -79,6 +85,7 @@ const linksByRole: Record<ClinicRole, NavLink[]> = {
     documents,
     pharmacy,
     payments,
+    members,
     claims,
     enquiries,
   ],
@@ -94,6 +101,7 @@ const linksByRole: Record<ClinicRole, NavLink[]> = {
     documents,
     pharmacy,
     payments,
+    members,
     claims,
     enquiries,
   ],
