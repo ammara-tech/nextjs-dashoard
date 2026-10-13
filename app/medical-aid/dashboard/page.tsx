@@ -6,6 +6,11 @@ import CarePlanCards from '@/app/ui/care-plan-cards';
 import { loadCarePlanState } from '../lib/data';
 import { CancelPlanForm, ChangeCardForm, EnrolForm } from '../ui/plan-forms';
 import PaymentsChart from '../ui/payments-chart';
+import PlanProgress from '../ui/plan-progress';
+import ClaimForm from '../ui/claim-form';
+import { loadPatientClaims } from '../lib/claims';
+import { ClaimBadge, ClaimStats, ClaimTracker } from '@/app/ui/claim-parts';
+import { getT } from '@/app/lib/lang';
 import {
   DocumentList,
   formatDate,
@@ -21,6 +26,7 @@ const tabs = [
   { id: 'plans', label: 'Choose a plan' },
   { id: 'cards', label: 'Cards' },
   { id: 'payments', label: 'Payments' },
+  { id: 'claims', label: 'Claims' },
   { id: 'documents', label: 'Documents' },
 ] as const;
 
@@ -40,6 +46,8 @@ export default async function MedicalAidDashboardPage({
   const { tab: requestedTab, plan: requestedPlan, joined, cancelled } =
     await searchParams;
   const { supabase, user, role } = await getClinicAccess();
+  const { t, lang } = await getT();
+  const locale = lang === 'af' ? 'af-ZA' : 'en-GB';
 
   if (role !== 'patient') {
     return (
@@ -80,12 +88,13 @@ export default async function MedicalAidDashboardPage({
     );
   }
 
-  const [state, cardsResult] = await Promise.all([
+  const [state, cardsResult, claimsState] = await Promise.all([
     loadCarePlanState(supabase, patient.id),
     supabase
       .from('clinic_saved_cards')
       .select('id, cardholder_name, brand, last4, exp_month, exp_year, nickname, is_default')
       .order('created_at', { ascending: true }),
+    loadPatientClaims(supabase, patient.id),
   ]);
   if (cardsResult.error) {
     console.error('Care plans saved cards error:', cardsResult.error);
@@ -126,7 +135,7 @@ export default async function MedicalAidDashboardPage({
             href={`/medical-aid/dashboard?tab=${item.id}`}
             key={item.id}
           >
-            {item.label}
+            {item.id === 'claims' ? t('nav.claims') : item.label}
           </Link>
         ))}
       </nav>
@@ -224,6 +233,16 @@ export default async function MedicalAidDashboardPage({
                 <CancelPlanForm />
               </div>
             </section>
+
+            {activePlan ? (
+              <PlanProgress
+                locale={locale}
+                membership={state.active}
+                payments={state.payments}
+                plan={activePlan}
+                t={t}
+              />
+            ) : null}
 
             {state.payments.length > 0 ? <PaymentsChart payments={state.payments} /> : null}
 
@@ -346,6 +365,66 @@ export default async function MedicalAidDashboardPage({
             taken from your card.
           </p>
         </section>
+      ) : null}
+
+      {tab === 'claims' ? (
+        <div className="space-y-6">
+          <div>
+            <h2 className="text-xl font-bold text-[#20263b]">{t('claims.title')}</h2>
+            <p className="mt-1 text-sm text-[#727a90]">{t('claims.subtitle')}</p>
+          </div>
+          {!claimsState.ready ? (
+            <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              Claims are not set up yet. Ask the clinic to run supabase/clinic-claims.sql.
+            </p>
+          ) : (
+            <>
+              <ClaimStats claims={claimsState.claims} t={t} />
+              <section className={cardClass}>
+                <h3 className="mb-3 font-semibold">{t('claims.new')}</h3>
+                <ClaimForm />
+              </section>
+              {claimsState.claims.length === 0 ? (
+                <p className={`${cardClass} text-sm text-[#727a90]`}>{t('claims.empty')}</p>
+              ) : (
+                <ul className="space-y-3">
+                  {claimsState.claims.map((claim) => (
+                    <li className={cardClass} key={claim.id}>
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <p className="font-semibold text-[#20263b]">{claim.description}</p>
+                          <p className="text-xs text-[#8b91a3]">
+                            {claim.reference} ·{' '}
+                            {new Date(claim.submitted_at).toLocaleDateString(locale, {
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric',
+                              timeZone: 'Africa/Johannesburg',
+                            })}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-bold text-[#0F766E]">
+                            {formatRand(claim.amount_minor)}
+                          </p>
+                          <ClaimBadge status={claim.status} t={t} />
+                        </div>
+                      </div>
+                      <div className="mt-4">
+                        <ClaimTracker status={claim.status} t={t} />
+                      </div>
+                      {claim.decision_note ? (
+                        <p className="mt-3 rounded-lg bg-[#f7f8fc] px-3 py-2 text-xs text-[#727a90]">
+                          {claim.decision_note}
+                        </p>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
+          )}
+        </div>
       ) : null}
 
       {tab === 'documents' && state.ready ? (

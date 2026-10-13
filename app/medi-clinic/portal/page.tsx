@@ -13,9 +13,12 @@ import CarePlanCards from '@/app/ui/care-plan-cards';
 import { getCarePlan, type CarePlanCode } from '@/app/lib/care-plans';
 import { loadCarePlanState } from '@/app/medical-aid/lib/data';
 import PortalPlanCard from '@/app/medical-aid/ui/portal-plan-card';
+import ProfileForm from '../ui/profile-form';
+import { getT } from '@/app/lib/lang';
 
 const tabs = [
   { id: 'overview', label: 'Overview' },
+  { id: 'profile', label: 'My profile' },
   { id: 'appointments', label: 'Appointments' },
   { id: 'prescriptions', label: 'Prescriptions' },
   { id: 'medical-aid', label: 'Medical aid' },
@@ -31,6 +34,7 @@ export default async function PatientPortalPage({
   searchParams: Promise<{ tab?: string }>;
 }) {
   const { tab: requestedTab } = await searchParams;
+  const { t: tr } = await getT();
   const tab = tabs.some((t) => t.id === requestedTab)
     ? (requestedTab as string)
     : 'overview';
@@ -187,7 +191,7 @@ export default async function PatientPortalPage({
             key={t.id}
             scroll={false}
           >
-            {t.label}
+            {t.id === 'profile' ? tr('profile.title') : t.label}
           </Link>
         ))}
       </nav>
@@ -232,6 +236,15 @@ export default async function PatientPortalPage({
             />
           </section>
           <section className="grid gap-4 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <Link
+                className="text-sm font-semibold text-[#1E4FD8] hover:underline"
+                href="/medi-clinic/portal?tab=profile"
+                scroll={false}
+              >
+                {tr('profile.edit')} →
+              </Link>
+            </div>
             <InfoCard label="Patient number" value={patient.patient_number ?? 'Not assigned'} />
             <InfoCard label="Email" value={patient.email ?? user.email ?? 'Not on file'} />
             <InfoCard label="Phone" value={patient.phone ?? 'Not on file'} />
@@ -239,6 +252,19 @@ export default async function PatientPortalPage({
           </section>
           <FamilyCarePromo activePlanName={carePlan.active ? getCarePlan(carePlan.active.plan_code)?.name : undefined} />
         </>
+      )}
+
+      {tab === 'profile' && (
+        <ProfileForm
+          loginEmail={user.email ?? null}
+          profile={{
+            full_name: patient.full_name,
+            phone: patient.phone,
+            email: patient.email,
+            date_of_birth: patient.date_of_birth,
+            patient_number: patient.patient_number,
+          }}
+        />
       )}
 
       {tab === 'plans' && (
