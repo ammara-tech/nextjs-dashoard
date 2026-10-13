@@ -2,7 +2,8 @@ import { formatCurrency, generateYAxis } from '@/app/lib/utils';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import { lusitana } from '@/app/ui/fonts';
 import { fetchRevenue } from '@/app/lib/data';
-import ChartHoverArea, { tip } from '@/app/ui/chart-hover';
+import ChartHoverArea from '@/app/ui/chart-hover';
+import { tip } from '@/app/ui/chart-tip';
 
 // This component is representational only.
 // For data visualization UI, check out:

@@ -1,4 +1,5 @@
-import ChartHoverArea, { tip } from '@/app/ui/chart-hover';
+import ChartHoverArea from '@/app/ui/chart-hover';
+import { tip } from '@/app/ui/chart-tip';
 import type {
   AppointmentStatusCount,
   MonthlyPatientCount,

@@ -1,5 +1,6 @@
 import { formatRand, getCarePlan } from '@/app/lib/care-plans';
-import ChartHoverArea, { tip } from '@/app/ui/chart-hover';
+import ChartHoverArea from '@/app/ui/chart-hover';
+import { tip } from '@/app/ui/chart-tip';
 import type { CarePlanPayment } from '../lib/data';
 
 /** Care Plan payments over the last six months. Hover a bar for the details. */
