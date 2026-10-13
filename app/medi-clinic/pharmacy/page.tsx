@@ -1,11 +1,11 @@
 import { redirect } from 'next/navigation';
 import {
-  createInventoryItem,
   dispenseClinicPrescription,
   receiveInventoryBatch,
   setBatchAvailability,
 } from '../lib/actions';
 import { getClinicAccess, redirectToClinicSignIn } from '../lib/access';
+import InventoryItemForm from '../ui/inventory-item-form';
 
 export default async function PharmacyPage() {
   const { supabase, role } = await getClinicAccess();
@@ -65,20 +65,10 @@ export default async function PharmacyPage() {
       </div>
 
       {canStock && (
-        <section className="grid gap-5 lg:grid-cols-2">
+        <section className="grid items-start gap-5 lg:grid-cols-2">
           <div className="rounded-2xl border border-[#e9eaf0] bg-white p-5">
             <h2 className="font-semibold">Add inventory item</h2>
-            <form action={createInventoryItem} className="mt-4 grid gap-3 sm:grid-cols-2">
-              <label className="text-sm text-[#727a90]">
-                Item name
-                <input className={inputClass} maxLength={160} name="name" required />
-              </label>
-              <label className="text-sm text-[#727a90]">
-                SKU (optional)
-                <input className={inputClass} maxLength={80} name="sku" />
-              </label>
-              <button className={buttonClass}>Add item</button>
-            </form>
+            <InventoryItemForm items={itemsResult.data ?? []} />
           </div>
           <div className="rounded-2xl border border-[#e9eaf0] bg-white p-5">
             <h2 className="font-semibold">Receive batch</h2>

@@ -698,22 +698,44 @@ export async function recordInPersonPayment(formData: FormData) {
   revalidatePath('/medi-clinic/portal');
 }
 
-export async function createInventoryItem(formData: FormData) {
+export type InventoryItemState = { message?: string; success?: boolean };
+
+export async function createInventoryItem(
+  _previous: InventoryItemState,
+  formData: FormData,
+): Promise<InventoryItemState> {
   const { supabase } = await requireClinicRole(['owner', 'admin', 'stock_manager']);
   const name = formString(formData, 'name');
   const sku = formString(formData, 'sku');
-  if (!name || name.length > 160 || sku.length > 80) {
-    throw new Error('Enter a valid item name and optional SKU.');
-  }
+  if (!name) return { message: 'Enter the item name.' };
+  if (name.length > 160) return { message: 'The item name can be at most 160 characters.' };
+  if (sku.length > 80) return { message: 'The SKU can be at most 80 characters.' };
+
   const { error } = await supabase.from('clinic_inventory_items').insert({
     name,
     sku: sku || null,
   });
   if (error) {
     console.error('Supabase inventory item create error:', error);
-    throw new Error(`Unable to add inventory item (${error.code}).`);
+    if (error.code === '23505') {
+      return { message: `An item with the SKU "${sku}" already exists. Use a different SKU or leave it blank.` };
+    }
+    if (error.code === '42501') {
+      return { message: 'Your account is not allowed to add inventory items.' };
+    }
+    if (error.code === '23502') {
+      return { message: 'Your account is not linked to a clinic owner, so the item cannot be saved. Ask the owner to link your account.' };
+    }
+    if (error.code === '42P01' || error.code === 'PGRST205') {
+      return {
+        message:
+          'The inventory tables are missing. Run supabase/clinic-platform.sql in Supabase, then try again.',
+      };
+    }
+    return { message: `Unable to add the item (${error.code}). ${error.message}` };
   }
   revalidatePath('/medi-clinic/pharmacy');
+  return { message: `Added "${name}". You can now receive stock for it.`, success: true };
 }
 
 export async function receiveInventoryBatch(formData: FormData) {
