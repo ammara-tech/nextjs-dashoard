@@ -1,6 +1,11 @@
 import '@/app/ui/global.css';
 import { inter } from '@/app/ui/fonts';
 import type { Metadata, Viewport } from 'next';
+import { getLang } from '@/app/lib/lang';
+import { I18nProvider } from '@/app/ui/i18n-provider';
+import CommandPalette from '@/app/ui/command-palette';
+import GuidedTour from '@/app/ui/guided-tour';
+import { RealtimeNotifier } from '@/app/ui/notifications';
 
 export const metadata: Metadata = {
   title: {
@@ -16,14 +21,28 @@ export const viewport: Viewport = {
   themeColor: '#0F172A',
 };
 
-export default function RootLayout({
+// Applies the saved theme before the page paints, so there is no flash.
+const themeScript = `try{if(localStorage.getItem('theme')==='dark'){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark'}}catch(e){}`;
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const lang = await getLang();
   return (
-    <html lang="en">
-      <body className={`${inter.className} antialiased`}>{children}</body>
+    <html lang={lang} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body className={`${inter.className} antialiased`}>
+        <I18nProvider lang={lang}>
+          {children}
+          <CommandPalette />
+          <GuidedTour />
+          <RealtimeNotifier />
+        </I18nProvider>
+      </body>
     </html>
   );
 }

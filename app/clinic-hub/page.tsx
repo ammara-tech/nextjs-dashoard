@@ -12,11 +12,13 @@ import {
 import ClinicLogo, { ClinicMark } from '@/app/ui/clinic-logo';
 import { lusitana } from '@/app/ui/fonts';
 import HistoryNav from '@/app/ui/history-nav';
+import HeaderTools from '@/app/ui/header-tools';
 
 export default function ClinicHubPage() {
   return (
     <main className="relative min-h-screen bg-white">
       <HistoryNav fallbackHref="/" variant="floating" />
+      <HeaderTools showNotifications={false} variant="floating" />
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 pb-6 pt-16">
         <ClinicLogo />
       </header>

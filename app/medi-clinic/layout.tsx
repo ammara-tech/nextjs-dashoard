@@ -5,6 +5,8 @@ import { getSelectedDoctor } from './lib/doctor-context';
 import ClinicNavigation from './ui/navigation';
 import ClinicLogo from '@/app/ui/clinic-logo';
 import HistoryNav from '@/app/ui/history-nav';
+import HeaderTools from '@/app/ui/header-tools';
+import { getT } from '@/app/lib/lang';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,6 +16,7 @@ export default async function MediClinicLayout({
   children: React.ReactNode;
 }) {
   const { user, role } = await getClinicAccess();
+  const { t } = await getT();
   const selectedDoctor =
     role === 'doctor' ? (await getSelectedDoctor()).selected : null;
 
@@ -35,10 +38,11 @@ export default async function MediClinicLayout({
                   href="/medi-clinic?switch=1"
                 >
                   {selectedDoctor
-                    ? `${selectedDoctor.display_name} · Switch`
-                    : 'Choose doctor'}
+                    ? `${selectedDoctor.display_name} · ${t('ui.switch')}`
+                    : t('ui.chooseDoctor')}
                 </Link>
               )}
+              <HeaderTools />
               <span className="hidden text-right sm:block">
                 <span className="block text-sm font-medium">{user.email}</span>
                 <span className="block text-xs capitalize text-[#8b91a3]">
@@ -50,7 +54,7 @@ export default async function MediClinicLayout({
                   className="rounded-xl border border-[#e9eaf0] px-4 py-2 text-sm font-medium text-[#626b82] hover:bg-[#f7f8fc]"
                   type="submit"
                 >
-                  Sign out
+                  {t('ui.signOut')}
                 </button>
               </form>
             </div>

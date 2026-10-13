@@ -7,92 +7,112 @@ import {
   BanknotesIcon,
   BeakerIcon,
   CalendarDaysIcon,
+  CalendarIcon,
   ChatBubbleLeftRightIcon,
   ClipboardDocumentCheckIcon,
   ClockIcon,
   FolderOpenIcon,
   HeartIcon,
   HomeIcon,
+  ShieldCheckIcon,
   SunIcon,
   UserCircleIcon,
   UserGroupIcon,
   UsersIcon,
 } from '@heroicons/react/24/outline';
 import type { ClinicRole } from '../lib/access';
+import type { Key } from '@/app/lib/i18n';
+import { useT } from '@/app/ui/i18n-provider';
 
 type Icon = typeof HomeIcon;
-type NavLink = { href: string; label: string; icon: Icon };
+type NavLink = { href: string; label: Key; icon: Icon };
 
-const overview: NavLink = { href: '/medi-clinic', label: 'Overview', icon: HomeIcon };
-const patients: NavLink = { href: '/medi-clinic/patients', label: 'Patients', icon: UsersIcon };
+const overview: NavLink = { href: '/medi-clinic', label: 'nav.overview', icon: HomeIcon };
+const patients: NavLink = { href: '/medi-clinic/patients', label: 'nav.patients', icon: UsersIcon };
 const appointments: NavLink = {
   href: '/medi-clinic/appointments',
-  label: 'Appointments',
+  label: 'nav.appointments',
   icon: CalendarDaysIcon,
 };
-const tomorrow: NavLink = { href: '/medi-clinic/tomorrow', label: 'Tomorrow', icon: SunIcon };
-const shifts: NavLink = { href: '/medi-clinic/shifts', label: 'Shifts', icon: ClockIcon };
+const calendar: NavLink = {
+  href: '/medi-clinic/calendar',
+  label: 'nav.calendar',
+  icon: CalendarIcon,
+};
+const claims: NavLink = {
+  href: '/medi-clinic/claims',
+  label: 'nav.claims',
+  icon: ShieldCheckIcon,
+};
+const tomorrow: NavLink = { href: '/medi-clinic/tomorrow', label: 'nav.tomorrow', icon: SunIcon };
+const shifts: NavLink = { href: '/medi-clinic/shifts', label: 'nav.shifts', icon: ClockIcon };
 const clinical: NavLink = {
   href: '/medi-clinic/clinical',
-  label: 'Clinical',
+  label: 'nav.clinical',
   icon: ClipboardDocumentCheckIcon,
 };
 const documents: NavLink = {
   href: '/medi-clinic/documents',
-  label: 'Documents',
+  label: 'nav.documents',
   icon: FolderOpenIcon,
 };
-const pharmacy: NavLink = { href: '/medi-clinic/pharmacy', label: 'Pharmacy', icon: BeakerIcon };
-const payments: NavLink = { href: '/medi-clinic/payments', label: 'Payments', icon: BanknotesIcon };
+const pharmacy: NavLink = { href: '/medi-clinic/pharmacy', label: 'nav.pharmacy', icon: BeakerIcon };
+const payments: NavLink = { href: '/medi-clinic/payments', label: 'nav.payments', icon: BanknotesIcon };
 const enquiries: NavLink = {
   href: '/medi-clinic/enquiries',
-  label: 'Enquiries',
+  label: 'nav.enquiries',
   icon: ChatBubbleLeftRightIcon,
 };
 
 const linksByRole: Record<ClinicRole, NavLink[]> = {
-  patient: [{ href: '/medi-clinic/portal', label: 'My clinic', icon: UserCircleIcon }],
+  patient: [{ href: '/medi-clinic/portal', label: 'nav.myClinic', icon: UserCircleIcon }],
   owner: [
     overview,
     patients,
     appointments,
+    calendar,
     tomorrow,
-    { href: '/medi-clinic/providers', label: 'Providers & availability', icon: UserGroupIcon },
+    { href: '/medi-clinic/providers', label: 'nav.providers', icon: UserGroupIcon },
     shifts,
-    { href: '/medi-clinic/treatments', label: 'Treatments', icon: HeartIcon },
+    { href: '/medi-clinic/treatments', label: 'nav.treatments', icon: HeartIcon },
     clinical,
     documents,
     pharmacy,
     payments,
+    claims,
     enquiries,
   ],
   admin: [
     overview,
     patients,
     appointments,
+    calendar,
     tomorrow,
-    { href: '/medi-clinic/providers', label: 'Providers', icon: UserGroupIcon },
+    { href: '/medi-clinic/providers', label: 'nav.providersShort', icon: UserGroupIcon },
     shifts,
     clinical,
     documents,
     pharmacy,
     payments,
+    claims,
     enquiries,
   ],
-  front_desk: [overview, patients, appointments, tomorrow, shifts, documents, enquiries, payments],
+  front_desk: [overview, patients, appointments, calendar, tomorrow, shifts, documents, enquiries, payments, claims],
   doctor: [
     overview,
-    { ...appointments, label: 'My appointments' },
-    { ...shifts, label: 'My shifts' },
-    { ...patients, label: 'My patients' },
+    { ...appointments, label: 'nav.myAppointments' },
+    calendar,
+    { ...shifts, label: 'nav.myShifts' },
+    { ...patients, label: 'nav.myPatients' },
     clinical,
   ],
   pharmacist: [pharmacy],
-  stock_manager: [{ ...pharmacy, label: 'Inventory', icon: ArchiveBoxIcon }],
+  stock_manager: [{ ...pharmacy, label: 'nav.inventory', icon: ArchiveBoxIcon }],
 };
 
 export default function ClinicNavigation({ role }: { role: ClinicRole }) {
   const pathname = usePathname();
+  const t = useT();
   const visibleLinks = linksByRole[role] ?? [];
 
   return (
@@ -116,7 +136,7 @@ export default function ClinicNavigation({ role }: { role: ClinicRole }) {
             href={link.href}
             key={link.href}
           >
-            {link.label}
+            {t(link.label)}
           </Link>
         );
       })}

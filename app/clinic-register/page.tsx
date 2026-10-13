@@ -1,11 +1,13 @@
 import Link from 'next/link';
 import PatientRegistrationForm from './registration-form';
 import HistoryNav from '@/app/ui/history-nav';
+import HeaderTools from '@/app/ui/header-tools';
 
 export default function PatientRegistrationPage() {
   return (
     <main className="relative flex min-h-screen items-center justify-center bg-[#f7f8fc] px-5 py-10">
       <HistoryNav fallbackHref="/clinic-login" variant="floating" />
+      <HeaderTools showNotifications={false} variant="floating" />
       <section className="w-full max-w-[440px] rounded-2xl border border-[#e9eaf0] bg-white p-6 shadow-sm">
         <p className="text-sm font-medium text-[#74809a]">Family Clinic</p>
         <h1 className="mt-1 text-2xl font-bold text-[#20263b]">

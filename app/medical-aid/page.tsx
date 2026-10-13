@@ -12,6 +12,7 @@ import { getCarePlan } from '@/app/lib/care-plans';
 import { createClient } from '@/lib/supabase/server';
 import { faqs } from './faq';
 import HistoryNav from '@/app/ui/history-nav';
+import HeaderTools from '@/app/ui/header-tools';
 
 export const dynamic = 'force-dynamic';
 
@@ -53,6 +54,7 @@ export default async function MedicalAidLandingPage({
   return (
     <main className="relative min-h-screen bg-white">
       <HistoryNav fallbackHref="/" variant="floating" />
+      <HeaderTools showNotifications={false} variant="floating" />
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 pb-6 pt-16">
         <MedicalAidLogo />
         <Link

@@ -1,3 +1,4 @@
+import type { Key } from '@/app/lib/i18n';
 import {
   ArrowRightIcon,
   HeartIcon,
@@ -6,41 +7,55 @@ import {
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { ClinicMark, MedicalAidMark } from '@/app/ui/clinic-logo';
+import HeaderTools from '@/app/ui/header-tools';
+import { getT } from '@/app/lib/lang';
 
-const cards = [
+const cards: {
+  href: string;
+  badge: string;
+  title: Key;
+  text: Key;
+  cta: Key;
+  icon: typeof HeartIcon;
+  accent: string;
+}[] = [
   {
     href: '/clinic-hub',
     badge: 'Family Clinic',
-    title: 'Care for the whole family, in one place.',
-    text: 'Appointments, prescriptions, medical aid and records for patients and clinic staff.',
-    cta: 'Open Family Clinic',
+    title: 'home.clinicTitle',
+    text: 'home.clinicText',
+    cta: 'home.openClinic',
     icon: HeartIcon,
     accent: 'from-[#1E4FD8] to-[#5B7FFF]',
   },
   {
     href: '/nextjs-hub',
     badge: 'Next.js',
-    title: 'Next.js invoice dashboard',
-    text: 'Manage customers, invoices and revenue in the original Next.js dashboard.',
-    cta: 'Open Next.js dashboard',
+    title: 'home.nextTitle',
+    text: 'home.nextText',
+    cta: 'home.openNext',
     icon: Squares2X2Icon,
     accent: 'from-[#0F172A] to-[#1E2F66]',
   },
   {
     href: '/medical-aid',
     badge: 'Medical Aid',
-    title: 'Medical aid dashboard',
-    text: 'Join a Family Clinic Care Plan, choose the card it is paid from, and see your cover and documents.',
-    cta: 'Open Medical Aid',
+    title: 'home.aidTitle',
+    text: 'home.aidText',
+    cta: 'home.openAid',
     icon: ShieldCheckIcon,
     accent: 'from-[#0D9488] to-[#2DD4BF]',
   },
 ];
 
-export default function Page() {
+export default async function Page() {
+  const { t } = await getT();
   return (
-    <main className="flex min-h-screen flex-col bg-[#F8FAFC] p-6">
-      <div className="flex shrink-0 flex-col items-center gap-5 rounded-2xl bg-[#0F172A] px-6 py-10 text-center text-white">
+    <main className="relative flex min-h-screen flex-col bg-[#F8FAFC] p-6">
+      <div className="relative flex shrink-0 flex-col items-center gap-5 rounded-2xl bg-[#0F172A] px-6 py-10 text-center text-white">
+        <div className="absolute right-4 top-4">
+          <HeaderTools showNotifications={false} />
+        </div>
         <div className="flex items-center gap-4">
           <ClinicMark className="h-16 w-16" />
           <span className="h-10 w-px bg-white/25" aria-hidden="true" />
@@ -84,12 +99,12 @@ export default function Page() {
               <span className="mx-auto rounded-full border border-[#dbe3ff] bg-[#EEF2FF] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#1E2F66]">
                 {card.badge}
               </span>
-              <h2 className="text-3xl font-bold text-[#0F172A]">{card.title}</h2>
-              <p className="text-[#475569]">{card.text}</p>
+              <h2 className="text-3xl font-bold text-[#0F172A]">{t(card.title)}</h2>
+              <p className="text-[#475569]">{t(card.text)}</p>
               <span
                 className={`mt-auto flex items-center justify-center gap-3 rounded-xl bg-gradient-to-r ${card.accent} px-6 py-3 font-medium text-white shadow-md transition-all group-hover:gap-4 group-hover:shadow-lg`}
               >
-                {card.cta}
+                {t(card.cta)}
                 <ArrowRightIcon className="w-5" />
               </span>
             </Link>

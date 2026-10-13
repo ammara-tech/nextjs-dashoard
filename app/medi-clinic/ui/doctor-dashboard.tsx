@@ -3,6 +3,7 @@ import type { Appointment, ProviderShift } from '../lib/data';
 import { dayKey, type DoctorOption } from '../lib/demo-data';
 import { WeekAppointmentsChart } from './charts';
 import WeeklyShifts from './weekly-shifts';
+import { getT } from '@/app/lib/lang';
 
 type Schedule = {
   appointments: Appointment[];
@@ -115,13 +116,14 @@ function AppointmentRows({
   );
 }
 
-export default function DoctorDashboard({
+export default async function DoctorDashboard({
   doctor,
   schedule,
 }: {
   doctor: DoctorOption;
   schedule: Schedule;
 }) {
+  const { t } = await getT();
   const timeZone = doctor.time_zone || 'Africa/Johannesburg';
   const now = new Date();
   const todayKey = dayKey(now, timeZone);
@@ -180,7 +182,7 @@ export default function DoctorDashboard({
           className="rounded-xl border border-[#e9eaf0] bg-white px-4 py-2.5 text-sm font-medium text-[#1E4FD8] shadow-sm hover:bg-[#EEF2FF]"
           href="/medi-clinic?switch=1"
         >
-          Switch doctor
+          {t('doctor.switch')}
         </Link>
       </div>
 
@@ -200,26 +202,26 @@ export default function DoctorDashboard({
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Metric
           accent="bg-[#1E4FD8]"
-          label="Today"
-          note={`${todayRemaining} still to see`}
+          label={t('doctor.today')}
+          note={`${todayRemaining} ${t('doctor.todayNote')}`}
           value={today.length}
         />
         <Metric
           accent="bg-[#5B7FFF]"
-          label="Next 7 days"
-          note="Booked appointments"
+          label={t('doctor.next7')}
+          note={t('doctor.next7Note')}
           value={upcoming.length}
         />
         <Metric
           accent="bg-[#1E2F66]"
-          label="Completed (last 7 days)"
-          note={`${noShowsRecently} no-shows`}
+          label={t('doctor.completed')}
+          note={`${noShowsRecently} ${t('doctor.noShows')}`}
           value={completedRecently}
         />
         <Metric
           accent="bg-[#8FA8FF]"
-          label="Patients"
-          note="On this schedule"
+          label={t('doctor.patients')}
+          note={t('doctor.patientsNote')}
           value={patientCount}
         />
       </div>
@@ -228,10 +230,10 @@ export default function DoctorDashboard({
 
       <div className="grid gap-5 lg:grid-cols-2">
         <section className="rounded-2xl border border-[#e9eaf0] bg-white p-6 shadow-[0_8px_30px_rgba(31,41,55,0.04)]">
-          <h2 className="text-lg font-semibold text-[#20263b]">Today’s schedule</h2>
+          <h2 className="text-lg font-semibold text-[#20263b]">{t('doctor.todaySchedule')}</h2>
           {today.length === 0 ? (
             <p className="mt-4 rounded-xl bg-[#f7f8fc] px-4 py-5 text-sm text-[#7b8296]">
-              No appointments today.
+              {t('doctor.noToday')}
             </p>
           ) : (
             <div className="mt-2">
@@ -242,17 +244,17 @@ export default function DoctorDashboard({
 
         <section className="rounded-2xl border border-[#e9eaf0] bg-white p-6 shadow-[0_8px_30px_rgba(31,41,55,0.04)]">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-lg font-semibold text-[#20263b]">Coming up</h2>
+            <h2 className="text-lg font-semibold text-[#20263b]">{t('doctor.comingUp')}</h2>
             <Link
               className="text-sm font-semibold text-[#1E4FD8] hover:text-[#465fd4]"
               href="/medi-clinic/appointments"
             >
-              View all
+              {t('doctor.viewAll')}
             </Link>
           </div>
           {upcoming.length === 0 ? (
             <p className="mt-4 rounded-xl bg-[#f7f8fc] px-4 py-5 text-sm text-[#7b8296]">
-              Nothing booked in the next 7 days.
+              {t('doctor.nothingNext')}
             </p>
           ) : (
             <div className="mt-2">
@@ -268,12 +270,12 @@ export default function DoctorDashboard({
 
       <section className="rounded-2xl border border-[#e9eaf0] bg-white p-6 shadow-[0_8px_30px_rgba(31,41,55,0.04)]">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold text-[#20263b]">My weekly shifts</h2>
+          <h2 className="text-lg font-semibold text-[#20263b]">{t('doctor.weeklyShifts')}</h2>
           <Link
             className="text-sm font-semibold text-[#1E4FD8] hover:text-[#465fd4]"
             href="/medi-clinic/shifts"
           >
-            Full view
+            {t('doctor.fullView')}
           </Link>
         </div>
         <div className="mt-3">

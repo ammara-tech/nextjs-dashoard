@@ -10,6 +10,7 @@ import {
 import { ClinicMark } from '@/app/ui/clinic-logo';
 import { lusitana } from '@/app/ui/fonts';
 import HistoryNav from '@/app/ui/history-nav';
+import HeaderTools from '@/app/ui/header-tools';
 
 function NextMark({ className = 'h-14 w-14' }: { className?: string }) {
   return (
@@ -27,6 +28,7 @@ export default function NextjsHubPage() {
   return (
     <main className="relative min-h-screen bg-white">
       <HistoryNav fallbackHref="/" variant="floating" />
+      <HeaderTools showNotifications={false} variant="floating" />
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 pb-6 pt-16">
         <div className="flex items-center gap-3">
           <ClinicMark className="h-10 w-10" />

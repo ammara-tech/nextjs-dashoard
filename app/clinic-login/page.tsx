@@ -3,6 +3,7 @@ import ClinicLogo from '@/app/ui/clinic-logo';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import HistoryNav from '@/app/ui/history-nav';
+import HeaderTools from '@/app/ui/header-tools';
 
 export default async function ClinicLoginPage({
   searchParams,
@@ -17,6 +18,7 @@ export default async function ClinicLoginPage({
   return (
     <main className="relative flex min-h-screen items-center justify-center bg-[#F8FAFC]">
       <HistoryNav fallbackHref="/clinic-hub" variant="floating" />
+      <HeaderTools showNotifications={false} variant="floating" />
       <div className="w-full max-w-[440px] p-5">
         <div className="mb-5 rounded-2xl bg-[#0F172A] p-6 text-white">
           <ClinicLogo light />
