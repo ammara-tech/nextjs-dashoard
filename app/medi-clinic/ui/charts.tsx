@@ -24,6 +24,8 @@ export function NewPatientsChart({
 }) {
   const maxCount = Math.max(1, ...data.map((item) => item.count));
   const total = data.reduce((sum, item) => sum + item.count, 0);
+  const lastThree = data.slice(-3).reduce((sum, item) => sum + item.count, 0);
+  const priorThree = data.slice(-6, -3).reduce((sum, item) => sum + item.count, 0);
 
   return (
     <section className="rounded-2xl border border-[#e9eaf0] bg-white p-6 shadow-[0_8px_30px_rgba(31,41,55,0.04)]">
@@ -31,7 +33,7 @@ export function NewPatientsChart({
         <div>
           <p className="text-sm font-medium text-[#798096]">Practice growth</p>
           <h2 className="mt-1 text-lg font-semibold text-[#20263b]">
-            New patients
+            Is the practice growing? New patients per month
           </h2>
         </div>
         <span className="rounded-full bg-[#EEF2FF] px-3 py-1 text-xs font-semibold text-[#1E4FD8]">
@@ -41,7 +43,7 @@ export function NewPatientsChart({
       <ChartHoverArea>
         <div
           aria-label="New patients by month for the last six months. Hover or focus a bar for details."
-          className="mt-8 grid h-48 grid-cols-6 items-end gap-3"
+          className="mt-6 grid h-48 grid-cols-6 items-end gap-3"
           role="group"
         >
           {data.map((item, index) => {
@@ -89,6 +91,13 @@ export function NewPatientsChart({
           })}
         </div>
       </ChartHoverArea>
+      <p className="mt-2 text-center text-xs text-[#8b91a3]">
+        Month (x) · New patients, count (y, bars start at zero)
+      </p>
+      <p className="mt-3 rounded-lg bg-[#EEF2FF] px-3 py-2 text-sm text-[#1E2F66]">
+        Last 3 months: {lastThree} new patients, against {priorThree} in the 3 before.
+        If the last three bars fall, the owner holds off on a second consulting day.
+      </p>
     </section>
   );
 }
@@ -99,6 +108,7 @@ export function AppointmentStatusChart({
   data: AppointmentStatusCount[];
 }) {
   const total = data.reduce((sum, item) => sum + item.count, 0);
+  const noShowCount = data.find((item) => item.status === 'no_show')?.count ?? 0;
   const radius = 68;
   const circumference = 2 * Math.PI * radius;
   let offset = 0;
@@ -126,7 +136,7 @@ export function AppointmentStatusChart({
       <div>
         <p className="text-sm font-medium text-[#798096]">This month</p>
         <h2 className="mt-1 text-lg font-semibold text-[#20263b]">
-          Appointment outcomes
+          What share of this month&apos;s appointments are no-shows?
         </h2>
       </div>
       <ChartHoverArea className="mt-6">
@@ -192,6 +202,11 @@ export function AppointmentStatusChart({
           </ul>
         </div>
       </ChartHoverArea>
+      <p className="mt-4 rounded-lg bg-[#EEF2FF] px-3 py-2 text-sm text-[#1E2F66]">
+        {noShowCount} of {total} appointments this month are no-shows
+        {total === 0 ? '' : ` (${Math.round((noShowCount / total) * 100)}%)`}. If this stays
+        high, reception sends reminders the day before.
+      </p>
     </section>
   );
 }

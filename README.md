@@ -1,5 +1,54 @@
-# Patient and Billing Dashboard
+# Family Clinic Platform (Patient and Billing Dashboard)
 
+**Production:** https://nextjs-dashoard-psi.vercel.app
+
+**DEMO LOGIN:** admin `staff@nextmail.com`, patient `user@nextmail.com`. Passwords are given to the panel in person and are never kept in this README.
+
+## What it does
+
+A secure clinic system for a family practice. Reception and admin manage patients, appointments, shifts, claims and Care Plan members; doctors and pharmacy have their own workspaces; patients sign in to their own portal and Medical Aid (Care Plans) dashboard. Every role sees only the rows the database allows it to see.
+
+## How to run it
+
+1. `npm install`
+2. Copy `.env.example` to `.env.local` and fill in the variable names (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `POSTGRES_URL` and the others listed there). Values are never committed.
+3. Run the SQL files in `supabase/` in the order given under "Supabase SQL run order" below.
+4. `npm run dev`, then open http://localhost:3000.
+
+## Tech stack and why
+
+- **Next.js App Router + TypeScript**: server components fetch data next to the page, server actions handle writes.
+- **Supabase (Auth + Postgres + RLS)**: logins and row-level security in one place, so access rules live in the database.
+- **Tailwind CSS**: consistent styling, with dark mode.
+- **Vercel**: automatic deploys from `main`.
+
+## Known limitations
+
+- Payments are a labelled demo record: no gateway, no money moves.
+- No POPIA or other compliance is claimed; a legal and privacy review is needed before real patient data.
+
+## What I would do next
+
+1. Connect a real payment gateway with verified webhooks.
+2. Add refunds for plan members, plus e-mail and SMS alerts.
+3. Complete the legal and privacy review.
+
+## Smoke test (tick before the demo)
+
+- [ ] Production URL loads signed out; /medi-clinic sends me to sign-in
+- [ ] Admin signs in and lands on the overview
+- [ ] Create a patient, rename it, delete it; the list updates each time
+- [ ] Create an appointment from the "Select a patient" dropdown
+- [ ] Patient sees only their own records (second-user proof)
+- [ ] Bar chart and donut load with hover cards
+- [ ] Care Plan members page and claims board load
+- [ ] Patient edits their phone number in My profile
+- [ ] CSV export downloads
+- [ ] Sign out returns to the login page
+
+---
+
+# Patient and Billing Dashboard
 A Next.js application with three separate dashboards, chosen from the landing page at `/`:
 
 | Dashboard | Route | What it is |

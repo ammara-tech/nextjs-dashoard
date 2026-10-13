@@ -6,6 +6,14 @@
 
 **Student:** Ammara Badat
 
+## Who it is for and the two questions
+
+**Audience:** the owner and front desk of a small family clinic, and the families who are its patients.
+
+**Chart 1 (bar):** "Is the practice growing? New patients per month." If the last three bars fall, the owner holds off on a second consulting day.
+
+**Chart 2 (donut):** "What share of this month's appointments are no-shows?" If the share stays high, reception sends reminders the day before.
+
 ## 1. Executive summary
 
 This project is a web dashboard for reviewing billing, customer, and revenue
