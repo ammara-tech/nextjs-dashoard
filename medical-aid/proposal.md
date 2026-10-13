@@ -43,11 +43,15 @@ sign in once.
 - A PDF invoice for every payment, downloadable from the payments table (`/medi-clinic/invoices/care-plan/[id]`), marked as a demo.
 - A "Paid by month" chart on the overview with a hover card showing the amount, payments and plan.
 - Teal Medical Aid colours and logo, and back, forward and refresh arrows on its pages.
+- Plan progress and payment tracking: a 12-month progress bar, next payment date with days remaining, total paid and a payment schedule (paid, upcoming, failed, refunded).
+- Claim tracking: members submit claims and follow them through Submitted, In review, Approved or Rejected, and Paid; staff update the stage on a board at `/medi-clinic/claims`, with approval rate and totals (`supabase/clinic-claims.sql`).
+- Live updates and a notification bell when payments or claims change (`supabase/clinic-realtime.sql`).
+- Dark and light mode and an English / Afrikaans toggle on every page.
 
 ### Not included
 
 - A real payment gateway, real debit orders or card verification.
-- Claims, provider network checks or regulatory approval as a medical scheme.
+- Provider network checks, automatic claim adjudication against a scheme, or regulatory approval as a medical scheme. Claim tracking is a workflow record only: staff decide each stage by hand.
 - A staff view of plan members and refunds.
 - Storage of card numbers or CVV (never stored).
 
@@ -63,6 +67,7 @@ sign in once.
   The price is read from the database, never from the browser; the chosen card
   must belong to the patient and not be expired.
 - Cancelling keeps payment history.
+- `clinic_claims` is read-only for patients (their own rows) and staff (their clinic's rows). Patients submit through `submit_claim`; staff move a claim through `set_claim_status`, which only allows submitted to in review or rejected, in review to approved or rejected, and approved to paid. Both are security-definer functions with an empty `search_path`, tested on PostgreSQL for role, ownership and clinic isolation.
 - The app shows a setup notice instead of failing if the migration has not been run.
 
 ## 5. Delivery and acceptance

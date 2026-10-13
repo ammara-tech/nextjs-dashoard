@@ -290,6 +290,13 @@ Built and type-checked; SQL migrations must still be run in Supabase and the flo
 - **Chart hover cards:** every chart (clinic overview, doctor weekly chart, Medical Aid payments chart, revenue chart) shows a card with its statistics on hover, keyboard focus or tap, for every role.
 - **Page history arrows:** back, forward and refresh controls on login pages, hubs and dashboards.
 - **Doctors:** only the "Dr. Sample ..." providers are used; `supabase/clinic-sample-doctors-only.sql` removes or hides any others.
+- **Dark and light mode, and English / Afrikaans:** toggles in every header and login page; the choice is remembered and the dashboards' colours are remapped for dark mode. Navigation, headers, the doctor dashboard, calendar, claims, profile, search and tour are translated.
+- **Guided demo tour:** a ten-step, plain-language walkthrough of the roles and dashboards, opened from any header.
+- **Search and shortcuts:** Ctrl+K opens role-aware search (pages, patients, actions); `?` lists shortcuts such as `G` then `P` for Patients.
+- **Live updates and notifications:** changes to appointments, Care Plan payments and claims refresh the page and add a bell notification, through Supabase Realtime (`supabase/clinic-realtime.sql`).
+- **Appointment calendar:** a week grid per doctor with overlapping appointments side by side, status colours, hover details and the doctor's available hours shaded (`/medi-clinic/calendar`).
+- **Claims board for staff:** owner, admin and front desk move claims through Submitted, In review, Approved or Rejected, and Paid (`/medi-clinic/claims`, `supabase/clinic-claims.sql`).
+- **Patient profile editing:** patients update their own name, phone, email and date of birth (`supabase/clinic-patient-profile.sql`).
 - **Polish:** branded 404 page, favicon, page titles, keyboard focus styling, aligned table numbers and reduced-motion support.
 - **Patient portal tabs** with dashboard-style stat cards.
 - **Online booking** from active provider shifts (`clinic-patient-booking-seed.sql`).
@@ -298,7 +305,7 @@ Built and type-checked; SQL migrations must still be run in Supabase and the flo
 - **Patient document upload:** PDF/JPEG/PNG up to 10 MB into the private `patients-medical-records` bucket under `pt_<patientId>/<category>/<uuid>`; categories identity, clinical_history, invoices (`clinic-patient-documents-upload.sql`).
 - **Resilient admin dashboard** with an amber banner for partial load failures; RLS recursion on `patients` fixed (`fix-patients-rls-recursion.sql`).
 
-Still open: real payment gateway (Care Plan payments are labelled demo records), wallet top-up/refund, treatments page for admin role, notifications, a staff view of Care Plan members, and doctor cards with a speciality description.
+Still open: real payment gateway (Care Plan payments are labelled demo records), wallet top-up/refund, treatments page for admin role, e-mail and SMS notifications (in-app notifications are built), a staff view of Care Plan members, translating the remaining page text into Afrikaans, and doctor cards with a speciality description.
 
 ## 11. Phased delivery plan
 

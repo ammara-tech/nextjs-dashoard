@@ -35,6 +35,9 @@ These links identify the deployed entry points. Users still need valid Supabase 
 - Provider shifts are entered and shown as a day range (Monday to Friday by default), with a weekly grid per provider.
 - Join a Family Clinic Care Plan at `/medical-aid` (Essential, Family Plus, Premium), pay from a chosen saved card (demo payment only), and open sample plan PDFs.
 - Manage patient medical aid and co-payment coverage, with provider selection, dependent mapping, digital card uploads, verification badges, and in-network billing summaries.
+- Dark and light mode, and an English / Afrikaans language toggle, in every header and on every login page.
+- A guided demo tour, a global search and keyboard shortcuts bar (Ctrl+K), and live updates with a notification bell.
+- An appointment calendar (week grid per doctor), Care Plan progress and payment tracking, medical aid claim tracking, and patient profile editing.
 
 ## Medical aid & co-payment flow
 
@@ -164,8 +167,11 @@ Run these in the Supabase SQL Editor, in order, after the base schema files abov
 9. `supabase/clinic-invoices.sql` (lets patients and front desk read the services on appointments so appointment invoices work; optional but needed for patient appointment invoices)
 10. `supabase/clinic-admin-availability.sql` (lets the owner and administrators change when providers are available from the Provider shifts page)
 11. `supabase/clinic-sample-doctors-only.sql` (optional clean-up: removes every provider that is not a "Dr. Sample ..." provider, or hides it if it has history)
+12. `supabase/clinic-claims.sql` (medical aid claim tracking: table, row-level security, `submit_claim` and `set_claim_status` functions, and five sample claims while the table is empty; run after `clinic-care-plans.sql`)
+13. `supabase/clinic-patient-profile.sql` (lets a patient edit their own name, phone, email and date of birth through `update_my_profile`)
+14. `supabase/clinic-realtime.sql` (turns on live updates for appointments, Care Plan payments and memberships, and claims; run after `clinic-claims.sql`)
 
-The app still loads if steps 7 and 8 have not been run: the Care Plans pages show a setup notice and the doctor dashboards fall back to clearly labelled sample data.
+The app still loads if steps 7 and 8 have not been run: the Care Plans pages show a setup notice and the doctor dashboards fall back to clearly labelled sample data. Likewise the Claims screens and the profile form show a plain "run this SQL file" message until steps 12 and 13 are run, and live updates simply stay off until step 14.
 
 ### Known issues
 
@@ -213,6 +219,20 @@ supabase/clinic-demo-data.sql Shifts, patients and appointments for the Dr. Samp
 supabase/clinic-sample-doctors-only.sql Removes or hides non-sample providers
 supabase/clinic-invoices.sql Read access to appointment services for invoices
 supabase/clinic-admin-availability.sql Atomic function to change provider availability
+supabase/clinic-claims.sql Claim tracking table, functions and sample claims
+supabase/clinic-patient-profile.sql Function for patients to edit their own profile
+supabase/clinic-realtime.sql Turns on Supabase Realtime for the watched tables
+app/ui/
+  theme-toggle.tsx, language-toggle.tsx   Dark/light and EN/AF buttons
+  header-tools.tsx                        Toolbar: search, tour, notifications, language, theme
+  command-palette.tsx                     Ctrl+K search and keyboard shortcuts
+  guided-tour.tsx                         Ten-step guided demo tour
+  notifications.tsx                       Notification bell and realtime listener
+  claim-parts.tsx                         Claim stage tracker, badge and statistics
+app/lib/i18n.ts, lang.ts                  English / Afrikaans dictionaries and helpers
+app/lib/nav-items.ts, claims.ts           Role navigation list and claim stage rules
+app/api/search/route.ts                   Role-aware page and patient search
+app/medi-clinic/calendar, claims          Appointment calendar and claims board (staff)
 ```
 
 ## Chart hover cards
@@ -225,6 +245,52 @@ Every chart in every dashboard shows a card with its statistics when the user ho
 - Next.js dashboard: the revenue chart shows the month's revenue, the change from the previous month and its share of the year.
 
 Charts stay server components: each bar or segment carries a `data-tip` description and the shared `ChartHoverArea` draws the card.
+
+## Dark and light mode
+
+The moon / sun button in every header switches the whole app between light and dark. The choice is saved in the browser and applied before the page paints, so there is no flash. Dark mode works by remapping the dashboards' fixed colours in `app/ui/global.css` (under `html.dark`), so new pages that use the same palette are covered automatically. Press `T` to toggle it from the keyboard.
+
+## Languages
+
+The language button switches between English and Afrikaans (stored in a `lang` cookie, with the page language set on `<html>`). Dictionaries are in `app/lib/i18n.ts`; server pages use `getT()` (`app/lib/lang.ts`) and client components use `useT()`. Currently translated: the toolbar, navigation, headers, landing cards, doctor dashboard, calendar, claims, plan progress, patient profile, search, notifications and the guided tour. Other page text is still English and can be added key by key. Press `L` to switch language.
+
+## Guided demo tour
+
+A ten-step tour explains the three dashboards, the roles, a doctor's day, running the clinic, the patient view, Medical Aid plans and claims, and live updates and shortcuts. It opens from the sparkle button in any header (or Search > Take the tour), appears as a small card that never blocks the page, highlights the toolbar and bell where relevant, and offers links to the pages it describes. First-time visitors to the home page get a one-time prompt. Use the arrow keys, Back / Next, or Esc. It is available in English and Afrikaans.
+
+## Search and keyboard shortcuts
+
+Press `Ctrl+K` (or `Cmd+K`, or `/`) to search. Results are limited to the pages your role can open, plus patients (for owner, admin, front desk and doctor roles; read through the signed-in user's row-level security), plus actions (theme, language, tour, shortcuts). Press `?` for the full list:
+
+| Keys | Action |
+| --- | --- |
+| `Ctrl+K` or `/` | Open search |
+| `?` | Show shortcuts |
+| `T` / `L` | Toggle theme / language |
+| `G` then `O`, `P`, `A`, `C`, `S`, `M`, `H` | Go to Overview, Patients, Appointments, Calendar, Shifts, Medical Aid, Home |
+| `Esc` | Close |
+
+Shortcuts are ignored while typing in a field.
+
+## Live updates and notifications
+
+When a signed-in user is on a page, the app subscribes to Supabase Realtime for appointments, Care Plan payments and memberships, and claims. Any change refreshes the page by itself and adds an entry to the bell (with an unread count, mark-all-read, clear, and a green dot while live). Row-level security decides which changes each user receives. Run `supabase/clinic-realtime.sql` once to switch it on; without it the app works as before. Notifications are kept in the browser only.
+
+## Appointment calendar
+
+`/medi-clinic/calendar` (owner, admin, front desk and doctor) shows a Monday to Sunday week grid in the clinic's time zone: appointments positioned by time and length (overlaps sit side by side), colour-coded booked / done / no-show, today highlighted, and a hover card per appointment. Choose a doctor to shade their available hours from their shifts; doctors see their own chosen schedule. Previous, Today and Next move between weeks.
+
+## Care Plan progress and payments
+
+The Medical Aid overview shows the first 12 months of the plan as a progress bar, the next payment date with days remaining (or overdue), the total paid and a 12-month schedule: recorded payments are marked Paid (or Failed / Refunded), and later months are projected from the next debit date and the plan price, labelled Upcoming.
+
+## Medical aid claims
+
+Patients submit a claim (what it was for and the amount) from the Claims tab of the Medical Aid dashboard and follow it through Submitted, In review, Approved or Rejected, and Paid with a stage tracker. Owner, admin and front desk use the Claims board at `/medi-clinic/claims` to move claims one allowed step at a time (with an optional reason), and see open claims, approval rate, total claimed and total paid. The allowed moves and who may make them are enforced in the database (`set_claim_status`), not in the browser.
+
+## Patient profile
+
+Patients edit their own name, phone, email and date of birth from the "My profile" tab of the portal (`update_my_profile`). The function only changes the signed-in patient's own row and validates every field; staff-managed fields such as the patient number cannot be changed.
 
 ## Navigation and polish
 
