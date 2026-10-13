@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import type { Lang } from '@/app/lib/i18n';
 import { useLang, useT } from './i18n-provider';
-import { OPEN_TOUR_EVENT } from './command-palette';
+import { OPEN_TOUR_EVENT } from './events';
 
 type Step = {
   title: Record<Lang, string>;
@@ -40,13 +40,13 @@ const steps: Step[] = [
         'The round buttons at the top are on every page.',
         'Moon or sun: switch between dark and light mode. Your choice is remembered.',
         'Language: switch between English and Afrikaans.',
-        'Magnifier: search pages and patients. Bell: live notifications. Sparkle: restart this tour.',
+        'Bell: live notifications. Sparkle: restart this tour.',
       ],
       af: [
         'Die ronde knoppies bo is op elke bladsy.',
         'Maan of son: wissel tussen donker en lig modus. Jou keuse word onthou.',
         'Taal: wissel tussen Engels en Afrikaans.',
-        'Vergrootglas: soek bladsye en pasiënte. Klokkie: lewendige kennisgewings. Vonk: begin hierdie toer weer.',
+        'Klokkie: lewendige kennisgewings. Vonk: begin hierdie toer weer.',
       ],
     },
   },
@@ -152,12 +152,12 @@ const steps: Step[] = [
     body: {
       en: [
         'When something changes, like a new appointment, a payment or a claim update, the page refreshes by itself and the bell shows a notification.',
-        'Press Ctrl+K (or /) to search anywhere. Press ? to see every shortcut.',
+        'Press ? to see every keyboard shortcut.',
         'Quick keys: T for theme, L for language, G then O, P, A or C to jump to a page.',
       ],
       af: [
         'Wanneer iets verander, soos ʼn nuwe afspraak, ʼn betaling of ʼn eis, verfris die bladsy vanself en wys die klokkie ʼn kennisgewing.',
-        'Druk Ctrl+K (of /) om oral te soek. Druk ? om elke kortpad te sien.',
+        'Druk ? om elke sleutelbordkortpad te sien.',
         'Vinnige sleutels: T vir tema, L vir taal, G dan O, P, A of C om na ʼn bladsy te spring.',
       ],
     },

@@ -61,7 +61,7 @@ record, clinical decision-support system, or claim of regulatory compliance.
 - Authentication using Supabase Auth for protected dashboard access.
 - Dashboard overview with billing metrics, revenue, and latest invoices.
 - Customer listing and invoice listing, creation, editing, and deletion.
-- Shared across all three dashboards: dark and light mode, an English / Afrikaans toggle, search and keyboard shortcuts (Ctrl+K), a guided demo tour, and hover cards with statistics on every chart.
+- Shared across all three dashboards: dark and light mode, an English / Afrikaans toggle, keyboard shortcuts, a guided demo tour, and hover cards with statistics on every chart.
 - In the Family Clinic and Medical Aid dashboards: live updates with a notification bell, an appointment calendar, Care Plan progress and payment tracking, claim tracking, and patient profile editing. See [`family-clinic/proposal.md`](./family-clinic/proposal.md) and [`medical-aid/proposal.md`](./medical-aid/proposal.md).
 
 ### Not included

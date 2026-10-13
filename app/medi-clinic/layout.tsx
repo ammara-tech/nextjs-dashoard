@@ -31,7 +31,7 @@ export default async function MediClinicLayout({
                 <ClinicLogo />
               </Link>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-5">
               {role === 'doctor' && (
                 <Link
                   className="rounded-xl bg-[#EEF2FF] px-4 py-2 text-sm font-medium text-[#1E4FD8] hover:bg-[#dfe7ff]"

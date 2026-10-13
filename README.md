@@ -36,7 +36,7 @@ These links identify the deployed entry points. Users still need valid Supabase 
 - Join a Family Clinic Care Plan at `/medical-aid` (Essential, Family Plus, Premium), pay from a chosen saved card (demo payment only), and open sample plan PDFs.
 - Manage patient medical aid and co-payment coverage, with provider selection, dependent mapping, digital card uploads, verification badges, and in-network billing summaries.
 - Dark and light mode, and an English / Afrikaans language toggle, in every header and on every login page.
-- A guided demo tour, a global search and keyboard shortcuts bar (Ctrl+K), and live updates with a notification bell.
+- A guided demo tour, keyboard shortcuts, and live updates with a notification bell.
 - An appointment calendar (week grid per doctor), Care Plan progress and payment tracking, medical aid claim tracking, and patient profile editing.
 
 ## Medical aid & co-payment flow
@@ -224,14 +224,13 @@ supabase/clinic-patient-profile.sql Function for patients to edit their own prof
 supabase/clinic-realtime.sql Turns on Supabase Realtime for the watched tables
 app/ui/
   theme-toggle.tsx, language-toggle.tsx   Dark/light and EN/AF buttons
-  header-tools.tsx                        Toolbar: search, tour, notifications, language, theme
-  command-palette.tsx                     Ctrl+K search and keyboard shortcuts
+  header-tools.tsx                        Toolbar: tour, notifications, language, theme
+  keyboard-shortcuts.tsx                  Single-key shortcuts and the ? help
   guided-tour.tsx                         Ten-step guided demo tour
   notifications.tsx                       Notification bell and realtime listener
   claim-parts.tsx                         Claim stage tracker, badge and statistics
 app/lib/i18n.ts, lang.ts                  English / Afrikaans dictionaries and helpers
-app/lib/nav-items.ts, claims.ts           Role navigation list and claim stage rules
-app/api/search/route.ts                   Role-aware page and patient search
+app/lib/claims.ts                         Claim stage rules
 app/medi-clinic/calendar, claims          Appointment calendar and claims board (staff)
 ```
 
@@ -252,25 +251,24 @@ The moon / sun button in every header switches the whole app between light and d
 
 ## Languages
 
-The language button switches between English and Afrikaans (stored in a `lang` cookie, with the page language set on `<html>`). Dictionaries are in `app/lib/i18n.ts`; server pages use `getT()` (`app/lib/lang.ts`) and client components use `useT()`. Currently translated: the toolbar, navigation, headers, landing cards, doctor dashboard, calendar, claims, plan progress, patient profile, search, notifications and the guided tour. Other page text is still English and can be added key by key. Press `L` to switch language.
+The language button switches between English and Afrikaans (stored in a `lang` cookie, with the page language set on `<html>`). Dictionaries are in `app/lib/i18n.ts`; server pages use `getT()` (`app/lib/lang.ts`) and client components use `useT()`. Currently translated: the toolbar, navigation, headers, landing cards, doctor dashboard, calendar, claims, plan progress, patient profile, notifications, keyboard help and the guided tour. Other page text is still English and can be added key by key. Press `L` to switch language.
 
 ## Guided demo tour
 
 A ten-step tour explains the three dashboards, the roles, a doctor's day, running the clinic, the patient view, Medical Aid plans and claims, and live updates and shortcuts. It opens from the sparkle button in any header (or Search > Take the tour), appears as a small card that never blocks the page, highlights the toolbar and bell where relevant, and offers links to the pages it describes. First-time visitors to the home page get a one-time prompt. Use the arrow keys, Back / Next, or Esc. It is available in English and Afrikaans.
 
-## Search and keyboard shortcuts
+## Keyboard shortcuts
 
-Press `Ctrl+K` (or `Cmd+K`, or `/`) to search. Results are limited to the pages your role can open, plus patients (for owner, admin, front desk and doctor roles; read through the signed-in user's row-level security), plus actions (theme, language, tour, shortcuts). Press `?` for the full list:
+Single-key shortcuts work anywhere except while typing in a field. Press `?` for the list:
 
 | Keys | Action |
 | --- | --- |
-| `Ctrl+K` or `/` | Open search |
 | `?` | Show shortcuts |
 | `T` / `L` | Toggle theme / language |
 | `G` then `O`, `P`, `A`, `C`, `S`, `M`, `H` | Go to Overview, Patients, Appointments, Calendar, Shifts, Medical Aid, Home |
 | `Esc` | Close |
 
-Shortcuts are ignored while typing in a field.
+The `G` jumps only go to pages your role has in its navigation bar.
 
 ## Live updates and notifications
 

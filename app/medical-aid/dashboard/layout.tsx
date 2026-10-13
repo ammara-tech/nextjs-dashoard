@@ -26,7 +26,7 @@ export default async function MedicalAidDashboardLayout({
               <MedicalAidLogo />
             </Link>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-5">
             {role === 'patient' ? (
               <Link
                 className="rounded-xl bg-[#E6F7F5] px-4 py-2 text-sm font-medium text-[#0D9488] hover:bg-[#CDEFEA]"

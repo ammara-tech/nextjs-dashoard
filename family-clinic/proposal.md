@@ -290,9 +290,9 @@ Built and type-checked; SQL migrations must still be run in Supabase and the flo
 - **Chart hover cards:** every chart (clinic overview, doctor weekly chart, Medical Aid payments chart, revenue chart) shows a card with its statistics on hover, keyboard focus or tap, for every role.
 - **Page history arrows:** back, forward and refresh controls on login pages, hubs and dashboards.
 - **Doctors:** only the "Dr. Sample ..." providers are used; `supabase/clinic-sample-doctors-only.sql` removes or hides any others.
-- **Dark and light mode, and English / Afrikaans:** toggles in every header and login page; the choice is remembered and the dashboards' colours are remapped for dark mode. Navigation, headers, the doctor dashboard, calendar, claims, profile, search and tour are translated.
+- **Dark and light mode, and English / Afrikaans:** toggles in every header and login page; the choice is remembered and the dashboards' colours are remapped for dark mode. Navigation, headers, the doctor dashboard, calendar, claims, profile, notifications and tour are translated.
 - **Guided demo tour:** a ten-step, plain-language walkthrough of the roles and dashboards, opened from any header.
-- **Search and shortcuts:** Ctrl+K opens role-aware search (pages, patients, actions); `?` lists shortcuts such as `G` then `P` for Patients.
+- **Keyboard shortcuts:** `?` lists them: `T` theme, `L` language, and `G` then `P` for Patients, limited to the pages the role has.
 - **Live updates and notifications:** changes to appointments, Care Plan payments and claims refresh the page and add a bell notification, through Supabase Realtime (`supabase/clinic-realtime.sql`).
 - **Appointment calendar:** a week grid per doctor with overlapping appointments side by side, status colours, hover details and the doctor's available hours shaded (`/medi-clinic/calendar`).
 - **Claims board for staff:** owner, admin and front desk move claims through Submitted, In review, Approved or Rejected, and Paid (`/medi-clinic/claims`, `supabase/clinic-claims.sql`).

@@ -3,7 +3,7 @@ import { inter } from '@/app/ui/fonts';
 import type { Metadata, Viewport } from 'next';
 import { getLang } from '@/app/lib/lang';
 import { I18nProvider } from '@/app/ui/i18n-provider';
-import CommandPalette from '@/app/ui/command-palette';
+import KeyboardShortcuts from '@/app/ui/keyboard-shortcuts';
 import GuidedTour from '@/app/ui/guided-tour';
 import { RealtimeNotifier } from '@/app/ui/notifications';
 
@@ -38,7 +38,7 @@ export default async function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <I18nProvider lang={lang}>
           {children}
-          <CommandPalette />
+          <KeyboardShortcuts />
           <GuidedTour />
           <RealtimeNotifier />
         </I18nProvider>

@@ -92,12 +92,12 @@ About 8 to 9 minutes spoken. Read the paragraphs as your speech, glance at the k
 
 ---
 
-## 11. Make it yours: theme, language and search (45 seconds)
+## 11. Make it yours: theme, language and shortcuts (45 seconds)
 
-> Every header has a small toolbar. The moon button switches the whole app between light and dark mode, and it remembers your choice. The language button switches between English and Afrikaans, covering the navigation, headers and key pages. And if you press Control and K, or just the slash key, a search opens. It only shows the pages your role is allowed to open, it can find patients for the roles that may see them, and it has shortcuts like theme and language. Press the question mark to see every keyboard shortcut, for example G then P to jump to Patients.
+> Every header has a small toolbar. The moon button switches the whole app between light and dark mode, and it remembers your choice. The language button switches between English and Afrikaans, covering the navigation, headers and key pages. There are also keyboard shortcuts: T for theme, L for language, and G then a letter to jump to a page your role has, for example G then P for Patients. Press the question mark to see every shortcut.
 
-**Key points:** dark and light mode remembered; English and Afrikaans; Ctrl+K search limited to your role; question mark lists shortcuts.
-**Demo cue:** toggle dark mode, switch language, press Ctrl+K and search a patient, press the question mark.
+**Key points:** dark and light mode remembered; English and Afrikaans; keyboard shortcuts limited to your role; question mark lists them.
+**Demo cue:** toggle dark mode, switch language, press the question mark, then press G and P.
 
 ---
 
@@ -142,7 +142,7 @@ About 8 to 9 minutes spoken. Read the paragraphs as your speech, glance at the k
 - **Why three dashboards?** They serve different audiences, but one login system and one repository keep it simple.
 - **How are invoices created?** On request, from stored payments and appointment services, in one PDF layout.
 - **Is it POPIA or HIPAA compliant?** No certification is claimed. It follows least privilege and minimal data, and a legal review is planned before real data.
-- **Can I use it in Afrikaans?** Yes, with the language button. The navigation, headers, calendar, claims, profile, search and tour are translated; the remaining page text is still English.
+- **Can I use it in Afrikaans?** Yes, with the language button. The navigation, headers, calendar, claims, profile, notifications and tour are translated; the remaining page text is still English.
 - **How do live updates work?** The app listens for changes through Supabase Realtime, refreshes the page and adds a bell notification. Row-level security still decides who receives each change.
 - **Are claims paid or approved automatically?** No. Claims are tracked by hand: staff move each claim through the stages, and the database only allows valid moves.
 - **How does dark mode work?** One button remaps the dashboards' colours and remembers the choice; no flash on reload.
