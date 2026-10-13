@@ -26,7 +26,7 @@ the landing page at `/`:
   saved cards, a chosen card for the plan, demo payments and sample PDFs.
 
 Across the platform: automatic PDF invoices for payments and appointments,
-back, forward and refresh arrows on every login page and dashboard, and small
+back, forward and refresh arrows on every login page and dashboard, hover cards with statistics on every chart for every role, and small
 professional touches (branded 404 page, favicon, page titles, keyboard focus
 and reduced-motion support). The walkthrough deck in
 [`presentations/`](./presentations) explains all of it in about five minutes.

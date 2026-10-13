@@ -215,6 +215,17 @@ supabase/clinic-invoices.sql Read access to appointment services for invoices
 supabase/clinic-admin-availability.sql Atomic function to change provider availability
 ```
 
+## Chart hover cards
+
+Every chart in every dashboard shows a card with its statistics when the user hovers over it, focuses it with the keyboard or taps it, for all roles (`app/ui/chart-hover.tsx`):
+
+- Family Clinic overview (owner, admin, front desk): the new patients bars show the month's count, the change from the previous month and the share of the six months; the appointment outcomes donut shows each status's count, its share of the month and the month total.
+- Doctor dashboard: a new "Appointments by day" chart for the current week, with booked, completed, no-show and day totals.
+- Medical Aid dashboard: a new "Paid by month" chart of Care Plan payments, with the amount, number of payments and plan.
+- Next.js dashboard: the revenue chart shows the month's revenue, the change from the previous month and its share of the year.
+
+Charts stay server components: each bar or segment carries a `data-tip` description and the shared `ChartHoverArea` draws the card.
+
 ## Navigation and polish
 
 - Back, forward and refresh arrows (like the browser's) appear on every login and sign-up page, each hub page and inside each dashboard (`app/ui/history-nav.tsx`). If there is no earlier page, Back goes to that area's home.

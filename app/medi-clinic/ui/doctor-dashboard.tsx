@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Appointment, ProviderShift } from '../lib/data';
 import { dayKey, type DoctorOption } from '../lib/demo-data';
+import { WeekAppointmentsChart } from './charts';
 import WeeklyShifts from './weekly-shifts';
 
 type Schedule = {
@@ -146,6 +147,24 @@ export default function DoctorDashboard({
   const todayRemaining = today.filter((appointment) => appointment.status === 'booked').length;
   const patientCount = new Set(sorted.map((appointment) => appointment.patient_id)).size;
 
+  // This week, Monday to Sunday in the doctor's time zone, for the chart.
+  const todayDate = new Date(`${todayKey}T00:00:00Z`);
+  const mondayOffset = (todayDate.getUTCDay() + 6) % 7;
+  const weekDays = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(todayDate.getTime() + (index - mondayOffset) * 86_400_000);
+    const key = date.toISOString().slice(0, 10);
+    const forDay = sorted.filter(
+      (appointment) => dayKey(new Date(appointment.starts_at), timeZone) === key,
+    );
+    return {
+      label: date.toLocaleDateString('en-GB', { timeZone: 'UTC', weekday: 'short' }),
+      date: date.toLocaleDateString('en-GB', { timeZone: 'UTC', day: 'numeric', month: 'short' }),
+      booked: forDay.filter((appointment) => appointment.status === 'booked').length,
+      done: forDay.filter((appointment) => appointment.status === 'done').length,
+      noShow: forDay.filter((appointment) => appointment.status === 'no_show').length,
+    };
+  });
+
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -204,6 +223,8 @@ export default function DoctorDashboard({
           value={patientCount}
         />
       </div>
+
+      <WeekAppointmentsChart days={weekDays} />
 
       <div className="grid gap-5 lg:grid-cols-2">
         <section className="rounded-2xl border border-[#e9eaf0] bg-white p-6 shadow-[0_8px_30px_rgba(31,41,55,0.04)]">

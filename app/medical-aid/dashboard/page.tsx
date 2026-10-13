@@ -5,6 +5,7 @@ import CardWallet, { type SavedCard } from '@/app/medi-clinic/ui/card-wallet';
 import CarePlanCards from '@/app/ui/care-plan-cards';
 import { loadCarePlanState } from '../lib/data';
 import { CancelPlanForm, ChangeCardForm, EnrolForm } from '../ui/plan-forms';
+import PaymentsChart from '../ui/payments-chart';
 import {
   DocumentList,
   formatDate,
@@ -223,6 +224,8 @@ export default async function MedicalAidDashboardPage({
                 <CancelPlanForm />
               </div>
             </section>
+
+            {state.payments.length > 0 ? <PaymentsChart payments={state.payments} /> : null}
 
             <section className="space-y-3">
               <div className="flex items-center justify-between">

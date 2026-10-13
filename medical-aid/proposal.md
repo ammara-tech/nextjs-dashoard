@@ -41,6 +41,7 @@ sign in once.
   (three benefit guides, membership certificate, terms and debit authorisation).
 - The patient portal's Medical aid tab shows the joined plan.
 - A PDF invoice for every payment, downloadable from the payments table (`/medi-clinic/invoices/care-plan/[id]`), marked as a demo.
+- A "Paid by month" chart on the overview with a hover card showing the amount, payments and plan.
 - Teal Medical Aid colours and logo, and back, forward and refresh arrows on its pages.
 
 ### Not included

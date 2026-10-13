@@ -287,6 +287,7 @@ Built and type-checked; SQL migrations must still be run in Supabase and the flo
 - **Shifts as a range:** providers' shifts are entered as a day range (Monday to Friday by default) and shown in a weekly grid; one shift is created per day and duplicates are skipped.
 - **Navigation:** header and tab bar by role (including Shifts), instant loading skeletons between pages. The original header-and-tab-bar layout was kept.
 - **Automatic PDF invoices:** generated on request for every Care Plan payment, every recorded payment and every appointment that has services (`/medi-clinic/invoices/...`). Numbers come from the record date and id, access follows RLS, and `supabase/clinic-invoices.sql` lets patients read the services on their own appointments.
+- **Chart hover cards:** every chart (clinic overview, doctor weekly chart, Medical Aid payments chart, revenue chart) shows a card with its statistics on hover, keyboard focus or tap, for every role.
 - **Page history arrows:** back, forward and refresh controls on login pages, hubs and dashboards.
 - **Doctors:** only the "Dr. Sample ..." providers are used; `supabase/clinic-sample-doctors-only.sql` removes or hides any others.
 - **Polish:** branded 404 page, favicon, page titles, keyboard focus styling, aligned table numbers and reduced-motion support.
