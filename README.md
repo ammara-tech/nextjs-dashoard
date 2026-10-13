@@ -276,7 +276,7 @@ When a signed-in user is on a page, the app subscribes to Supabase Realtime for 
 
 ## Appointment calendar
 
-`/medi-clinic/calendar` (owner, admin, front desk and doctor) shows a Monday to Sunday week grid in the clinic's time zone: appointments positioned by time and length (overlaps sit side by side), colour-coded booked / done / no-show, today highlighted, and a hover card per appointment. Choose a doctor to shade their available hours from their shifts; doctors see their own chosen schedule. Previous, Today and Next move between weeks.
+`/medi-clinic/calendar` (owner, admin, front desk and doctor) shows a Monday to Sunday week in the clinic's time zone, colour-coded booked / done / no-show, with today highlighted and a hover card per appointment. Choosing one doctor (and for doctors, their own schedule) shows a time grid with their available hours shaded. "All doctors" shows each day as a list of cards in time order, with the full patient name, time, visit type and doctor, so nothing is cut off when several doctors are busy at the same hour. Previous, Today and Next move between weeks.
 
 ## Care Plan progress and payments
 

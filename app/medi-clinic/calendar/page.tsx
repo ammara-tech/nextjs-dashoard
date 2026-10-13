@@ -14,7 +14,7 @@ import ChartHoverArea from '@/app/ui/chart-hover';
 import { tip } from '@/app/ui/chart-tip';
 import { getT } from '@/app/lib/lang';
 
-const ROW = 48; // pixels per hour
+const ROW = 72; // pixels per hour (a 30 minute visit is 36px: room for two lines)
 const DEFAULT_TZ = 'Africa/Johannesburg';
 
 function minutesInDay(iso: string, timeZone: string) {
@@ -182,6 +182,23 @@ export default async function CalendarPage({
         : 'border-[#e3e8f5] bg-white text-[#727a90] hover:bg-[#EEF2FF]'
     }`;
 
+  const tipFor = (appointment: Appointment, start: number, end: number) =>
+    tip({
+      title: appointment.patients.full_name,
+      rows: [
+        { label: lang === 'af' ? 'Tyd' : 'Time', value: `${clock(start)}–${clock(end)}` },
+        {
+          label: lang === 'af' ? 'Tipe' : 'Type',
+          value: appointment.clinic_appointment_types?.name ?? 'Appointment',
+        },
+        {
+          label: t('cal.doctor'),
+          value: appointment.clinic_providers?.display_name ?? doctorName ?? '—',
+        },
+        { label: 'Status', value: appointment.status.replace('_', ' ') },
+      ],
+    });
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -245,107 +262,161 @@ export default async function CalendarPage({
         ) : null}
       </div>
 
-      <ChartHoverArea className="overflow-x-auto rounded-2xl border border-[#e9eaf0] bg-white shadow-sm">
-        <div className="min-w-[760px]">
-          <div className="grid grid-cols-[3.5rem_repeat(7,minmax(0,1fr))] border-b border-[#e9eaf0]">
-            <div />
-            {days.map((day) => (
-              <div
-                className={`px-2 py-3 text-center ${day.key === todayKey ? 'bg-[#EEF2FF]' : ''}`}
-                key={day.key}
-              >
-                <p className="text-xs font-semibold uppercase tracking-wide text-[#8b91a3]">
-                  {day.short}
-                </p>
-                <p
-                  className={`text-sm font-bold ${day.key === todayKey ? 'text-[#1E4FD8]' : 'text-[#1E2F66]'}`}
+      {focusId ? (
+        // One doctor: a time grid with their available hours shaded.
+        <ChartHoverArea className="overflow-x-auto rounded-2xl border border-[#e9eaf0] bg-white shadow-sm">
+          <div className="min-w-[980px]">
+            <div className="grid grid-cols-[3.5rem_repeat(7,minmax(0,1fr))] border-b border-[#e9eaf0]">
+              <div />
+              {days.map((day) => (
+                <div
+                  className={`px-2 py-3 text-center ${day.key === todayKey ? 'bg-[#EEF2FF]' : ''}`}
+                  key={day.key}
                 >
-                  {day.date}
-                </p>
-              </div>
-            ))}
-          </div>
-          <div className="grid grid-cols-[3.5rem_repeat(7,minmax(0,1fr))]">
-            <div className="relative" style={{ height }}>
-              {hours.map((hour, index) => (
-                <span
-                  className="absolute right-2 -translate-y-1/2 text-[11px] text-[#8b91a3]"
-                  key={hour}
-                  style={{ top: index * ROW }}
-                >
-                  {index === 0 ? '' : clock(hour * 60)}
-                </span>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-[#8b91a3]">
+                    {day.short}
+                  </p>
+                  <p
+                    className={`text-sm font-bold ${day.key === todayKey ? 'text-[#1E4FD8]' : 'text-[#1E2F66]'}`}
+                  >
+                    {day.date}
+                  </p>
+                </div>
               ))}
             </div>
-            {days.map((day, dayIndex) => {
-              const placed = layout(weekItems[dayIndex]);
-              const dayShifts = shifts.filter((shift) => shift.weekday === day.weekday);
-              return (
-                <div
-                  className={`relative border-l border-[#e9eaf0] ${day.key === todayKey ? 'bg-[#EEF2FF]/40' : ''}`}
-                  key={day.key}
-                  style={{ height }}
-                >
-                  {hours.map((hour, index) => (
-                    <span
-                      aria-hidden="true"
-                      className="absolute inset-x-0 border-t border-[#eff0f4]"
-                      key={hour}
-                      style={{ top: index * ROW }}
-                    />
-                  ))}
-                  {dayShifts.map((shift) => {
-                    const from = toMinutes(shift.starts_at);
-                    const to = toMinutes(shift.ends_at);
-                    return (
+            <div className="grid grid-cols-[3.5rem_repeat(7,minmax(0,1fr))]">
+              <div className="relative" style={{ height }}>
+                {hours.map((hour, index) => (
+                  <span
+                    className="absolute right-2 -translate-y-1/2 text-[11px] text-[#8b91a3]"
+                    key={hour}
+                    style={{ top: index * ROW }}
+                  >
+                    {index === 0 ? '' : clock(hour * 60)}
+                  </span>
+                ))}
+              </div>
+              {days.map((day, dayIndex) => {
+                const placed = layout(weekItems[dayIndex]);
+                const dayShifts = shifts.filter((shift) => shift.weekday === day.weekday);
+                return (
+                  <div
+                    className={`relative border-l border-[#e9eaf0] ${day.key === todayKey ? 'bg-[#EEF2FF]/40' : ''}`}
+                    key={day.key}
+                    style={{ height }}
+                  >
+                    {hours.map((hour, index) => (
                       <span
                         aria-hidden="true"
-                        className="absolute inset-x-0 bg-[#E6F7F5]/80 ring-1 ring-inset ring-[#0D9488]/25"
-                        key={shift.id}
-                        style={{
-                          top: ((from - startHour * 60) / 60) * ROW,
-                          height: ((to - from) / 60) * ROW,
-                        }}
+                        className="absolute inset-x-0 border-t border-[#eff0f4]"
+                        key={hour}
+                        style={{ top: index * ROW }}
                       />
-                    );
-                  })}
-                  {placed.map(({ appointment, start, end, lane, lanes }) => (
-                    <button
-                      className={`absolute overflow-hidden rounded-lg border-l-4 px-1.5 py-1 text-left text-[11px] leading-tight shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5B7FFF] ${statusStyle[appointment.status]}`}
-                      data-tip={tip({
-                        title: appointment.patients.full_name,
-                        rows: [
-                          { label: lang === 'af' ? 'Tyd' : 'Time', value: `${clock(start)}–${clock(end)}` },
-                          {
-                            label: lang === 'af' ? 'Tipe' : 'Type',
-                            value: appointment.clinic_appointment_types?.name ?? 'Appointment',
-                          },
-                          {
-                            label: t('cal.doctor'),
-                            value: appointment.clinic_providers?.display_name ?? doctorName ?? '—',
-                          },
-                          { label: 'Status', value: appointment.status.replace('_', ' ') },
-                        ],
-                      })}
-                      key={appointment.id}
-                      style={{
-                        top: ((start - startHour * 60) / 60) * ROW + 1,
-                        height: Math.max(((end - start) / 60) * ROW - 2, 22),
-                        left: `calc(${(lane / lanes) * 100}% + 2px)`,
-                        width: `calc(${100 / lanes}% - 4px)`,
-                      }}
-                      type="button"
+                    ))}
+                    {dayShifts.map((shift) => {
+                      const from = toMinutes(shift.starts_at);
+                      const to = toMinutes(shift.ends_at);
+                      return (
+                        <span
+                          aria-hidden="true"
+                          className="absolute inset-x-0 bg-[#E6F7F5]/80 ring-1 ring-inset ring-[#0D9488]/25"
+                          key={shift.id}
+                          style={{
+                            top: ((from - startHour * 60) / 60) * ROW,
+                            height: ((to - from) / 60) * ROW,
+                          }}
+                        />
+                      );
+                    })}
+                    {placed.map(({ appointment, start, end, lane, lanes }) => (
+                      <button
+                        className={`absolute overflow-hidden rounded-lg border-l-4 px-2 py-1 text-left leading-tight shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5B7FFF] ${statusStyle[appointment.status]}`}
+                        data-tip={tipFor(appointment, start, end)}
+                        key={appointment.id}
+                        style={{
+                          top: ((start - startHour * 60) / 60) * ROW + 1,
+                          height: Math.max(((end - start) / 60) * ROW - 2, 34),
+                          left: `calc(${(lane / lanes) * 100}% + 3px)`,
+                          width: `calc(${100 / lanes}% - 6px)`,
+                        }}
+                        type="button"
+                      >
+                        <span className="block break-words text-xs font-semibold">
+                          {appointment.patients.full_name}
+                        </span>
+                        <span className="block truncate text-[11px] opacity-80">
+                          {clock(start)} · {appointment.clinic_appointment_types?.name ?? 'Appointment'}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </ChartHoverArea>
+      ) : (
+        // All doctors: each day lists its visits in time order, so every full
+        // name, time and doctor is readable even when several doctors are busy
+        // at the same hour.
+        <ChartHoverArea className="overflow-x-auto rounded-2xl border border-[#e9eaf0] bg-white shadow-sm">
+          <div className="grid min-w-[1120px] grid-cols-7">
+            {days.map((day, dayIndex) => {
+              const items = [...weekItems[dayIndex]].sort((a, b) => a.start - b.start);
+              return (
+                <div
+                  className={`border-l border-[#e9eaf0] first:border-l-0 ${day.key === todayKey ? 'bg-[#EEF2FF]/40' : ''}`}
+                  key={day.key}
+                >
+                  <div
+                    className={`border-b border-[#e9eaf0] px-2 py-3 text-center ${day.key === todayKey ? 'bg-[#EEF2FF]' : ''}`}
+                  >
+                    <p className="text-xs font-semibold uppercase tracking-wide text-[#8b91a3]">
+                      {day.short}
+                    </p>
+                    <p
+                      className={`text-sm font-bold ${day.key === todayKey ? 'text-[#1E4FD8]' : 'text-[#1E2F66]'}`}
                     >
-                      <span className="block truncate font-semibold">{appointment.patients.full_name}</span>
-                      <span className="block truncate opacity-80">{clock(start)}</span>
-                    </button>
-                  ))}
+                      {day.date}
+                    </p>
+                    <p className="mt-0.5 text-[11px] text-[#8b91a3]">{items.length}</p>
+                  </div>
+                  <ul className="space-y-2 p-2">
+                    {items.length === 0 ? (
+                      <li className="py-6 text-center text-xs text-[#b0b6c6]">—</li>
+                    ) : (
+                      items.map(({ appointment, start, end }) => (
+                        <li key={appointment.id}>
+                          <button
+                            className={`block w-full rounded-xl border-l-4 px-2.5 py-2 text-left shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5B7FFF] ${statusStyle[appointment.status]}`}
+                            data-tip={tipFor(appointment, start, end)}
+                            type="button"
+                          >
+                            <span className="block text-[11px] font-bold tracking-wide opacity-80">
+                              {clock(start)}–{clock(end)}
+                            </span>
+                            <span className="mt-0.5 block break-words text-[13px] font-semibold leading-snug">
+                              {appointment.patients.full_name}
+                            </span>
+                            <span className="mt-0.5 block break-words text-[11px] leading-snug opacity-80">
+                              {appointment.clinic_appointment_types?.name ?? 'Appointment'}
+                            </span>
+                            {appointment.clinic_providers?.display_name ? (
+                              <span className="mt-1 block break-words text-[11px] font-medium leading-snug text-[#0F766E]">
+                                {appointment.clinic_providers.display_name}
+                              </span>
+                            ) : null}
+                          </button>
+                        </li>
+                      ))
+                    )}
+                  </ul>
                 </div>
               );
             })}
           </div>
-        </div>
-      </ChartHoverArea>
+        </ChartHoverArea>
+      )}
 
       {total === 0 ? (
         <p className="rounded-xl bg-[#f7f8fc] px-4 py-5 text-sm text-[#7b8296]">{t('cal.empty')}</p>

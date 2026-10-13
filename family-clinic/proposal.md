@@ -294,7 +294,7 @@ Built and type-checked; SQL migrations must still be run in Supabase and the flo
 - **Guided demo tour:** a ten-step, plain-language walkthrough of the roles and dashboards, opened from any header.
 - **Keyboard shortcuts:** `?` lists them: `T` theme, `L` language, and `G` then `P` for Patients, limited to the pages the role has.
 - **Live updates and notifications:** changes to appointments, Care Plan payments and claims refresh the page and add a bell notification, through Supabase Realtime (`supabase/clinic-realtime.sql`).
-- **Appointment calendar:** a week grid per doctor with overlapping appointments side by side, status colours, hover details and the doctor's available hours shaded (`/medi-clinic/calendar`).
+- **Appointment calendar:** a week view with status colours and hover details: a time grid with the doctor's available hours shaded for one doctor, and a day-by-day card list with full names for all doctors (`/medi-clinic/calendar`).
 - **Claims board for staff:** owner, admin and front desk move claims through Submitted, In review, Approved or Rejected, and Paid (`/medi-clinic/claims`, `supabase/clinic-claims.sql`).
 - **Patient profile editing:** patients update their own name, phone, email and date of birth (`supabase/clinic-patient-profile.sql`).
 - **Polish:** branded 404 page, favicon, page titles, keyboard focus styling, aligned table numbers and reduced-motion support.
