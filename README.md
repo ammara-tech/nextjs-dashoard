@@ -87,6 +87,8 @@ These links identify the deployed entry points. Users still need valid Supabase 
 - Dark and light mode, and an English / Afrikaans language toggle, in every header and on every login page.
 - A guided demo tour, keyboard shortcuts, and live updates with a notification bell.
 - An appointment calendar, Care Plan progress and payment tracking, medical aid claim tracking, patient profile editing, a staff Care Plan members page, and CSV export of payments, claims and members.
+- An owner Audit log, pharmacy stock alerts, a database guard against double booking, daily appointment reminders (e-mail and SMS), daily Care Plan renewals with a Payment due state, an installable app, and a PayFast sandbox webhook foundation.
+- Automated tests and CI: SQL security tests on a real PostgreSQL, unit tests, Playwright browser tests and Lighthouse, run by GitHub Actions.
 
 ## Medical aid & co-payment flow
 
@@ -244,8 +246,15 @@ npm run start   # Serve a production build
 ## Project map
 
 ```text
+.github/workflows/     CI (type check, build, SQL tests) and post-deploy browser and Lighthouse checks
+tests/
+  sql/                  Row-level security tests that run the real migrations
+  unit/                 Unit tests for stock alerts, reminders and gateway signatures
+  e2e/                  Playwright browser tests for the live site
 app/
-  medi-clinic/          Separate family clinic dashboard and CRUD routes
+  medi-clinic/          Separate family clinic dashboard and CRUD routes (incl. audit log, calendar, claims, members)
+  api/cron/             Daily reminder and renewal jobs (secret-protected)
+  api/payments/payfast/ Verified PayFast sandbox webhook
   medical-aid/          Care Plans landing page, login/register and patient dashboard
   dashboard/
     (overview)/          Dashboard overview
