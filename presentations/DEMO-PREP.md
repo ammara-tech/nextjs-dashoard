@@ -8,7 +8,7 @@ Read sections 1 to 3 tonight, rehearse section 4 out loud twice, and keep sectio
 
 - **Check Vercel first.** Open the Vercel project and confirm the newest Production deployment says Ready. The latest commits have not been seen building there yet. If the newest one failed, the previous deployment stays live, so the site still works, but the newest features would be missing.
 - **Run the three new SQL files in Supabase** (SQL Editor, one at a time): clinic-claims.sql, clinic-patient-profile.sql, clinic-realtime.sql. Without claims.sql the Claims pages show an empty or error state. Without patient-profile.sql, saving My profile fails. Without realtime.sql, only the live notification bell is affected.
-- **logins.txt is committed in your public GitHub repo** and contains the demo passwords (123456 and 000000). The checklist item "no secrets" is about env files, which are clean (only .env.example is tracked), but a panel member who opens the repo will see this file. After the demo, run `git rm --cached logins.txt`, add it to .gitignore, and change those passwords in Supabase. If you want it fixed tonight, tell me and I will do it.
+- **logins.txt** is no longer tracked in the repo and is listed in .gitignore. It stays in git history, so change those demo passwords in Supabase when the demo is over.
 - **Dark mode, Afrikaans and the new pages have not been seen rendered** by me. Click through each once tonight in a real browser.
 - **Record the 60 to 90 second backup** tonight (section 8). Nobody can do that for you.
 
