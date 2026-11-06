@@ -24,13 +24,13 @@ A secure clinic system for a family practice. Reception and admin manage patient
 
 ## Known limitations
 
-- Payments are a labelled demo record: no gateway, no money moves.
+- Payments are a labelled demo record: no money moves. A PayFast sandbox webhook that verifies signatures is built, but it is not yet connected to the Care Plan screens.
 - No POPIA or other compliance is claimed; a legal and privacy review is needed before real patient data.
 
 ## What I would do next
 
-1. Connect a real payment gateway with verified webhooks.
-2. Add refunds for plan members, plus e-mail and SMS alerts.
+1. Connect the PayFast sandbox checkout to the Care Plan screens, using the verified webhook that is already built.
+2. Add refunds for plan members.
 3. Complete the legal and privacy review.
 
 ## Smoke test (tick before the demo)
@@ -219,6 +219,11 @@ Run these in the Supabase SQL Editor, in order, after the base schema files abov
 12. `supabase/clinic-claims.sql` (medical aid claim tracking: table, row-level security, `submit_claim` and `set_claim_status` functions, and five sample claims while the table is empty; run after `clinic-care-plans.sql`)
 13. `supabase/clinic-patient-profile.sql` (lets a patient edit their own name, phone, email and date of birth through `update_my_profile`)
 14. `supabase/clinic-realtime.sql` (turns on live updates for appointments, Care Plan payments and memberships, and claims; run after `clinic-claims.sql`)
+15. `supabase/clinic-audit-log.sql` (records who changed patients, appointments, claims and Care Plans, for the owner's Audit log page; run after `clinic-claims.sql`)
+16. `supabase/clinic-booking-guard.sql` (the database refuses a second booked appointment for the same provider at the same time)
+17. `supabase/clinic-reminders.sql` (appointment reminder log and the functions the scheduled job uses)
+18. `supabase/clinic-plan-renewals.sql` (daily Care Plan renewals and the "payment due" flag; run after `clinic-care-plans.sql`)
+19. `supabase/clinic-gateway.sql` (payment gateway event log for the PayFast sandbox webhook)
 
 The app still loads if steps 7 and 8 have not been run: the Care Plans pages show a setup notice and the doctor dashboards fall back to clearly labelled sample data. Likewise the Claims screens and the profile form show a plain "run this SQL file" message until steps 12 and 13 are run, and live updates simply stay off until step 14.
 
@@ -348,6 +353,66 @@ Patients submit a claim (what it was for and the amount) from the Claims tab of 
 ## Patient profile
 
 Patients edit their own name, phone, email and date of birth from the "My profile" tab of the portal (`update_my_profile`). The function only changes the signed-in patient's own row and validates every field; staff-managed fields such as the patient number cannot be changed.
+
+## Audit log
+
+Owners and admins open **Audit log** to see who created, edited, deleted or changed the status of patients, appointments, claims and Care Plan memberships and payments, and when. Database triggers write every row (`clinic-audit-log.sql`), the log records which fields changed but never copies personal values, and rows cannot be edited or deleted.
+
+## Stock alerts
+
+The pharmacy and inventory page shows low stock (10 or fewer usable items), batches that expire within 30 days, and expired batches. The rules live in `app/medi-clinic/lib/stock.ts` and are unit tested.
+
+## Appointment reminders
+
+A daily scheduled job (`/api/cron/reminders`, see `vercel.json`) finds booked appointments starting in 12 to 36 hours and sends an e-mail (Resend) and an SMS (Twilio) to each patient once. Reminders are logged so nobody is messaged twice. Without the keys below it only reports who would be reminded and records nothing. The route accepts only the `CRON_SECRET` bearer token.
+
+Variable names (values go in Vercel, never in the repository): `CRON_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `REMINDER_FROM_EMAIL`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`.
+
+## Care Plan renewals and payment due
+
+A second daily job (`/api/cron/renewals`) renews every active plan whose debit date has arrived by recording the next demo payment, and flags plans whose saved card was removed or has expired. Patients see a "Payment due" banner on their plan and staff see a badge on the Care Plan members page.
+
+## Double-booking guard
+
+A unique index (`clinic-booking-guard.sql`) makes the database refuse a second booked appointment for the same provider at the same moment, even if two people click at once.
+
+## Payment gateway foundation (PayFast sandbox)
+
+`/api/payments/payfast/notify` receives PayFast notifications, recomputes the signature, checks the merchant and amount, and records each payment once in `clinic_gateway_events`. It is switched off until `PAYFAST_MERCHANT_ID` (and optionally `PAYFAST_PASSPHRASE`) are set. It is not yet connected to the Care Plan screens, so no real money moves.
+
+## Installable app
+
+The site has a web app manifest and icons, so it can be installed on a phone or desktop ("Add to home screen"). A tiny service worker only shows an "you are offline" page; it never stores pages or records, because they can contain health information.
+
+## Tests and CI
+
+| Check | Where | What it proves |
+|---|---|---|
+| SQL security tests | `tests/sql`, run by GitHub Actions on a real PostgreSQL | The real migrations apply cleanly; patients see only their own rows; a patient cannot change a claim; claim status moves are enforced; the audit log is private and immutable; double booking is refused; reminders and renewals work once; the gateway event log is idempotent |
+| Unit tests | `tests/unit` (Node's built-in runner) | Stock alerts, phone normalisation, reminder wording, PayFast signature checks |
+| Type check and production build | GitHub Actions | The project compiles |
+| Browser tests | `tests/e2e` (Playwright) | The live site loads, dashboards redirect when signed out, exports and scheduled jobs refuse strangers, the app is installable. With demo accounts set as secrets it also signs in as admin and patient |
+| Lighthouse | `lighthouserc.json` | Accessibility 90 or higher is enforced on the landing, login and Medical Aid pages; scores are printed in the run summary |
+
+Run the browser and Lighthouse checks after every Production deploy (and every morning) from the **Post-deploy checks** workflow. To switch on the signed-in browser tests, add these GitHub repository secrets: `E2E_ADMIN_EMAIL`, `E2E_ADMIN_PASSWORD`, `E2E_PATIENT_EMAIL`, `E2E_PATIENT_PASSWORD`.
+
+Locally: `tests/sql/run.sh` (needs a scratch PostgreSQL and the `PG*` variables), `node --experimental-strip-types --test tests/unit/logic.test.ts`, and `cd tests/e2e && npm install && npx playwright install chromium && npx playwright test`.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  Browser[Browser or installed app] -->|pages, forms| Next[Next.js on Vercel]
+  Next -->|signed-in user's token| Supabase[(Supabase: Auth + Postgres + RLS)]
+  Supabase -->|live changes| Browser
+  Cron[Vercel Cron] -->|CRON_SECRET| Next
+  Next -->|service role: reminders, renewals| Supabase
+  Next -->|e-mail| Resend
+  Next -->|SMS| Twilio
+  PayFast -->|signed notification| Next
+```
+
+Every request a person makes runs as that person, so row-level security decides what comes back. Only the scheduled jobs and the payment webhook use the service role, and each is protected by a secret or a signature.
 
 ## Navigation and polish
 

@@ -70,3 +70,46 @@ test('reminder text names the patient, the doctor and the time', () => {
   assert.match(text, /Hi Alice/);
   assert.match(text, /Dr\. Sample/);
 });
+
+import { checkItn, payfastSignature, signedItn } from '../../app/lib/payfast.ts';
+
+const itn: [string, string][] = [
+  ['m_payment_id', 'PLAN-123'],
+  ['pf_payment_id', '1089250'],
+  ['payment_status', 'COMPLETE'],
+  ['amount_gross', '199.00'],
+  ['merchant_id', '10000100'],
+  ['item_name', 'Essential plan'],
+];
+
+test('gateway: a correctly signed notification is accepted', () => {
+  const body = signedItn(itn, 'secret phrase');
+  const result = checkItn(body, { merchantId: '10000100', passphrase: 'secret phrase' });
+  assert.equal(result.ok, true);
+  if (result.ok) {
+    assert.equal(result.amountMinor, 19900);
+    assert.equal(result.reference, 'PLAN-123');
+    assert.equal(result.status, 'COMPLETE');
+  }
+});
+
+test('gateway: tampering, the wrong passphrase or the wrong merchant are refused', () => {
+  const body = signedItn(itn, 'secret phrase');
+  assert.deepEqual(checkItn(body.replace('199.00', '1.00'), { merchantId: '10000100', passphrase: 'secret phrase' }), {
+    ok: false,
+    reason: 'bad signature',
+  });
+  assert.equal(checkItn(body, { merchantId: '10000100', passphrase: 'other' }).ok, false);
+  assert.deepEqual(checkItn(body, { merchantId: '999', passphrase: 'secret phrase' }), {
+    ok: false,
+    reason: 'wrong merchant',
+  });
+  assert.equal(checkItn('m_payment_id=x', { merchantId: '1' }).ok, false);
+});
+
+test('gateway: signature depends on field order and ignores empty fields', () => {
+  const a = payfastSignature([['a', '1'], ['b', '2']]);
+  const b = payfastSignature([['b', '2'], ['a', '1']]);
+  assert.notEqual(a, b);
+  assert.equal(payfastSignature([['a', '1'], ['empty', ''], ['b', '2']]), a);
+});

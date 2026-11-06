@@ -277,3 +277,23 @@ begin
   assert r.failed >= 1, 'a plan without a card fails';
   assert (select payment_failed_at from public.clinic_care_plan_memberships where id = mid2) is not null, 'marked payment due';
 end $$;
+
+-- 13. Gateway events: recorded once, service role only.
+begin;
+select pg_temp.sign_in('b131b12e-4a10-4d7b-904a-087c610a8a53') \g /dev/null
+do $$ begin
+  begin
+    perform public.record_gateway_event('1', 'REF', 'COMPLETE', 100);
+    assert false, 'owner must not record gateway events';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+rollback;
+begin;
+set local role service_role;
+do $$ begin
+  assert public.record_gateway_event('42', 'REF-1', 'COMPLETE', 19900) = true, 'first event is new';
+  assert public.record_gateway_event('42', 'REF-1', 'COMPLETE', 19900) = false, 'repeat event is ignored';
+  assert (select count(*) from public.clinic_gateway_events where gateway_payment_id = '42') = 1, 'stored once';
+end $$;
+rollback;

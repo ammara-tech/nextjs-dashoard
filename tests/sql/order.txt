@@ -18,3 +18,4 @@ clinic-audit-log.sql
 clinic-booking-guard.sql
 clinic-reminders.sql
 clinic-plan-renewals.sql
+clinic-gateway.sql

@@ -351,3 +351,8 @@ explicit tenant model and dedicated isolation tests before onboarding another
 clinic. Production secrets belong in the hosting provider's secret store, not
 source control or browser code. Schema and policy changes are deployed through
 reviewed migrations, not undocumented manual edits in the SQL editor.
+
+## Quality, operations and next features (added)
+
+- **Tests and CI:** SQL security tests on a real PostgreSQL, unit tests, browser tests and Lighthouse run in GitHub Actions; accessibility is enforced at 90 or higher.
+- **Audit log, stock alerts, double-booking guard** for the clinic, appointment **reminders** by e-mail and SMS, daily Care Plan **renewals** with a "Payment due" state, an **installable app**, and a verified **PayFast sandbox webhook** foundation.
