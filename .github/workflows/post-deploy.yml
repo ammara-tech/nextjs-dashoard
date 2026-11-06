@@ -46,6 +46,17 @@ jobs:
           node-version: 22
       - name: Lighthouse
         run: npx --yes @lhci/cli@0.14.0 autorun --config=lighthouserc.json
+      - name: Show scores
+        if: always()
+        run: |
+          node -e '
+            const m = require("./lighthouse-report/manifest.json").filter((r) => r.isRepresentativeRun);
+            const pct = (n) => Math.round(n * 100);
+            const rows = ["| Page | Performance | Accessibility | Best practices | SEO |", "|---|---|---|---|---|"];
+            for (const r of m) rows.push(`| ${r.url.replace("https://nextjs-dashoard-psi.vercel.app", "") || "/"} | ${pct(r.summary.performance)} | ${pct(r.summary.accessibility)} | ${pct(r.summary["best-practices"])} | ${pct(r.summary.seo)} |`);
+            console.log(rows.join("\n"));
+            require("fs").appendFileSync(process.env.GITHUB_STEP_SUMMARY, rows.join("\n") + "\n");
+          '
       - uses: actions/upload-artifact@v4
         if: always()
         with:

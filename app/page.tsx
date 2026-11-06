@@ -70,13 +70,13 @@ export default async function Page() {
           <span className="h-10 w-px bg-white/25" aria-hidden="true" />
           <MedicalAidMark className="h-16 w-16" />
         </div>
-        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-lg font-semibold md:text-2xl">
+        <h1 className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-lg font-semibold md:text-2xl">
           <span>Family Clinic Dashboard</span>
           <span className="text-[#9CC9FF]" aria-hidden="true">&amp;</span>
           <span>Next.js Dashboard</span>
           <span className="text-[#9CC9FF]" aria-hidden="true">&amp;</span>
           <span>Medical Aid Dashboard</span>
-        </div>
+        </h1>
       </div>
       <div className="mt-4 grid grow content-center gap-6 md:grid-cols-3 md:px-8">
         {cards.map((card) => {
