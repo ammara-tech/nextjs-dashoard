@@ -46,6 +46,7 @@ export default async function MembersPage({
     .sort()[0];
 
   const locale = lang === 'af' ? 'af-ZA' : 'en-GB';
+  const todayIso = new Date().toLocaleDateString('en-CA', { timeZone: 'Africa/Johannesburg' });
   const date = (value: string | null) =>
     value
       ? new Date(value.length === 10 ? `${value}T00:00:00Z` : value).toLocaleDateString(locale, {
@@ -173,6 +174,11 @@ export default async function MembersPage({
                           {t('plan.statusCancelled')}
                         </span>
                       )}
+                      {member.status === 'active' && member.nextDebitOn && member.nextDebitOn < todayIso ? (
+                        <span className="ml-2 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700">
+                          {t('plan.paymentDue')}
+                        </span>
+                      ) : null}
                     </td>
                     <td className="px-5 py-4 text-[#727a90]">{date(member.startedAt)}</td>
                     <td className="px-5 py-4 text-[#727a90]">

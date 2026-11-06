@@ -146,6 +146,12 @@ begin
   perform public.set_claim_status(cid, 'approved');
   perform public.set_claim_status(cid, 'paid');
   assert (select status from public.clinic_claims where id = cid) = 'paid', 'legal path should end paid';
+  execute 'reset role'; -- front desk cannot read the log; check as the database owner
+  assert (select count(*) from public.clinic_audit_events where entity_type = 'clinic_claims' and action = 'status_change' and entity_id = cid::text) = 3,
+    'each claim status change should be audited';
+  assert (select details ->> 'status_to' from public.clinic_audit_events
+          where entity_type = 'clinic_claims' and action = 'status_change' and entity_id = cid::text order by id desc limit 1) = 'paid',
+    'latest audited change should be paid';
   begin
     perform public.set_claim_status(cid, 'rejected');
     assert false, 'paid is final';
@@ -162,3 +168,112 @@ do $$ begin
   assert (select count(*) from public.clinic_care_plan_memberships) = 0, 'Bob has no memberships to see';
 end $$;
 rollback;
+
+-- 9. Audit log: changes are recorded, only owner/admin can read, nobody can edit.
+do $$ begin
+  assert (select count(*) from public.clinic_audit_events where entity_type = 'clinic_claims' and action = 'insert') >= 1,
+    'claim creation should be audited';
+  assert (select count(*) from public.clinic_audit_events where entity_type = 'patients' and action = 'insert') >= 2,
+    'patient creation should be audited';
+  assert not exists (select 1 from public.clinic_audit_events where details::text ilike '%Dentist%' or details::text ilike '%0829999999%'),
+    'audit rows must not hold personal values';
+end $$;
+begin;
+select pg_temp.sign_in('b131b12e-4a10-4d7b-904a-087c610a8a53') \g /dev/null
+do $$ begin
+  assert (select count(*) from public.clinic_audit_events) > 0, 'owner reads the audit log';
+end $$;
+rollback;
+begin;
+select pg_temp.sign_in('00000000-0000-0000-0000-0000000000a1') \g /dev/null
+do $$ begin
+  assert (select count(*) from public.clinic_audit_events) = 0, 'front desk must not read the audit log';
+end $$;
+rollback;
+begin;
+select pg_temp.sign_in('b131b12e-4a10-4d7b-904a-087c610a8a53') \g /dev/null
+do $$ begin
+  begin
+    update public.clinic_audit_events set action = 'x';
+    assert false, 'audit rows must be immutable';
+  exception when others then
+    if sqlerrm like 'audit rows must be immutable' then raise; end if;
+  end;
+end $$;
+rollback;
+
+-- 10. Double booking is refused.
+do $$
+declare prov uuid; pat uuid; at_time timestamptz := now() + interval '3 days';
+begin
+  select id into prov from public.clinic_providers limit 1;
+  if prov is null then
+    insert into public.clinic_providers (user_id, display_name, specialty) values ('b131b12e-4a10-4d7b-904a-087c610a8a53', 'Dr. Test', 'GP') returning id into prov;
+  end if;
+  select id into pat from public.patients limit 1;
+  insert into public.appointments (user_id, patient_id, provider_id, starts_at, status)
+  values ('b131b12e-4a10-4d7b-904a-087c610a8a53', pat, prov, at_time, 'booked');
+  begin
+    insert into public.appointments (user_id, patient_id, provider_id, starts_at, status)
+    values ('b131b12e-4a10-4d7b-904a-087c610a8a53', pat, prov, at_time, 'booked');
+    assert false, 'second booking at the same time must be refused';
+  exception when unique_violation then null;
+  end;
+end $$;
+
+-- 11. Reminders: only the service role can use them; sent reminders are not repeated.
+begin;
+select pg_temp.sign_in('b131b12e-4a10-4d7b-904a-087c610a8a53') \g /dev/null
+do $$ begin
+  begin
+    perform * from public.appointments_due_for_reminder(now(), now() + interval '10 days');
+    assert false, 'owner must not call the reminder function';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+rollback;
+begin;
+set local role service_role;
+do $$
+declare a uuid; n1 int; n2 int;
+begin
+  select count(*) into n1 from public.appointments_due_for_reminder(now(), now() + interval '10 days') where not email_done;
+  assert n1 >= 1, 'a future booked appointment should be due';
+  select appointment_id into a from public.appointments_due_for_reminder(now(), now() + interval '10 days') where not email_done limit 1;
+  perform public.record_reminder(a, 'email', 'sent');
+  select count(*) into n2 from public.appointments_due_for_reminder(now(), now() + interval '10 days') where not email_done;
+  assert n2 = n1 - 1, 'a reminded appointment is not due again';
+end $$;
+rollback;
+
+-- 12. Plan renewals: due plans renew once; a missing card marks payment due.
+do $$
+declare card uuid; pid uuid; mid uuid; mid2 uuid; before_n int; r record;
+begin
+  select id into pid from public.patients where auth_user_id = '00000000-0000-0000-0000-0000000000b1';
+  insert into public.clinic_saved_cards (patient_id, auth_user_id, cardholder_name, brand, last4, exp_month, exp_year)
+  values (pid, '00000000-0000-0000-0000-0000000000b1', 'Alice', 'visa', '4242', 12, 2099) returning id into card;
+  insert into public.clinic_care_plan_memberships (user_id, patient_id, plan_code, card_id, status, next_debit_on)
+  values ('b131b12e-4a10-4d7b-904a-087c610a8a53', pid, 'essential', card, 'active', current_date - 1) returning id into mid;
+  select count(*) into before_n from public.clinic_care_plan_payments where membership_id = mid;
+  set local role service_role;
+  select * into r from public.run_plan_renewals();
+  reset role;
+  assert r.renewed >= 1, 'a due plan should renew';
+  assert (select count(*) from public.clinic_care_plan_payments where membership_id = mid) = before_n + 1, 'one payment recorded';
+  assert (select next_debit_on from public.clinic_care_plan_memberships where id = mid) > current_date, 'date moves on';
+  set local role service_role;
+  select * into r from public.run_plan_renewals();
+  reset role;
+  assert r.renewed = 0, 'renewing again does nothing';
+
+  -- cancel the first plan and make a new one whose card has gone
+  update public.clinic_care_plan_memberships set status = 'cancelled' where id = mid;
+  insert into public.clinic_care_plan_memberships (user_id, patient_id, plan_code, card_id, status, next_debit_on)
+  values ('b131b12e-4a10-4d7b-904a-087c610a8a53', pid, 'essential', null, 'active', current_date) returning id into mid2;
+  set local role service_role;
+  select * into r from public.run_plan_renewals();
+  reset role;
+  assert r.failed >= 1, 'a plan without a card fails';
+  assert (select payment_failed_at from public.clinic_care_plan_memberships where id = mid2) is not null, 'marked payment due';
+end $$;

@@ -64,6 +64,7 @@ const documents: NavLink = {
 };
 const pharmacy: NavLink = { href: '/medi-clinic/pharmacy', label: 'nav.pharmacy', icon: BeakerIcon };
 const payments: NavLink = { href: '/medi-clinic/payments', label: 'nav.payments', icon: BanknotesIcon };
+const audit: NavLink = { href: '/medi-clinic/audit', label: 'nav.audit', icon: ShieldCheckIcon };
 const enquiries: NavLink = {
   href: '/medi-clinic/enquiries',
   label: 'nav.enquiries',
@@ -88,6 +89,7 @@ const linksByRole: Record<ClinicRole, NavLink[]> = {
     members,
     claims,
     enquiries,
+    audit,
   ],
   admin: [
     overview,
@@ -104,6 +106,7 @@ const linksByRole: Record<ClinicRole, NavLink[]> = {
     members,
     claims,
     enquiries,
+    audit,
   ],
   front_desk: [overview, patients, appointments, calendar, tomorrow, shifts, documents, enquiries, payments, claims],
   doctor: [

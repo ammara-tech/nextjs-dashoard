@@ -14,3 +14,7 @@ clinic-admin-availability.sql
 clinic-claims.sql
 clinic-patient-profile.sql
 clinic-realtime.sql
+clinic-audit-log.sql
+clinic-booking-guard.sql
+clinic-reminders.sql
+clinic-plan-renewals.sql

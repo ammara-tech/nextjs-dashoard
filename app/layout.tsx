@@ -3,6 +3,7 @@ import { inter } from '@/app/ui/fonts';
 import type { Metadata, Viewport } from 'next';
 import { getLang } from '@/app/lib/lang';
 import { I18nProvider } from '@/app/ui/i18n-provider';
+import PwaRegister from '@/app/ui/pwa-register';
 import KeyboardShortcuts from '@/app/ui/keyboard-shortcuts';
 import GuidedTour from '@/app/ui/guided-tour';
 import { RealtimeNotifier } from '@/app/ui/notifications';
@@ -39,6 +40,7 @@ export default async function RootLayout({
         <I18nProvider lang={lang}>
           {children}
           <KeyboardShortcuts />
+          <PwaRegister />
           <GuidedTour />
           <RealtimeNotifier />
         </I18nProvider>

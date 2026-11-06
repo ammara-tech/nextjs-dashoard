@@ -6,6 +6,8 @@ import {
 } from '../lib/actions';
 import { getClinicAccess, redirectToClinicSignIn } from '../lib/access';
 import InventoryItemForm from '../ui/inventory-item-form';
+import StockAlerts from '../ui/stock-alerts';
+import { computeStockAlerts } from '../lib/stock';
 
 export default async function PharmacyPage() {
   const { supabase, role } = await getClinicAccess();
@@ -103,6 +105,12 @@ export default async function PharmacyPage() {
           </div>
         </section>
       )}
+
+      {canStock ? (
+        <StockAlerts
+          alerts={computeStockAlerts(itemsResult.data ?? [], batchesResult.data ?? [])}
+        />
+      ) : null}
 
       <section className="rounded-2xl border border-[#e9eaf0] bg-white p-5">
         <h2 className="font-semibold">Inventory batches</h2>

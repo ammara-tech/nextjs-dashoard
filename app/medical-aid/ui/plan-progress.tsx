@@ -111,6 +111,13 @@ export default function PlanProgress({
         />
       </div>
 
+      {daysUntil !== null && daysUntil < 0 && membership.status === 'active' ? (
+        <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert">
+          <p className="font-semibold">{t('plan.paymentDue')}</p>
+          <p className="mt-1">{t('plan.paymentDueText')}</p>
+        </div>
+      ) : null}
+
       <dl className="mt-5 grid gap-3 sm:grid-cols-3">
         <div className="rounded-xl bg-[#f7f8fc] p-4">
           <dt className="text-xs text-[#8b91a3]">{t('plan.nextPayment')}</dt>
