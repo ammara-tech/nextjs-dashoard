@@ -7,7 +7,8 @@ Read sections 1 to 3 tonight, rehearse section 4 out loud twice, and keep sectio
 ## 1. The honest state of things (read first)
 
 - **Check Vercel first.** Open the Vercel project and confirm the newest Production deployment says Ready. The latest commits have not been seen building there yet. If the newest one failed, the previous deployment stays live, so the site still works, but the newest features would be missing.
-- **Run the three new SQL files in Supabase** (SQL Editor, one at a time): clinic-claims.sql, clinic-patient-profile.sql, clinic-realtime.sql. Without claims.sql the Claims pages show an empty or error state. Without patient-profile.sql, saving My profile fails. Without realtime.sql, only the live notification bell is affected.
+- **New since the last version:** run the five extra SQL files too (clinic-audit-log.sql, clinic-booking-guard.sql, clinic-reminders.sql, clinic-plan-renewals.sql, clinic-gateway.sql). Without clinic-audit-log.sql the Audit log page shows a setup notice. Tests, CI and Lighthouse now run automatically on GitHub; you can mention them in the viva as proof that it works.
+- **Run the three earlier SQL files in Supabase** (SQL Editor, one at a time): clinic-claims.sql, clinic-patient-profile.sql, clinic-realtime.sql. Without claims.sql the Claims pages show an empty or error state. Without patient-profile.sql, saving My profile fails. Without realtime.sql, only the live notification bell is affected.
 - **logins.txt** is no longer tracked in the repo and is listed in .gitignore. It stays in git history, so change those demo passwords in Supabase when the demo is over.
 - **Dark mode, Afrikaans and the new pages have not been seen rendered** by me. Click through each once tonight in a real browser.
 - **Record the 60 to 90 second backup** tonight (section 8). Nobody can do that for you.
@@ -53,6 +54,9 @@ Also: DEMO.md now has five numbered lines (hook, problem, walk, decision, limits
 - **Claims board.** Patients submit claims; staff move them through the stages. The database only allows legal moves: submitted to in review or rejected, in review to approved or rejected, approved to paid. An illegal move is refused by the database function, not just hidden in the interface.
 - **Members.** Owner and admin see every Care Plan member with plan and status filters, and export to CSV.
 - **Other roles.** Doctors choose "which doctor are you" in a pop-up and see their own dashboard. Pharmacist and stock manager use the pharmacy workspace (prescriptions, inventory). Front desk goes to the payment register.
+- **Audit log (owner and admin).** Every change to patients, appointments, claims and plans, with who and when, but never the personal values.
+- **Stock alerts.** The pharmacy page flags low stock and batches expiring within 30 days.
+- **Behind the scenes.** Daily jobs send appointment reminders and renew Care Plans; the database refuses double bookings; the site is installable on a phone.
 - **Extras.** Dark and light mode (toggle or key T), English and Afrikaans (key L), a guided tour (the ? button), keyboard shortcuts (press ?), and a bell that fills with live notifications when an appointment, payment, member or claim changes (Supabase Realtime).
 
 ### Medical Aid and the patient side (what you show as the patient)
@@ -164,6 +168,10 @@ Pick one you truly lived through and say it in your own words. Two good ones:
 ### Is the payment real?
 
 > No. It is a labelled demo record. Only the brand, last four digits and expiry are stored, never the full card number. A real gateway with verified webhooks is my first next step.
+
+### How do you know it works?
+
+> Every push runs automated checks on GitHub: the security rules are tested on a real Postgres with a second user, the site is built and type-checked, browser tests visit the live site, and Lighthouse scores it for accessibility.
 
 ### What would you change if you had another week?
 
