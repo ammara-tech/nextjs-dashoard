@@ -1,0 +1,16 @@
+patients.sql
+medi-clinic.sql
+clinic-scheduling.sql
+clinic-platform.sql
+clinic-patient-registration.sql
+clinic-patient-access-cleanup.sql
+clinic-medical-aid.sql
+fix-patients-rls-recursion.sql
+clinic-saved-cards.sql
+clinic-patient-documents-upload.sql
+clinic-care-plans.sql
+clinic-invoices.sql
+clinic-admin-availability.sql
+clinic-claims.sql
+clinic-patient-profile.sql
+clinic-realtime.sql

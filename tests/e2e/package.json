@@ -1,0 +1,11 @@
+{
+  "name": "clinic-e2e",
+  "private": true,
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.49.1",
+    "@types/node": "22.10.7"
+  }
+}
