@@ -1,6 +1,6 @@
 # Family Clinic Platform: the speech
 
-About 8 to 9 minutes spoken. Read the paragraphs as your speech, glance at the key points if you lose your place, and follow the demo cues when you are on screen.
+About 9 to 10 minutes spoken. Read the paragraphs as your speech, glance at the key points if you lose your place, and follow the demo cues when you are on screen.
 
 ---
 
@@ -110,7 +110,24 @@ About 8 to 9 minutes spoken. Read the paragraphs as your speech, glance at the k
 
 ---
 
-## 13. Security and honesty (45 seconds)
+## 13. Running the clinic and staying on top of it (45 seconds)
+
+> The owner also gets tools to run the practice. The Audit log shows who created, edited or changed the status of a patient, appointment, claim or plan, and when, but it never copies personal details into the log. On the pharmacy page, stock alerts flag low stock and medicine that expires within 30 days. The database refuses a double booking for the same doctor and time. And in the background, a daily job sends appointment reminders by e-mail and text message, and renews Care Plans, flagging any plan whose card is missing or expired as "Payment due".
+
+**Key points:** audit log with no personal values; stock alerts; no double booking; daily reminders and renewals; payment due.
+**Demo cue:** sign in as the owner, open Audit log, then the pharmacy page with the stock alerts.
+
+---
+
+## 14. Proof that it works (30 seconds)
+
+> I did not just click through it. Every time I push a change, GitHub checks it automatically: the security rules are tested on a real database with a second user, the app is built and type-checked, and browser tests and Lighthouse then check the live site. Accessibility scores 96 to 100 and performance 99 to 100.
+
+**Key points:** security tests on a real PostgreSQL; build and type check; browser tests on the live site; Lighthouse scores.
+
+---
+
+## 15. Security and honesty (45 seconds)
 
 > On security: least privilege everywhere. A stock manager, for example, gets no patient charts, and claim stages can only move in the allowed order because the database checks it. Documents are in a private store and open only through short-lived links. And I want to be clear about limits: no payment gateway is connected, and I am not claiming POPIA or any other certification. Before real patient data is used, a legal and privacy review is needed.
 
@@ -118,7 +135,7 @@ About 8 to 9 minutes spoken. Read the paragraphs as your speech, glance at the k
 
 ---
 
-## 14. How it is built and shipped (30 seconds)
+## 16. How it is built and shipped (30 seconds)
 
 > Technically, the app is Next.js with TypeScript, Supabase for sign-in, the database and file storage, and Vercel for hosting. When I merge to the main branch, Vercel builds and publishes it. If a build fails, the previous version stays live, so the site never goes down.
 
@@ -126,11 +143,11 @@ About 8 to 9 minutes spoken. Read the paragraphs as your speech, glance at the k
 
 ---
 
-## 15. What comes next and closing (30 seconds)
+## 17. What comes next and closing (30 seconds)
 
-> Next, I would connect a real payment gateway with verified webhooks, handle refunds for plan members, add e-mail and text-message alerts on top of the in-app notifications, translate the rest of the pages into Afrikaans, and complete the legal and privacy review. Thank you. I am happy to take questions.
+> Next, I would connect the PayFast sandbox checkout to the Care Plan screens, using the verified webhook that is already built, handle refunds for plan members, translate the rest of the pages into Afrikaans, and complete the legal and privacy review. Thank you. I am happy to take questions.
 
-**Key points:** real payments; refunds; e-mail and SMS alerts; finish the Afrikaans translation; legal review; invite questions.
+**Key points:** sandbox checkout; refunds; finish the Afrikaans translation; legal review; invite questions.
 
 ---
 
@@ -145,6 +162,9 @@ About 8 to 9 minutes spoken. Read the paragraphs as your speech, glance at the k
 - **Can I use it in Afrikaans?** Yes, with the language button. The navigation, headers, calendar, claims, profile, notifications and tour are translated; the remaining page text is still English.
 - **How do live updates work?** The app listens for changes through Supabase Realtime, refreshes the page and adds a bell notification. Row-level security still decides who receives each change.
 - **Are claims paid or approved automatically?** No. Claims are tracked by hand: staff move each claim through the stages, and the database only allows valid moves.
+- **How do you know it works?** Every push runs the security tests on a real PostgreSQL, a build and type check, then browser tests and Lighthouse on the live site.
+- **Who changed this record?** The Audit log shows who, when and which fields changed, without copying personal values.
+- **Do patients get reminders?** Yes, a daily job sends an e-mail and a text message once per appointment, once the e-mail and SMS keys are added.
 - **How does dark mode work?** One button remaps the dashboards' colours and remembers the choice; no flash on reload.
 - **How does a change go live?** Merge to main; Vercel builds and publishes. A failed build leaves the previous version live.
 
